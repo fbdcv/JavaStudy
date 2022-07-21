@@ -4,7 +4,7 @@ package reflection;
 
 //先定义一个实体类
 class User{
-    private String name;
+    private String name = "str";
     private int id;
     private int age;
 
