@@ -1,6 +1,6 @@
 # MySQL
 
-[思维导图](/MySQL/MySQL.xmind)
+[思维导图](/MySQL/MySQL.pdf)
 
 ##  初始MySQL
 
