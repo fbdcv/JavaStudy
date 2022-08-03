@@ -1,5 +1,7 @@
 # MySQL
 
+[思维导图](https://www.processon.com/mindmap/62e2110c1efad407907b8613)
+
 ##  初始MySQL
 
 ### 背景知识
