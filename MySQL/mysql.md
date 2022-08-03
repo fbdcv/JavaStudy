@@ -400,3 +400,19 @@ charset-set-server = utf8
 ```
 
 为了兼容性，最好不要在my.ini里面配置编码，最好在建表的时候声明编码
+
+### 修改和删除数据库表字段
+
+> 更改表名
+
+```sql
+-- alter table 旧表名 rename as 新表名
+ALTER TABLE teacher RENAME AS teacher1
+```
+
+
+
+> 增加表的字段
+
+
+
