@@ -156,7 +156,7 @@ CRUD （增加(Create)、检索(Retrieve)、更新(Update)和删除(Delete)）�
 - DQL    数据库 查询 语言
 - DCL    数据库 控制 语言
 
-## 操作数据库
+## 定义数据库
 
 ### 基本数据库操作
 
@@ -415,6 +415,274 @@ ALTER TABLE teacher RENAME AS teacher1
 
 
 > 增加表的字段
+
+## 操作数据
+
+## 查询数据
+
+## 事务
+
+## 索引
+
+## 用户权限
+
+## JDBC
+
+### JDBC简介
+
+[JDBC简介](https://www.liaoxuefeng.com/wiki/1252599548343744/1305152088703009)
+
+什么是JDBC？JDBC是Java DataBase Connectivity的缩写，它是Java程序访问数据库的标准接口。
+
+使用Java程序访问数据库时，Java代码并不是直接通过TCP连接去访问数据库，而是通过JDBC接口来访问，而JDBC接口则通过JDBC驱动来实现真正对数据库的访问。
+
+例如，我们在Java代码中如果要访问MySQL，那么必须编写代码操作JDBC接口。注意到JDBC接口是Java标准库自带的，所以可以直接编译。而具体的JDBC驱动是由数据库厂商提供的，例如，MySQL的JDBC驱动由Oracle提供。因此，访问某个具体的数据库，我们只需要引入该厂商提供的JDBC驱动，就可以通过JDBC接口来访问，这样保证了Java程序编写的是一套数据库访问代码，却可以访问各种不同的数据库，因为他们都提供了标准的JDBC驱动：
+
+```ascii
+┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐
+
+│  ┌───────────────┐  │
+   │   Java App    │
+│  └───────────────┘  │
+           │
+│          ▼          │
+   ┌───────────────┐
+│  │JDBC Interface │<─┼─── JDK
+   └───────────────┘
+│          │          │
+           ▼
+│  ┌───────────────┐  │
+   │  JDBC Driver  │<───── Vendor
+│  └───────────────┘  │
+           │
+└ ─ ─ ─ ─ ─│─ ─ ─ ─ ─ ┘
+           ▼
+   ┌───────────────┐
+   │   Database    │
+   └───────────────┘
+```
+
+从代码来看，Java标准库自带的JDBC接口其实就是定义了一组接口，而某个具体的JDBC驱动其实就是实现了这些接口的类：
+
+```ascii
+┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐
+
+│  ┌───────────────┐  │
+   │   Java App    │
+│  └───────────────┘  │
+           │
+│          ▼          │
+   ┌───────────────┐
+│  │JDBC Interface │<─┼─── JDK
+   └───────────────┘
+│          │          │
+           ▼
+│  ┌───────────────┐  │
+   │ MySQL Driver  │<───── Oracle
+│  └───────────────┘  │
+           │
+└ ─ ─ ─ ─ ─│─ ─ ─ ─ ─ ┘
+           ▼
+   ┌───────────────┐
+   │     MySQL     │
+   └───────────────┘
+```
+
+实际上，一个MySQL的JDBC的驱动就是一个jar包，它本身也是纯Java编写的。我们自己编写的代码只需要引用Java标准库提供的java.sql包下面的相关接口，由此再间接地通过MySQL驱动的jar包通过网络访问MySQL服务器，所有复杂的网络通讯都被封装到JDBC驱动中，因此，Java程序本身只需要引入一个MySQL驱动的jar包就可以正常访问MySQL服务器：
+
+```ascii
+┌ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┐
+   ┌───────────────┐
+│  │   App.class   │  │
+   └───────────────┘
+│          │          │
+           ▼
+│  ┌───────────────┐  │
+   │  java.sql.*   │
+│  └───────────────┘  │
+           │
+│          ▼          │
+   ┌───────────────┐     TCP    ┌───────────────┐
+│  │ mysql-xxx.jar │──┼────────>│     MySQL     │
+   └───────────────┘            └───────────────┘
+└ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ┘
+          JVM
+```
+
+使用JDBC的好处是：
+
+- 各数据库厂商使用相同的接口，Java代码不需要针对不同数据库分别开发；
+- Java程序编译期仅依赖java.sql包，不依赖具体数据库的jar包；
+- 可随时替换底层数据库，访问数据库的Java代码基本不变。
+
+### 第一个JDBC程序
+
+- 创建测试数据库
+
+  ```sql
+  CREATE DATABASE jdbcstudy CHARACTER SET utf8 COLLATE utf8_general_ci;
+  
+  USER jdbcstudy;
+  
+  CREATE TABLE users(
+    `id` INT PRIMARY KEY,
+    `name` VARCHAR(40),
+    `password` VARCHAR(40),
+    `email` VARCHAR(60),
+    `birthday` DATE
+  );
+  
+  INSERT INTO users(`id`,`name`,`password`,`email`,`birthday`)
+  VALUES(1,'张三','123456','zs@sina.com','1980-12-04'),
+  (2,'李四','123456','lisi@sina.com','1981-12-04'),
+  (3,'王五','123456','wangwu@sina.com','1982-12-04');
+  ```
+
+- 导入MySQL驱动
+
+  - 下载驱动
+
+  ![image-20220805103513320](image-20220805103513320.png)
+
+  - 在项目目录下创建lib目录，解压下载的驱动，复制jar包到lib目录
+
+    ![image-20220805103944791](image-20220805103944791.png)
+
+  - 添加依赖
+
+    ![image-20220805104101126](image-20220805104101126.png)
+
+    ![image-20220805104128329](image-20220805104128329.png)
+
+- 编写代码 
+
+```sql
+package lesson01;
+
+import java.sql.*;
+
+//我的第一个jdbc程序
+public class JdbcFirstDemo {
+    public static void main(String[] args) throws ClassNotFoundException, SQLException {
+        //1.加载驱动
+        Class.forName("com.mysql.jdbc.Driver");
+        //2.用户信息和url
+        String url = "jdbc:mysql://localhost:3306/jdbcstudy?useUnicode=true&characterEncoding=utf8&useSSL=false";
+        String username = "root";
+        String password = "wz123456789";
+        //3.连接数据库
+        Connection connection = DriverManager.getConnection(url, username, password);
+
+        //4.创建SQL对象
+        Statement statement = connection.createStatement();
+        //5.执行语句
+        String sql  ="select * from users";
+        ResultSet resultSet = statement.executeQuery(sql);
+        while (resultSet.next()){
+            System.out.println("id:"+resultSet.getObject("id"));
+            System.out.println("name:"+resultSet.getObject("name"));
+            System.out.println("pwd:"+resultSet.getObject("password"));
+            System.out.println("email:"+resultSet.getObject("email"));
+            System.out.println("birthday:"+resultSet.getObject("birthday"));
+        }
+        //6.关闭连接
+        resultSet.close();
+        statement.close();
+        connection.close();
+    }
+}
+
+```
+
+![image-20220805121223852](image-20220805121223852.png)
+
+
+
+代码解析
+
+```java
+ Class.forName("com.mysql.jdbc.Driver");
+ //使用注解，会初始化静态变量和静态代码块，而驱动的核心代码就写在静态代码块中，所以可以直接使用注解加载驱动
+```
+
+
+
+```java
+String url = "jdbc:mysql://localhost:3306/jdbcstudy?useUnicode=true&characterEncoding=utf8&useSSL=false";
+/*url分析
+jdbc:mysql:        可以看成协议例如http:
+
+localhoset:3306    服务器的ip和服务的端口号
+
+/jdbcstudy		   数据库
+
+?useUnicode=true&characterEncoding=utf8&useSSL=false    使用unicode编码，选择utf-8编码，不使用ssl    ?参数1&参数2&参数3& ...
+
+*/
+
+```
+
+
+
+```java
+Connection connection = DriverManager.getConnection(url, username, password);
+//connection相当于获得了数据库的对象,意味着可以通过代码直接操作数据库，例如 事务提交 事务回滚 设置自动提交
+connection.commit();
+connection.rollback();
+connection.setAutoCommit(true);
+```
+
+
+
+```java
+Statement statement = connection.createStatement();
+String sql  ="select * from users";
+ResultSet resultSet = statement.executeQuery(sql);
+/*
+	statement.execute();		可以执行任意sql
+	statement.executeQuery();	查询操作返回ResultSet
+	statement.executeUpdate();	返回受影响的行数
+
+*/
+```
+
+
+
+```java
+String sql  ="select * from users";
+ResultSet resultSet = statement.executeQuery(sql);
+while (resultSet.next()){
+            System.out.println("id:"+resultSet.getObject("id"));
+            System.out.println("name:"+resultSet.getObject("name"));
+            System.out.println("pwd:"+resultSet.getObject("password"));
+            System.out.println("email:"+resultSet.getObject("email"));
+            System.out.println("birthday:"+resultSet.getObject("birthday"));
+        }
+/*
+ResultSet
+迭代器 （获得行）
+resultSet.beforeFirst()
+resultSet.afterLast()
+resultSet.next()
+resultSet.previous()
+resultSet.absolute()
+得到指定类型（获得指定行的列值）
+resultSet.getObject()	//在不知道列类型的情况下使用
+resultSet.getString()
+resultSet.getInt()
+resultSet.getDate();
+....
+*/
+```
+
+
+
+```java
+        resultSet.close();
+        statement.close();
+        connection.close();
+//不关闭将相当浪费资源
+```
 
 
 
