@@ -1,3 +1,5 @@
+package JavaArray;
+
 public class Test01 {
     public static void main(String[] args) {
         //创建一维数组

@@ -51,7 +51,7 @@ ip地址：InetAddress
   
   public class TestInetAddress {
       public static void main(String[] args) throws UnknownHostException {
-          //查询本机地址
+          //查询本机地址 I net Address
           InetAddress address = InetAddress.getByName("localhost");
           System.out.println(address);
           InetAddress address1 = InetAddress.getLocalHost();

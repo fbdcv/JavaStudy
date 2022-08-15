@@ -556,7 +556,7 @@ ALTER TABLE teacher RENAME AS teacher1
 
 - 编写代码 
 
-```sql
+```java
 package lesson01;
 
 import java.sql.*;
@@ -685,4 +685,266 @@ resultSet.getDate();
 ```
 
 
+
+### 编写JDBC工具类
+
+- 编写db.properties配置文件
+
+```properties
+driver = com.mysql.jdbc.Driver
+url = jdbc:mysql://localhost:3306/jdbcstudy?useUnicode=true&characterEncoding=utf8&useSSL=false
+username =root
+password=wz123456789
+```
+
+- 编写工具类
+
+  
+
+```java
+package lesson02;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.*;
+import java.util.Properties;
+
+public class JdbcUtils {
+    private static String dirver =null;
+    private static String url =null;
+    private static String username =null;
+    private static String password =null;
+
+    static {
+
+        try {
+            //读取配置数据
+            InputStream in = JdbcUtils.class.getClassLoader().getResourceAsStream("db.properties");
+            Properties properties = new Properties();
+            properties.load(in);
+
+            dirver=properties.getProperty("driver");
+            url=properties.getProperty("url");
+            username=properties.getProperty("username");
+            password=properties.getProperty("password");
+            //加载驱动
+            Class.forName(dirver);
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    //获取连接
+    public static Connection getConnection() throws SQLException{
+        return DriverManager.getConnection(url,username,password);
+    }
+
+    //释放连接资源
+    public static void release(Connection conn,Statement st,ResultSet rs) {
+        try {
+            if(rs!=null){
+                rs.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        try {
+            if(st!=null) {
+                st.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        try {
+            if(conn!=null){
+                conn.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+}
+```
+
+- 测试增删改查
+
+  - 增删改的sql语句载入用executeUpdate，查的sql语句载入用executeQuery
+
+  ```java
+  package lesson02;
+  
+  import java.sql.Connection;
+  import java.sql.ResultSet;
+  import java.sql.SQLException;
+  import java.sql.Statement;
+  
+  public class TestInsert {
+      public static void main(String[] args) {
+          Connection conn = null;
+          Statement st= null;
+          ResultSet rs = null;
+  
+          try {
+              conn = JdbcUtils.getConnection();
+              st = conn.createStatement();
+              String sql ="insert into users(id,`NAME`,`PASSWORD`,`email`,`birthday`)"+
+                      "values (4,'kuangshen','wz123456789','2434897168@qq.com','2022-08-06')";
+              int i = st.executeUpdate(sql);
+              if(i>0){
+                  System.out.println("插入成功！");
+              }
+          } catch (SQLException e) {
+              e.printStackTrace();
+          }finally {
+              JdbcUtils.release(conn,st,rs);
+          }
+      }
+  
+  }
+  ```
+
+```java
+package lesson02;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+public class TestDelete {
+    public static void main(String[] args) {
+        Connection conn = null;
+        Statement st= null;
+        ResultSet rs = null;
+
+        try {
+            conn = JdbcUtils.getConnection();
+            st = conn.createStatement();
+            String sql ="delete from users where id =4";
+            int i = st.executeUpdate(sql);
+            if(i>0){
+                System.out.println("删除成功！");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }finally {
+            JdbcUtils.release(conn,st,rs);
+        }
+    }
+}
+```
+
+
+
+```java
+package lesson02;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+public class TestUpdate {
+    public static void main(String[] args) {
+        Connection conn = null;
+        Statement st= null;
+        ResultSet rs = null;
+
+        try {
+            conn = JdbcUtils.getConnection();
+            st = conn.createStatement();
+            String sql ="update users set `NAME`='kuangshen',email='24736743@qq.com' where  id = 1";
+            int i = st.executeUpdate(sql);
+            if(i>0){
+                System.out.println("更新成功！");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }finally {
+            JdbcUtils.release(conn,st,rs);
+        }
+    }
+}
+```
+
+
+
+```java
+package lesson02;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+public class TestSelect {
+    public static void main(String[] args) {
+        Connection conn = null;
+        Statement st= null;
+        ResultSet rs = null;
+
+        try {
+            conn = JdbcUtils.getConnection();
+            st = conn.createStatement();
+            String sql ="select * from  users where id =1";
+            rs = st.executeQuery(sql);
+            while (rs.next()){
+                System.out.println(rs.getString("NAME"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }finally {
+            JdbcUtils.release(conn,st,rs);
+        }
+    }
+}
+```
+
+### SQL注入问题
+
+### PreparedStatement对象
+
+```java
+import java.sql.*;
+
+public class Test {
+    public static void main(String[] args) {
+
+        Connection conn = null;
+        PreparedStatement st = null;
+        ResultSet rs = null;
+
+        try{
+            conn = JDBCUtils.getConnection();
+            String sql ="select * from  users where id =?";//?表示占位符
+            st= conn.prepareStatement(sql);//sql预编译
+			st.setInt(1,1);//将第一个占位符替换为1，补全sql语句
+             rs = st.executeQuery();//执行sql语句
+            while (rs.next()){
+                System.out.println(rs.getString("NAME"));
+            }
+        }catch (SQLException e){
+            e.printStackTrace();
+        }finally {
+            JDBCUtils.release(conn,st,rs);
+        }
+
+    }
+}
+```
+
+使用PreparedStatement对象的好处
+
+- 采用预编译，提高了编写、执行相似SQL语句的效率
+- 数据库引擎会把占位符‘？’当作数据类型而非特定语句来处理，可以有效防止SQL注入
+
+### 使用IDEA连接数据库
+
+### JDBC操作事务
+
+### DBCP 和C3P0连接池
 
