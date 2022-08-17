@@ -20,7 +20,6 @@ public class Test01 {
             System.out.print(b[i]+" ");
         }
         System.out.println();
-
         //另一种遍历方式
         System.out.println("使用另一种遍历方式");
         System.out.println("遍历数组a");
