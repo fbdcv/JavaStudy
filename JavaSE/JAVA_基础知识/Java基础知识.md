@@ -689,11 +689,136 @@ public class Test04 {
 
 ### String
 
+String类型的创建
+
+```java
+package string;
+
+public class Test02 {
+    public static void main(String[] args) {
+        //创建字符串
+        String a = "abcd";
+        String b = new String("efgh");
+        System.out.println(a);
+        System.out.println(b);
+        
+    }
+}
+```
+
+![image-20220819162745744](image-20220819162745744.png)
+
+String的常用方法
+
+```java
+package string;
+
+public class Test03 {
+    public static void main(String[] args) {
+        String str =" A安aBCa1234😀 ";
+
+        System.out.println("\t\t显示字符串的字符数量");
+        System.out.println("\t\t显示特定位置的字符");
+        System.out.println(str.codePointCount(0,str.length()));
+        int []codequeue= str.codePoints().toArray();
+        System.out.println(new String(codequeue,11,1));
+
+        System.out.println("\t\t显示字符串的代码单元数量");
+        System.out.println("\t\t显示特定位置的代码单元");
+        System.out.println(str.length());
+        System.out.println(str.charAt(11));
+        //字符串拼接(返回拼接后的字符串，而不是改变原有字符串)
+        System.out.println("\t\t拼接字符串");
+        System.out.println(str.concat("X"));
+        System.out.println(str);
+
+        //字符串查找
+        System.out.println("\t\t字符串查找");
+        System.out.println(str.contains("😀"));
+        System.out.println(str.indexOf("a"));
+        System.out.println(str.lastIndexOf("a"));
+
+        //字符串比较
+        System.out.println("\t\t字符串比较");
+        System.out.println(str.compareTo("B"));
+        //字符串变形
+        System.out.println("\t\t字符串变形");
+        System.out.println(str.toLowerCase());
+        System.out.println(str.toUpperCase());
+        System.out.println(str.trim());
+
+        //字符串截取
+        System.out.println("\t\t字符串截取");
+        System.out.println(str.substring(2,6));
+        //字符串转换
+        System.out.println("\t\t字符串转换");
+        System.out.println(String.valueOf(123456));
+        //...
+    }
+}
+```
+
+![image-20220819173920703](image-20220819173920703.png)
+
+字符串类时一个比较特殊的类，他是Java中唯一重载运算符的类！（Java不支持运算符重载，String是特例）
+
+String的对象直接支持使用+或+=运算符来进行拼接，并形成新的String对象！（String的字符串是不可变的）
+
+```java
+package string;
+
+public class Test04 {
+    public static void main(String[] args) {
+        String a="aaaa4";
+        String b="bbbb4";
+        System.out.println(a+=b);
+        System.out.println(a+b);
+    }
+}
+```
+
+![image-20220819174731606](image-20220819174731606.png)
+
 ### StringBuilder
+
+大量进行字符串的拼接似乎不太好，编译器是很聪明的，String的拼接有可能会被编译器优化为StringBuilder来减少对象创建（对象频繁创建时很费时间同时很占内存的）
+
+StringBuilder也是一个类，但是它能够存储可变长度的字符串！
+
+```java
+package string;
+
+public class Test05 {
+    public static void main(String[] args) {
+        StringBuilder builder = new StringBuilder();
+        builder                     //因为append返回StringBuilder对象本身所以支持链式调用
+                .append("1")
+                .append("2")
+                .append("3")
+                .append("4");
+        String str =builder.toString();
+        System.out.println(str);
+    }
+}
+```
+
+![image-20220819175708261](image-20220819175708261.png)
 
 ### 技术点
 
 #### 引用拷贝、浅拷贝、深拷贝
+
+```mermaid
+graph LR;
+	拷贝-->引用拷贝;
+	拷贝-->对象拷贝;
+	对象拷贝-->浅拷贝;
+	对象拷贝-->深拷贝;
+	
+
+```
+
+
 
 #### 字符串常量池
 
