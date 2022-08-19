@@ -818,11 +818,61 @@ graph LR;
 
 ```
 
+- 引用拷贝
 
+  引用拷贝会生成一个新的对象引用地址，但是两个最终指向依然是同一个对象
+
+  引用类型之间直接使用**=**赋值，即可实现引用拷贝
+
+  ![image-20201216222353944](1460000038523413.png)
+
+- 浅拷贝
+
+  浅拷贝会创建一个新对象，新对象和原对象本身没有任何关系，**新对象和原对象不等，但是新对象的属性和老对象相同**。
+
+  如何实现浅拷贝呢？也很简单，**就是在需要拷贝的类上实现Cloneable接口并重写其clone()方法**。
+
+  ![image-20201217002917565](1460000038523411.png)
+
+- 深拷贝
+
+  深拷贝：**在对引用数据类型进行拷贝的时候，创建了一个新的对象，并且复制其内的成员变量。**
+
+  在具体实现深拷贝上，这里提供两个方式，重写clone()方法和序列法。
+
+  ![image-20201217111300466](1460000038523414.png)
+
+  参考文章：[5张图搞懂Java引用拷贝、深拷贝、浅拷贝 - SegmentFault 思否](https://segmentfault.com/a/1190000038523408)
 
 #### 字符串常量池
 
+```java
+        String a = "abcd";
+        String b = new String("efgh");
+```
+
+使用第一种创建方式（使用双引号直接创建String对象的方式）称为字面量，这并不是语法糖，两种创建方式是有区别的。
+
+如果我们用new关键字创建String对象时，即使属性一样，也会创建多个对象，Java为了提高使用字符串的效率，引入了字符串常量池，字符串常量池位于堆中。
+
+当我们使用字面量创建字符串时，字符串常量池会将其对象引用进行保存，后面如果创建重复的字面量，就会直接将字符串中的引用进行返回。
+
 #### String不可变
+
+不可变指的是，一个对象创建后，如果不能修改这个对象的属性，则这个对象是不可变的
+
+String源码片段
+
+```java
+public final class String
+    implements java.io.Serializable, Comparable<String>, CharSequence {
+    /** The value is used for character storage. */
+    private final char value[];
+```
+
+String内部是基于char数组实现的，value数组被final修饰，表示该数组不能改变指向，并不能保证value数组中的内容不能被改变，真正让String不可变的原因是被private关键字修饰，不能从String方法以外的方式访问value，并且String没提供给修改value的方法。同时String这个类被final修饰，表示该类不能被继承，从而避免子类覆盖父类行为的可能。
+
+String不可变是字符串常量池存在的前置条件，同时String不可变还会保证哈希码也不会变，可以保证其他使用String哈希码的方法的安全性。
 
 #### String、StringBuilder和StringBuffer
 
