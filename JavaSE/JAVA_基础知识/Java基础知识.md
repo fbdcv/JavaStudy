@@ -876,7 +876,176 @@ String不可变是字符串常量池存在的前置条件，同时String不可�
 
 #### String、StringBuilder和StringBuffer
 
+**StringBuilder**
+
+String是不可变的，如果我们需要对字符串进行大量操作，就必然会产生许多新对象从而导致性能低下，为了解决这一问题，Java推出StringBuilder这个可变字符串类型
+
+StringBuilder源码片段
+
+```java
+public final class StringBuilder
+    extends AbstractStringBuilder
+    implements Serializable, CharSequence
+{
+
+    /** use serialVersionUID for interoperability */
+    static final long serialVersionUID = 4383685877147921099L;
+
+    /**
+     * Constructs a string builder with no characters in it and an
+     * initial capacity of 16 characters.
+     */
+    public StringBuilder() {
+        super(16);
+    }
+    //....
+     @Override
+    public StringBuilder append(String str) {
+        super.append(str);
+        return this;
+    }
+
+    //....
+```
+
+抽象类AbstractStringBuilder源码片段
+
+```java
+abstract class AbstractStringBuilder implements Appendable, CharSequence {
+    /**
+     * The value is used for character storage.
+     */
+    char[] value;
+
+    /**
+     * The count is the number of characters used.
+     */
+    int count;
+```
+
+但是StringBuilder是线程不安全的
+
+```java
+package string;
+
+public class Test06 {
+
+    public static void main(String[] args) throws InterruptedException {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 10; i++) {
+            new Thread(() -> {
+                for (int j = 0; j < 1000; j++) {
+                    sb.append("a");
+                }
+            }).start();
+        }
+        // 睡眠确保所有线程都执行完
+        Thread.sleep(2000);
+        System.out.println(sb.length());
+    }
+
+}
+
+```
+
+![image-20220821112739126](image-20220821112739126.png)
+
+**StingBuffer**
+
+相关文章：[为什么StringBuilder是线程不安全的？ - 腾讯云开发者社区-腾讯云 (tencent.com)](https://cloud.tencent.com/developer/article/1700344)
+
+StringBuffer 在StringBuilder的基础上在相关方法上加上了锁以保证线程安全（正因为加了锁所以性能不如StringBuilder，所以在不考虑线程安全的基础上，最好用StringBuilder）
+
+StringBuffer源码片段
+
+```java
+public final class StringBuffer
+    extends AbstractStringBuilder
+    implements Serializable, CharSequence
+{
+
+    /**
+     * A cache of the last value returned by toString. Cleared
+     * whenever the StringBuffer is modified.
+     */
+    private transient char[] toStringCache;
+
+    /** use serialVersionUID from JDK 1.0.2 for interoperability */
+    static final long serialVersionUID = 3388685877147921107L;
+
+    /**
+     * Constructs a string buffer with no characters in it and an
+     * initial capacity of 16 characters.
+     */
+    public StringBuffer() {
+        super(16);
+    }
+//....    
+@Override
+public synchronized StringBuffer append(String str) {
+    toStringCache = null;
+    super.append(str);
+    return this;
+}
+//....
+```
+
+```java
+package string;
+
+public class Test06 {
+
+    public static void main(String[] args) throws InterruptedException {
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < 10; i++) {
+            new Thread(() -> {
+                for (int j = 0; j < 1000; j++) {
+                    sb.append("a");
+                }
+            }).start();
+        }
+        // 睡眠确保所有线程都执行完
+        Thread.sleep(2000);
+        System.out.println(sb.length());
+    }
+
+}
+```
+
+![image-20220821113226658](image-20220821113226658.png)
+
 #### StringJoiner
+
+为了方便日常使用过程中字符串集合的拼接，出现了StringJoiner，Java标准库中的拼接操作（String.join()方法，Stream流中常用的joining操作等）其实就用到了StringJoiner。
+
+```java
+package string;
+
+import java.util.Arrays;
+import java.util.StringJoiner;
+import java.util.stream.Collectors;
+
+public class Test07 {
+    public static void main(String[] args) {
+        String []stings = {"Hello","World","!!!"};
+        StringJoiner sj = new StringJoiner(",","[","]");//设置分割符，开头和结尾的字符
+        for(String s:stings){
+            sj.add(s);
+        }
+        System.out.println(sj);
+
+        //String中的join方法
+        System.out.println(String.join(",",stings));
+
+        //Stream流中的joining操作
+        System.out.println(Arrays.stream(stings).collect(Collectors.joining(",")));
+    }
+}
+```
+
+![image-20220821120311451](image-20220821120311451.png)
+
+
 
 ## 常用类
 
@@ -905,6 +1074,8 @@ String不可变是字符串常量池存在的前置条件，同时String不可�
 #### BigDecimal的使用场景
 
 ## 类和对象
+
+### 包和导入
 
 ### 修饰符
 
