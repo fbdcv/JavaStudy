@@ -1051,19 +1051,116 @@ public class Test07 {
 
 ### 基本类型包装类
 
-#### Java中的非对象
+**Java中的非对象**
 
-#### 装箱拆箱原理&包装类型缓存池
+八大基本数据类型都不是对象，这与Java的核心理念，**一切即对象**相冲，所以引入基本数据类型的**包装类**来使这个体系完整。基本数据类型转为包装类的过程，称为**装箱**，反之，称为**拆箱**，装箱和拆箱无需我们手动进行，Java会自动帮忙做好。
 
-### 数字处理
+![img](1671444-20190811103456851-997879830.png)
+
+```java
+Integer a =8; //装箱
+int b =a ;//拆箱
+```
+
+**装箱拆箱原理&包装类型缓存池**
+
+**缓存池**（又叫常量池）是事先存储一些常用数据用以提高性能节省空间的一种技术，大部分的包装类型都实现了缓存池，**当我们在自动装箱过程中，如果基本类型的值处在缓存的范围内，则不会重新创建对象，而是复用缓冲池中已事先创建好的对象**。
+
+每个包装类都默认缓存了点常用的对象，如下表
+
+![img](modb_20220609_8e8673a2-e7e0-11ec-85d3-fa163eb4f6be.png)
+
+```java
+package pack;
+
+public class Test01 {
+    public static void main(String[] args) {
+        Integer a=8;
+        Integer b=8;
+        System.out.println(a==b);//利用默认缓存
+
+        Integer c = new Integer(8);//没有利用缓存，直接new对象
+        System.out.println(a==c);
+
+        a=128;
+        b=128;
+        System.out.println(a==b);//超出默认缓存范围
+        
+    }
+}
+```
+
+![image-20220821173959356](image-20220821173959356.png)
+
+使用**==**和**valueOf**方法都会进行默认缓存的判断，使用**new**关键字不会创建包装类则不会使用缓存
+
+使用自动装箱实际上是用了valueOf方法，使用自动拆箱实际上是使用了xxxValue方法 
+
+以下是包装类Integer常用的方法，其他包装类类似
+
+```java
+package pack;
+
+public class Test02 {
+    public static void main(String[] args) {
+
+        //包装类的赋值
+        System.out.println("包装类赋值");
+        Integer a = new Integer(200);
+        System.out.println(a);
+        a =8;                   //自动装箱（内部调用了valueOf）
+        System.out.println(a);
+        a=Integer.valueOf(9); //使用了变量池
+        System.out.println(a);
+
+        //包装类的拆箱
+        System.out.println("包装类拆箱");
+        System.out.println(a.intValue());
+        System.out.println(a.floatValue());
+        System.out.println(a.byteValue());
+        System.out.println(a.shortValue());
+        System.out.println(a.longValue());
+        System.out.println(a.doubleValue());
+
+        System.out.println("解析字符串");
+        a=Integer.parseInt("123456");//解析字符串
+        System.out.println(a);
+
+        //封装了的方法
+        System.out.println("测试常用方法");
+        System.out.println(Integer.min(100, 200));
+        System.out.println(Integer.max(100, 200));
+        System.out.println(Integer.sum(100, 200));
+        System.out.println(Integer.compare(100, 200));
+    }
+}
+```
+
+![image-20220821191431990](image-20220821191431990.png)
+
+### 数字类
+
+**Math类**
+
+**Random类**
+
+**DecimalFormat类**
+
+**BigInteger类**
+
+**BigDecimal类****
 
 ### 日期类
 
-#### java.time下 的日期类
+**Date类**
+
+**Calendar类**
+
+**java.time下 的日期类**
 
 ### Scanner类
 
-#### System类
+### System类
 
 ### Runtime类
 
@@ -1104,6 +1201,8 @@ public class Test07 {
 #### hashCode()与equals()重写
 
 ## 封装、继承、多态
+
+Object类
 
 ### 封装
 
