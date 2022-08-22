@@ -1142,13 +1142,203 @@ public class Test02 {
 
 **Math类**
 
+```java
+package math;
+
+public class Test01 {
+    public static void main(String[] args) {
+        //指数函数方法
+        System.out.println("指数函数方法");
+        System.out.println(Math.sqrt(25));
+        System.out.println(Math.pow(5,2));
+        //取整方法
+        System.out.println("去整方法");
+        System.out.println(Math.ceil(4.5));//向上取整
+        System.out.println(Math.floor(4.5));//向下取整
+        System.out.println(Math.round(4.6111111));//四舍五入为整数
+        //最大值、最小值、绝对值方法
+        System.out.println("最大值、最小值、绝对值");
+        System.out.println(Math.max(4,5));
+        System.out.println(Math.min(4,5));
+        System.out.println(Math.abs(-5));
+        //三角函数方法
+        System.out.println("三角函数方法");
+        System.out.println(Math.sin(Math.PI/2));
+        System.out.println(Math.cos(0));
+        System.out.println(Math.tan(Math.PI/4));
+    }
+}
+```
+
+![image-20220822093743105](image-20220822093743105.png)
+
 **Random类**
+
+Java存在两个random函数，一个是Math类下的，一个是Random类下的
+
+- java.lang.Math下的随机方法
+
+调用这个Math.random()函数能够返回带正号的double值，该值大于等于0.0且小于1.0，即取值范围是[0.0,1.0)的左闭右开区间，返回值是一个伪随机选择的数，在该范围内（近似）均匀分布。
+
+- java.util.Random中的随机方法
+
+下面是Java.util.Random()方法摘要：
+
+protected int next(int bits)：生成下一个伪随机数。
+boolean nextBoolean()：返回下一个伪随机数，它是取自此随机数生成器序列的均匀分布的boolean值。
+void nextBytes(byte[] bytes)：生成随机字节并将其置于用户提供的 byte 数组中。
+double nextDouble()：返回下一个伪随机数，它是取自此随机数生成器序列的、在0.0和1.0之间均匀分布的 double值。
+float nextFloat()：返回下一个伪随机数，它是取自此随机数生成器序列的、在0.0和1.0之间均匀分布float值。
+double nextGaussian()：返回下一个伪随机数，它是取自此随机数生成器序列的、呈高斯（“正态”）分布的double值，其平均值是0.0标准差是1.0。
+int nextInt()：返回下一个伪随机数，它是此随机数生成器的序列中均匀分布的 int 值。
+int nextInt(int n)：返回一个伪随机数，它是取自此随机数生成器序列的、在（包括和指定值（不包括）之间均匀分布的int值。
+long nextLong()：返回下一个伪随机数，它是取自此随机数生成器序列的均匀分布的 long 值。
+void setSeed(long seed)：使用单个 long 种子设置此随机数生成器的种子。
+
+```java
+package random;
+
+import java.util.Random;
+
+public class Test01 {
+    public static void main(String[] args) {
+        System.out.println("Math类下的随机数范围默认（0~1）");
+        System.out.println(Math.random());
+
+        System.out.println("Random类下的方法");
+        Random r1 = new Random(10);//Random需要填入种子参数，系统会根据种子生成伪随机数,不填参数默认种子为当前的时间戳
+        Random r2 = new Random(10);//对于相同的Random对象，生成的随机数序列是一致的
+        for (int i = 0; i < 5; i++) {
+            System.out.print(r1.nextInt(10)+"\t");//
+        }
+        System.out.println();for (int i = 0; i < 5; i++) {
+            System.out.print(r2.nextInt(10)+"\t");
+        }
+        System.out.println();
+        System.out.println("几个例子");
+        //生成[0,1.0)区间的小数：
+        System.out.println(r1.nextDouble());
+        //生成[0,5.0)区间的小数：
+        System.out.println(r1.nextDouble()*5);
+        //生成[1,2.5)区间的小数：
+        System.out.println(r1.nextDouble()*1.5+1);
+        //生成-2^31到2^31-1之间的整数：
+        System.out.println(r1.nextInt());
+
+        //生成[0,10)区间的整数：
+        System.out.println(r1.nextInt(10));//方法一
+        System.out.println(Math.abs(r1.nextInt()%10));//方法二
+
+
+    }
+}
+```
+
+![image-20220822100936367](image-20220822100936367.png)
 
 **DecimalFormat类**
 
+DecimalFormat用于格式化十进制数字
+
+![Java常用工具类：数字格式化DecimalFormat类](1dd7e77edbf3c01c3af99dcc21d86e62.png)
+
+```java
+import java.text.DecimalFormat;
+
+public class decimalformat {
+    public static void main(String[] args) {
+        String str ="00000.####";
+        DecimalFormat decimalFormat = new DecimalFormat(str);
+        double value =12.1500;
+        System.out.println(value+"\t"+str+"\t"+decimalFormat.format(value));
+
+        str = "00000.0##kg";
+        decimalFormat.applyPattern(str);
+        value = 123456.789;
+        System.out.println(value+"\t"+str+"\t"+decimalFormat.format(value));
+
+        str = "0.0kg";
+        decimalFormat.applyPattern(str);
+        value = 123456.789;
+        System.out.println(value+"\t"+str+"\t"+decimalFormat.format(value));
+
+        str = "0.00%";
+        decimalFormat.applyPattern(str);
+        value = 0.789666;
+        System.out.println(value+"\t"+str+"\t"+decimalFormat.format(value));
+
+        System.out.println("分组");
+        decimalFormat.setGroupingUsed(true);    //启用分组
+        decimalFormat.setGroupingSize(4);       //设置分组
+        str = "";
+        decimalFormat.applyPattern(str);
+        value = 123456789;
+        System.out.println(value+"\t"+str+"\t"+decimalFormat.format(value));
+
+    }
+}
+```
+
+![image-20220822105407211](image-20220822105407211.png)
+
+0和#对于小数点前的数字会保证显示完全部数字再与模板进行对比修改，而对于小数点后的数字和严格匹配位数（即如果小数点后的#和0的数量低于原数据的数量，那么原数据小数点后的位数会丢失）
+
+```java
+package decimalformat;
+import java.text.DecimalFormat;
+
+public class Test02 {
+    public static void main(String[] args) {
+        String str ="0.0";
+        DecimalFormat decimalFormat = new DecimalFormat(str);
+        double value =123.123;
+        System.out.println(value+"\t"+str+"\t"+decimalFormat.format(value));
+
+        str = "00.00";
+        decimalFormat.applyPattern(str);
+        value =123.123;
+        System.out.println(value+"\t"+str+"\t"+decimalFormat.format(value));
+
+        str = "000.000";
+        decimalFormat.applyPattern(str);
+        value =123.123;
+        System.out.println(value+"\t"+str+"\t"+decimalFormat.format(value));
+
+        str = "0000.0000";
+        decimalFormat.applyPattern(str);
+        value =123.123;
+        System.out.println(value+"\t"+str+"\t"+decimalFormat.format(value));
+
+        str = "#.#";
+        decimalFormat.applyPattern(str);
+        value =123.123;
+        System.out.println(value+"\t"+str+"\t"+decimalFormat.format(value));
+
+        str = "##.##";
+        decimalFormat.applyPattern(str);
+        value =123.123;
+        System.out.println(value+"\t"+str+"\t"+decimalFormat.format(value));
+
+        str = "###.###";
+        decimalFormat.applyPattern(str);
+        value =123.123;
+        System.out.println(value+"\t"+str+"\t"+decimalFormat.format(value));
+
+        str = "####.####";
+        decimalFormat.applyPattern(str);
+        value =123.123;
+        System.out.println(value+"\t"+str+"\t"+decimalFormat.format(value));
+
+
+    }
+}
+```
+
+![image-20220822110120286](image-20220822110120286.png)
+
 **BigInteger类**
 
-**BigDecimal类****
+**BigDecimal类**
 
 ### 日期类
 
@@ -1202,7 +1392,7 @@ public class Test02 {
 
 ## 封装、继承、多态
 
-Object类
+**Object类**
 
 ### 封装
 
