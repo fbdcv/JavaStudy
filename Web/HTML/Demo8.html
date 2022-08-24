@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>表单 post and get</title>
+    </head>
+    <body>
+        <form method="GET" action="./hellohtml.html">
+            <!--控件 标识label; 文本框输入框text; 密码框password; 提交按钮submit; 重置按钮reset-->
+            <label for="username">用户名:</label><input name="username" value="admin"  type="text" id="username" readonly><br/>
+            <label for="pwd">用户密码:</label><input name="pwd" type="password" id="pwd"><br/>
+            <input name="submit" type="submit">&nbsp;<input name="reset" type="reset"><br/>
+            <!--控件 单选框radio; 多选框checkbox; 图像按钮image; 自定义按钮button-->
+            <!--图像按钮有提交的功能-->
+            <!--表单的三种模式 只读readonly 禁用disableed 隐藏hidden-->
+            <!-- 表单初级验证 文本框中提示信息placeholder 非空判断required 正则表达式pattern-->
+            
+            <input type="radio" name="sex" value="男生" >男生&nbsp;
+            <input type="radio" name="sex" value="女生" >女生<br>
+            <input type="checkbox" name="hobby" value="游泳">游泳&nbsp;
+            <input type="checkbox" name="hobby" value="跑步">跑步<br/>
+            <p>
+                <input type="button" name="but1" value="自定义按钮">&nbsp;
+                <input type="image" src="./resource/bilibili.jpeg" width="80" height="50"><br/>
+            </p>
+            <!--控件 列表框select; 文本域textarea; 文件域file;-->
+            <select name="learn" >
+                <option value="Math">Math</option>
+                <option value="Chinese">Chinese</option>
+                <option value="English">English</option>
+                <option value="Computer Science" selected>Computer Science</option>
+            </select>
+            <input type="file"><br/>
+            <textarea name="textarea"  cols="30" rows="10" required placeholder="请输入文字"></textarea><br/>
+            <!--控件 滑块range; 搜索框search; 邮箱验证email; URL验证url; 数字验证number; -->
+            <label for="age">年龄:</label><input type="range" name="age" id="age" min="15" max="100" step="1"><br/>
+            <label for="search">搜索:</label><input type="search" name="search"><br/>
+            <label for="email">电子邮箱:</label><input type="email" name="email" id="email"
+            pattern="^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$"><br/>
+            <label for="url">URL:</label><input type="url" name="url" id="url"
+            pattern="[^http://([\w-]+\.)+[\w-]+(/[\w-./?%&=]*)?$"><br/>
+            <label for="number">数字验证:</label><input type="number" name="number" id="number"><br/>
+
+        </form>
+    </body>
+</html>
