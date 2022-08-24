@@ -2,7 +2,7 @@
 ## JavaSE
 
 - [Java基础知识](/JavaSE/JAVA_基础知识/Java基础知识.md)
-- [Java集合类](/JavaSE/集合类/集合类.md)
+- [Java集合类](/JavaSE/JAVA_集合类/集合类.md)
 - [JavaIO流](/JavaSE/JAVA_IO流/IO流.md)
 - [Java图形编程](/JavaSE/JAVA_GUI/GUI.md)
 - [Java网络编程](/JavaSE/JAVA_网络编程/Java网络编程.md)
@@ -28,5 +28,5 @@
 
 ## Linux
 
-- [Ubuntu20.04下JDK1.8的环境配置]()
-- [Ubuntu20.04下MySQL5.7的环境配置]()
+- [Ubuntu20.04下JDK1.8的环境配置](/Linux/Ubuntu下jdk1.8的环境配置.md)
+- [Ubuntu20.04下MySQL5.7的环境配置](/Linux/Ubuntu下MySQL5.7的环境配置.md)
