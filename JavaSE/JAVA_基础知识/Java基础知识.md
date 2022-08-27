@@ -1372,7 +1372,7 @@ public class Test02 {
 
 ### 修饰符
 
-![Java 修饰符](Java 修饰符.png)
+![Java修饰符](Java修饰符.png)
 
 ### 成员变量
 
