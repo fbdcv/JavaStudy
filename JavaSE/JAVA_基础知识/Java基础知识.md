@@ -1338,11 +1338,75 @@ public class Test02 {
 
 **BigInteger类**
 
+BigInteger类的数字范围较Integer类的数字范围要大的多，BigInteger支持任意精度的整数，也就是说BigInteger可以准确地表示任何大小的整数值而不会丢失信息。
+
+```java
+package bigdecimal;
+
+import java.math.BigInteger;
+
+public class Test01 {
+    public static void main(String[] args) {
+        BigInteger a = new BigInteger("4444444444445");
+        BigInteger b = new BigInteger("2222222222222");
+        System.out.println("a+b:"+a.add(b));
+        System.out.println("a-b:"+a.subtract(b));
+        System.out.println("a*b:"+a.multiply(b));
+        System.out.println("a/b:"+a.divide(b));
+        System.out.println("a//b:"+a.divideAndRemainder(b)[1]);
+        System.out.println("a^2:"+a.pow(2));
+        System.out.println("-a:"+a.negate());
+
+    }
+}
+```
+
+![image-20220827203955723](image-20220827203955723.png)
+
 **BigDecimal类**
+
+BigInteger和BigDecimal类都可以实现大数字的运算，不同的是BigDecimal类加入了小数概念，这个类型适合要求数字精度较高的商业计算中，可以用它来精确计算货币值。
+
+```java
+package bigdecimal;
+
+import java.math.BigDecimal;
+
+public class Test02 {
+    public static void main(String[] args) {
+        //BigDecimal的两种构造方法
+        BigDecimal a = new BigDecimal("10");
+        BigDecimal b = new BigDecimal(3);
+
+        System.out.println("a+b:"+a.add(b));
+        System.out.println("a-b:"+a.subtract(b));
+        System.out.println("a*b:"+a.multiply(b));
+
+        //BigDecimal的除法是最复杂的，因为在除不尽的情况下，商小数点后的末位的处理是需要考虑的
+        /*
+            除法有三个参数：除数，商的小数点后精确的位数，近似处理模式
+
+         */
+        //设小数点后要保留的最后一位为p
+        //设小数点后要保留的最后一位的下一位为p+
+        System.out.println("ROUND_Up模式 \t\ta/b:"+a.divide(b,2,BigDecimal.ROUND_UP));            //p+ 不为0，p=p+1
+        System.out.println("ROUND_DOWN模式\t\ta/b:"+a.divide(b,2,BigDecimal.ROUND_DOWN));         //无视p+的影响     ，相当于截取
+        System.out.println("ROUND_CEILING模式\ta/b:"+a.divide(b,2,BigDecimal.ROUND_CEILING));     //商为正数，按UP模式处理；商为负数，按DOWN模式处理，这样处理近似值会大于等于实际值
+        System.out.println("ROUND_FLOOR模式  \ta/b:"+a.divide(b,2,BigDecimal.ROUND_FLOOR));       //商为正数，按DOWN模式处理；商为负数，按UP模式处理，这样处理近似值会小于等于实际值
+        System.out.println("ROUND_HALF_UP模式 \t\ta/b:"+a.divide(b,2,BigDecimal.ROUND_HALF_UP));      //相当于四舍五入
+        System.out.println("ROUND_HALF_DOWN模式 \t\ta/b:"+a.divide(b,2,BigDecimal.ROUND_HALF_DOWN));  //相当于五舍六入
+        System.out.println("ROUND_HALF_EVEN模式 \t\ta/b:"+a.divide(b,2,BigDecimal.ROUND_HALF_EVEN));  //p为奇数，四舍五入;p为偶数，五舍六入
+
+
+    }
+}
+```
+
+![image-20220827221714516](image-20220827221714516.png)
 
 ### 日期类
 
-**Date类**
+**Date类**  
 
 **Calendar类**
 
@@ -1364,11 +1428,11 @@ public class Test02 {
 
 ### 包和导入
 
-为了更好地组织类，Java提供了包机制，用于区别类名的命名空间
+为了更好地组织类，Java提供了包机制，用于区别类名的命名空间，从而允许不同包下的同名类的存在
 
-- 一般用公司域名倒置作为包名，用于保证包名的不可重复性，例如com.baidu.www
-- 一般用package声明该类所在的包
-- 如果这个类想使用其他包下的类，需用import导入那个包
+- 一般用公司域名倒置作为包名，用于保证包名的不可重复性（为了避免同包名同类名的情况），例如com.baidu.www
+- 一般用**package**关键字声明该类所在的包
+- 如果这个类想使用其他包下的类，需用**import**关键字导入那个类
 
 ### 修饰符
 
