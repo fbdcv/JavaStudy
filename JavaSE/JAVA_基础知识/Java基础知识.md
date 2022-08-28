@@ -257,6 +257,49 @@ public class TestValue {
 
 ### 技术点
 
+#### 环境变量的配置
+
+- 创建JAVA_HOME系统变量
+
+  值：D:\jdk1.8.0_331
+
+  作用：定义一个变量，供其他地方使用  
+
+- 创建CLASSPATH系统变量
+
+  值：.;%JAVA_HOME%\lib\dt.jar;%JAVA_HOME%\lib\tools.jar;
+  用途：告诉jvm要使用或执行的class放在什么路径上，便于JVM加载class文件，.;表示当前路径，tools.jar和dt.jar为类库路径  
+
+- 添加PATH记录
+
+  添加的记录：D:\jdk1.8.0_331\bin；D:\jdk1.8.0_331\jre\bin
+
+  用途：让系统在任何路径下都可以识别java、javac、javap等命令 
+
+- CLASSPATH详解
+
+  - tools.jar  
+
+    ​		工具类库(编译和运行等)，它跟我们程序中用到的基础类库没有关系。我们注意到在Path中变量值bin目录下的各个exe工具的大小都很小，一般都在27KB左右，这是因为它们实际上仅仅相当于是一层代码的包装，这些工具的实现所要用到的类库都在tools.jar中，用压缩软件打开tools.jar,你会发现有很多文件是和bin目录下的exe工具相对性的，查看图一。当然，如果tools.jar的功能只有这些的话，那么我们根本不用把它加入到CLASSPATH变量中，因为bin目录下的工具自己可以完成对这些类库的调用，因此tools.jar应该还有其他的功能。在里面还可以看到有Applet和RMI等相关的文件，因此tools.jar应该还是远程调用等必须的jar包。tools.jar的其他作用可以查看其他资料。        
+
+  - dt.jar  
+
+    ​		运行环境类库，主要是Swing包，这一点通过用压缩软件打开dt.jar也可以看到。如果在开发时候没有用到Swing包，那么可以不用将dt.jar添加到CLASSPATH变量中。  
+
+    ​      CLASSPATH中的类库是由Application ClassLoader或者我们自定义的类加载器来加载的，这里当然不能包括基础类库，如果包括基础类库的话，并用两个不同的自定义类加载器去加载该基础类，那它得到的该基础类就不是唯一的了，这样便不能保证Java类的安全性。        
+
+  - 基本类库和扩展类库rt.jar  
+
+    ​		基本类库是所有的 import java.* 开头的类，在 %JAVA_HOME%\jre\lib 目录下（如其中的 rt.jar、resource.jar ），类加载机制提到，该目录下的类会由 Bootstrap ClassLoader 自动加载，并通过亲委派模型保证了基础类库只会被Bootstrap ClassLoader加载，这也就保证了基础类的唯一性。  
+
+    ​		扩展类库是所有的 import javax.* 开头的类，在 %JAVA_HOME%\jre\lib\ext 目录下，该目录下的类是由Extension ClassLoader 自动加载，不需要我们指定。  
+    
+    ​		rt.jar 默认就在根classloader的加载路径里面,放在claspath也是多此一举  
+    
+    
+    
+    参考文章：[JDK环境变量中dt.jar、tools.jar变量值的作用_kernel的技术博客_51CTO博客](https://blog.51cto.com/u_12843522/2084171)
+
 #### JVM，JDK，JRE的区别
 
 - JVM(Java Virtual Machine Java虚拟机)
@@ -1180,20 +1223,19 @@ Java存在两个random函数，一个是Math类下的，一个是Random类下的
 
 调用这个Math.random()函数能够返回带正号的double值，该值大于等于0.0且小于1.0，即取值范围是[0.0,1.0)的左闭右开区间，返回值是一个伪随机选择的数，在该范围内（近似）均匀分布。
 
-- java.util.Random中的随机方法
-
 下面是Java.util.Random()方法摘要：
 
-protected int next(int bits)：生成下一个伪随机数。
-boolean nextBoolean()：返回下一个伪随机数，它是取自此随机数生成器序列的均匀分布的boolean值。
-void nextBytes(byte[] bytes)：生成随机字节并将其置于用户提供的 byte 数组中。
-double nextDouble()：返回下一个伪随机数，它是取自此随机数生成器序列的、在0.0和1.0之间均匀分布的 double值。
-float nextFloat()：返回下一个伪随机数，它是取自此随机数生成器序列的、在0.0和1.0之间均匀分布float值。
-double nextGaussian()：返回下一个伪随机数，它是取自此随机数生成器序列的、呈高斯（“正态”）分布的double值，其平均值是0.0标准差是1.0。
-int nextInt()：返回下一个伪随机数，它是此随机数生成器的序列中均匀分布的 int 值。
-int nextInt(int n)：返回一个伪随机数，它是取自此随机数生成器序列的、在（包括和指定值（不包括）之间均匀分布的int值。
-long nextLong()：返回下一个伪随机数，它是取自此随机数生成器序列的均匀分布的 long 值。
-void setSeed(long seed)：使用单个 long 种子设置此随机数生成器的种子。
+| java.util.Random中的随机方法 |                                                              |
+| ---------------------------- | ------------------------------------------------------------ |
+| protected int next(int bits) | 生成下一个伪随机数。                                         |
+| boolean nextBoolean()        | 返回下一个伪随机数，它是取自此随机数生成器序列的均匀分布的boolean值 |
+| void nextBytes(byte[] bytes) | 生成随机字节并将其置于用户提供的 byte 数组中                 |
+| double nextDouble()          | 返回下一个伪随机数，它是取自此随机数生成器序列的、在0.0和1.0之间均匀分布的 double值。 |
+| float nextFloat()            | 返回下一个伪随机数，它是取自此随机数生成器序列的、在0.0和1.0之间均匀分布float值 |
+| double nextGaussian()        | 返回下一个伪随机数，它是取自此随机数生成器序列的、呈高斯（“正态”）分布的double值，其平均值是0.0标准差是1.0 |
+| int nextInt()                | 返回一个伪随机数，它是取自此随机数生成器序列的、在（包括和指定值（不包括）之间均匀分布的int值 |
+| long nextLong()              | 返回下一个伪随机数，它是取自此随机数生成器序列的均匀分布的 long 值。 |
+| void setSeed(long seed)      | 使用单个 long 种子设置此随机数生成器的种子。                 |
 
 ```java
 package random;
@@ -1408,21 +1450,109 @@ public class Test02 {
 
 **Date类**  
 
+
+
 **Calendar类**
 
 **java.time下 的日期类**
 
 ### Scanner类
 
+与C语言不同，Java从控制台中读出用户输入的值，用到的不是一行就可以直接实现的代码，而是由一个叫Scanner的类来实现的
+
+```java
+package commonclass;
+
+import java.util.Scanner;
+
+public class Test02 {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("输入一个字符串：");
+        sc.next();
+
+        System.out.print("输入一个int：");
+        sc.nextInt();
+
+        System.out.print("输入一个long：");
+        sc.nextLong();
+
+        System.out.print("输入一个float：");
+        sc.nextFloat();
+
+        System.out.print("输入一个字符串: ");  //最后一个字符串无法输入，程序直接就结束了
+        sc.nextLine();
+        
+        sc.close();
+    }
+}
+
+```
+
+![image-20220828120349707](image-20220828120349707.png)
+
+为了了解上面出现最后一个字符串无法输入的原因，我们需要了解下next()和nextLine()的区别
+
+​	next()方法在读取内容时，会过滤掉有效字符前面的无效字符，对输入有效字符之前遇到的空格键、Tab键或Enter键等结束符，next()方法会自动将其过滤掉；只有在读取到有效字符之后，next()方法才将其后的空格键、Tab键或Enter键等视为结束符，同时也不会吸收结束符；所以next()方法不能得到带空格的字符串。
+
+​	nextLine()方法字面上有扫描一整行的意思，它的结束符只能是Enter键，同时还会吸收这个Enter键，nextLine()方法返回的是Enter键之前没有被读取的所有字符，它是可以得到带空格的字符串的。
+
+像next()方法一样，nextFloat()方法也不会吸收结束符，而代码中的结束符恰好是enter，enter也是nextLine() 方法的结束符，该方法检测到结束符后直接识别输入完毕，所以导致最后一个字符串无法输入。
+
+处理方法：
+
+```java
+sc.nextFloat();
+
+sc.nextLine();//吸收前面的enter
+System.out.print("输入一个字符串: ");  //最后一个字符串无法输入，程序直接就结束了
+sc.nextLine();
+
+sc.close();
+```
+
+![image-20220828122107271](image-20220828122107271.png)
+
 ### System类
 
+System类是JDK中提供的系统类，该类用final修饰不允许被继承，System类提供了很多系统层面的操作方法，我们重点了解常用的输出和计时操作
+
+```java
+package commonclass;
+
+import java.util.Date;
+
+public class Test01 {
+    public static void main(String[] args) {
+        long start = System.currentTimeMillis();
+
+        System.out.print("测试输出1");
+        System.out.println("测试输出2");
+        System.out.printf("测试输出%d%s",3,new String("字符串"));
+        System.out.println();//换行
+
+        Date date = new Date();
+        System.out.print(date+"与1970-1-01 00:00:00.000相比已过去"+System.currentTimeMillis()+"ms");
+
+        long end = System.currentTimeMillis();
+
+        System.out.println();//换行
+        System.out.println("这个程序运行消耗的时间大概为"+(end-start)+"ms");
+
+    }
+}
+```
+
+![image-20220828113728230](image-20220828113728230.png)
+
 ### Runtime类
+
+
 
 ### 技术点
 
 #### Date烂设计
-
-#### BigDecimal的使用场景
 
 ## 类和对象
 
@@ -1435,6 +1565,8 @@ public class Test02 {
 - 如果这个类想使用其他包下的类，需用**import**关键字导入那个类
 
 ### 修饰符
+
+![查看源图像](v2-31733fe9aa37ddfbbd0457a41f398746_r.jpg)
 
 ![Java修饰符](Java修饰符.png)
 
