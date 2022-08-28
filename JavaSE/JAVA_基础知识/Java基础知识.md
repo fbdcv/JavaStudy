@@ -858,7 +858,7 @@ public class Test05 {
 | new String(byte[] data)                 | 使用系统默认的字符集，将给定的二进制数据映射为相应的字符，并构造成一个string。如果系统默认的字符集不变那么可以通过String.getBytes()或String.getBytes(Charset.defaultCharset().displayName())来还原原来的二进制数据。 |
 | new String(byte[] data, String charset) | 使用给定的字符集，将给定的二进制数据映射为相应的字符，并构造成一个string。只有通过传入相同的字符集才能还原原来的二进制数据，String.getBytes("charset")。 |
 
-[一个编码Bug的例子](###System类)
+[一个编码Bug的例子](#System类)
 
 #### 引用拷贝、浅拷贝、深拷贝
 
