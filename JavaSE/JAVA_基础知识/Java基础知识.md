@@ -1461,11 +1461,77 @@ public class Test02 {
 
 **Date类**  
 
+```java
+package commonclass;
+
+import java.util.Date;
+
+public class Test06 {
+    public static void main(String[] args) {
+        long time = System.currentTimeMillis();
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        Date d1 = new Date(time);
+        Date d2 = new Date();
+        System.out.println("d1："+d1);
+        System.out.println("d2："+d2);
+        System.out.println("d1是否晚于d2："+d1.after(d2));
+        System.out.println("d1是否早于d2："+d1.before(d2));
+        System.out.println("d1的时间戳："+d1.getTime());
+        System.out.println("d2的时间戳："+d2.getTime());
+        System.out.println("修改d1的时间戳，让d1与d2相等");
+        d1.setTime(d2.getTime());
+        System.out.println("d1："+d1);
+        System.out.println("d2："+d2);
+    }
+}
+
+```
+
+![image-20220828221131498](image-20220828221131498.png)
+
+**DateFormat类**
+
+```java
+package commonclass;
+
+import java.text.DateFormat;
+import java.util.Date;
+
+public class Test07 {
+    public static void main(String[] args) {
+        Date date = new Date();
+        DateFormat df = DateFormat.getInstance(); //这个类是个抽象类
+        System.out.println(df.format(date));
+
+        df = DateFormat.getTimeInstance();
+        System.out.println(df.format(date));
+
+        df = DateFormat.getDateInstance();
+        System.out.println(df.format(date));
+
+        df = DateFormat.getDateTimeInstance();
+        System.out.println(df.format(date));
+    }
+}
+```
+
+![image-20220828224214359](image-20220828224214359.png)
+
+**SimpleDateFormat类**
+
 
 
 **Calendar类**
 
+
+
 **java.time下 的日期类**
+
+![2022Java学习笔记五十二（java中的时间处理：JDK8新增日期类LocalDateTime）-爱代码爱编程](4ba77001ef7e445f917cd171bc4e22b1.png)
 
 ### Scanner类
 
@@ -1614,7 +1680,7 @@ Runtime是JDK提供的运行时类，该类为Java程序提供了与当前运行
           Integer ints[] =  new Integer[1000];
           long before = runtime.freeMemory();
           for(Integer i:ints){
-              i=10000;//i赋的值不能-128~127的数，否则因为常量池机制监测不到变化
+              i=10000;//i赋的值不能为-128~127的数，否则因为常量池机制内存不会消耗内存
           }
           long after = runtime.freeMemory();
           System.out.println("赋值前的空闲内存字节数："+before);
