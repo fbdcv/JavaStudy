@@ -732,7 +732,7 @@ public class Test04 {
 
 ### String
 
-String类型的创建
+**String类型的创建**
 
 ```java
 package string;
@@ -751,7 +751,7 @@ public class Test02 {
 
 ![image-20220819162745744](image-20220819162745744.png)
 
-String的常用方法
+**String的常用方法**
 
 ```java
 package string;
@@ -848,6 +848,17 @@ public class Test05 {
 ![image-20220819175708261](image-20220819175708261.png)
 
 ### 技术点
+
+#### String类型编码转换
+
+| 相关方法                                |                                                              |
+| --------------------------------------- | ------------------------------------------------------------ |
+| String.getBytes()                       | 获取当前string表示的字符，在使用系统默认的字符集(关于系统默认的字符集后面详细讨论)时，所映射的[二进制](https://so.csdn.net/so/search?q=二进制&spm=1001.2101.3001.7020)数据。不同的默认字符集生成的二进制数据是不同的，解码时只有使用与该默认字符集相同的字符集才能获得正确的字符。 |
+| String.getBytes(String charset)         | 获取当前string表示的字符，在使用指定字符集时，所映射的二进制数据。传入不同的字符集生成的二进制数据是不同，解码时只有使用相同的字符集才能获得正确的字符。 |
+| new String(byte[] data)                 | 使用系统默认的字符集，将给定的二进制数据映射为相应的字符，并构造成一个string。如果系统默认的字符集不变那么可以通过String.getBytes()或String.getBytes(Charset.defaultCharset().displayName())来还原原来的二进制数据。 |
+| new String(byte[] data, String charset) | 使用给定的字符集，将给定的二进制数据映射为相应的字符，并构造成一个string。只有通过传入相同的字符集才能还原原来的二进制数据，String.getBytes("charset")。 |
+
+[一个编码Bug的例子](###System类)
 
 #### 引用拷贝、浅拷贝、深拷贝
 
@@ -1548,7 +1559,73 @@ public class Test01 {
 
 ### Runtime类
 
+Runtime是JDK提供的运行时类，该类为Java程序提供了与当前运行环境相连接的一个通道，Java程序可以利用该类对当前的运行环境进行一些简单的操作
 
+- 执行本地命令
+
+  ```java
+  package commonclass;
+  
+  import java.io.BufferedReader;
+  import java.io.IOException;
+  import java.io.InputStream;
+  import java.io.InputStreamReader;
+  import java.nio.charset.StandardCharsets;
+  
+  public class Test04 {
+      public static void main(String[] args) {
+          try {
+              Runtime run = Runtime.getRuntime();
+              Process process = run.exec("ipconfig");
+  //            BufferedReader br = new BufferedReader(new InputStreamReader(process.getInputStream()));
+  //            String str = null;
+  //            while((str=new String(br.readLine().getBytes(),"GBK"))!=null){
+  //                System.out.println(str);
+  //            }
+              /*
+      当我们从文件中读数据时，最好使用InputStream方式，然后采用String(byte[] bytes, String encoding)指明文件的编码方式。
+  不要使用Reader方式，因为Reader方式会自动根据jdk指明的编码方式把文件内容转换成unicode 编码。
+      上面注释掉的内容出现bug的原因是 将cmd中的用GBK编码的二进制数据用UTF-16解码（经BufferReader包装，变成了一堆乱码字符串），这样的乱码字符串的二进制数据又被GBk编码，结果肯定是乱码
+      GBK二进制-->UTF-16的乱码字符串-->乱码字符串对应的UTF-16二进制-->GBK字符串
+               */
+              InputStream is = process.getInputStream();
+              byte[] buffer = new byte[1024];
+              int len=0;
+              while((len=is.read(buffer))!=-1){
+                  System.out.println(new String(buffer,0,len,"gbk"));
+              }
+          } catch (IOException e) {
+              e.printStackTrace();
+          }
+      }
+  }
+  ```
+
+  ![image-20220828175244861](image-20220828175244861.png)
+
+- 查看内存情况
+
+  ```java
+  package commonclass;
+  
+  public class Test05 {
+      public static void main(String[] args) {
+          Runtime runtime = Runtime.getRuntime();
+          Integer ints[] =  new Integer[1000];
+          long before = runtime.freeMemory();
+          for(Integer i:ints){
+              i=10000;//i赋的值不能-128~127的数，否则因为常量池机制监测不到变化
+          }
+          long after = runtime.freeMemory();
+          System.out.println("赋值前的空闲内存字节数："+before);
+          System.out.println("赋值后的空闲内存字节数："+after);
+          System.out.println("赋值消耗内存字节数："+(before-after));
+      }
+  }
+  ```
+
+
+![image-20220828183427037](image-20220828183427037.png)
 
 ### 技术点
 
