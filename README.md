@@ -24,6 +24,7 @@
 - Node js
 - Vue
 - [Electron](/Web/Electron/Electron.md)
+- WebView2
 
 ## JavaWeb
 

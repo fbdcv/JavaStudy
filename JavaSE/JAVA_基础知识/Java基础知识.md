@@ -1501,6 +1501,32 @@ public class Test06 {
 
 ![image-20220828221131498](image-20220828221131498.png)
 
+Date类还有许多废弃的方法，不建议使用
+
+```java
+package commonclass;
+
+import java.util.Date;
+
+public class Test10 {
+    public static void main(String[] args) {
+        Date date = new Date();
+        System.out.println(date);
+        System.out.println("原生数据");
+        System.out.println("年："+date.getYear());
+        System.out.println("月："+date.getMonth());
+        System.out.println("月："+date.getMonth());
+        System.out.println("星期："+date.getDay());
+        System.out.println("修改数据");
+        System.out.println("年："+(date.getYear()+1900));
+        System.out.println("月："+(date.getMonth()+1));
+        System.out.println("星期："+date.getDay());
+    }
+}
+```
+
+![image-20220829112922279](image-20220829112922279.png)
+
 **DateFormat类**
 
 ```java
@@ -1531,11 +1557,69 @@ public class Test07 {
 
 **SimpleDateFormat类**
 
+![查看源图像](v2-2186a4ade6eaba14acd3e5c48e999c8e_r.jpg)
 
+```java
+package commonclass;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+public class Test08 {
+    public static void main(String[] args) {
+        SimpleDateFormat df = new SimpleDateFormat("yyyy年MM月dd日 EEEE HH时mm分ss秒");
+        System.out.print("现在的时间是：");
+        System.out.println(df.format(new Date()));
+    }
+}
+```
+
+![image-20220829101947660](image-20220829101947660.png)
 
 **Calendar类**
 
+```java
+package commonclass;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
+public class Test09 {
+    public static void main(String[] args) {
+        Calendar calendar = Calendar.getInstance();//这个类是个抽象类，只能用它提供的方法创建实例
+        Date date = new Date();
+        calendar.setTime(date);
+        System.out.println("Date:"+date);                                                                  //直接输出Date
+        SimpleDateFormat df = new SimpleDateFormat("yyyy年MM月dd日 EEEE HH时mm分ss秒");
+        System.out.println("格式化后的Date："+df.format(date));                                            //输出格式化的Date
+        System.out.println("Calendar:");
+        System.out.println("年份："+calendar.get(Calendar.YEAR));
+        System.out.println("月份："+(calendar.get(Calendar.MONTH)+1));                              //Calendar类的得到的月份要加1(因为里面的月份是从0开始计算的 0~11)
+        System.out.println("一年中的第几天："+calendar.get(Calendar.DAY_OF_YEAR));
+        System.out.println("一个月中的第几天："+calendar.get(Calendar.DAY_OF_MONTH));
+        System.out.println("一个星期中的第几天（星期几）："+(calendar.get(Calendar.DAY_OF_WEEK)-1));   //外国的一周是从星期日开始计算的
+        System.out.println("这个月的第几周："+(calendar.get(Calendar.DAY_OF_WEEK_IN_MONTH)));
+        System.out.println("时："+calendar.get(Calendar.HOUR_OF_DAY));
+        System.out.println("分："+calendar.get(Calendar.MINUTE));
+        System.out.println("秒："+calendar.get(Calendar.SECOND));
+
+    }
+}
+
+```
+
+![image-20220829110139146](image-20220829110139146.png)
+
+对比以上几个类可以发现：
+
+Date类是日期时间类的主体，其他类基本上都是为更好地格式化Date类。
+
+DateFormat类，可以选择简化Date类的格式
+
+SimpleDateFormat类作为DateFormat的子类，细化了格式Date类的粒度
+
+Calendar类，作为Date类的一种可替代方案，提供了许多属性字段，简化了格式化的难度
 
 **java.time下 的日期类**
 
@@ -1688,7 +1772,7 @@ Runtime是JDK提供的运行时类，该类为Java程序提供了与当前运行
           Integer ints[] =  new Integer[1000];
           long before = runtime.freeMemory();
           for(Integer i:ints){
-              i=10000;//i赋的值不能为-128~127的数，否则因为常量池机制内存不会消耗内存
+              i=10000;//i赋的值不能为-128~127的数，否则因为常量池机制不会消耗内存
           }
           long after = runtime.freeMemory();
           System.out.println("赋值前的空闲内存字节数："+before);
@@ -1700,10 +1784,6 @@ Runtime是JDK提供的运行时类，该类为Java程序提供了与当前运行
 
 
 ![image-20220828183427037](image-20220828183427037.png)
-
-### 技术点
-
-#### Date烂设计
 
 ## 类和对象
 
