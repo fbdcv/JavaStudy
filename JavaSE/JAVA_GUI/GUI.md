@@ -1344,3 +1344,11 @@ public class TestJTextArea extends JFrame {
 ![image-20220710083744159](image-20220710083744159.png)
 
 ## JavaFX
+
+## JxBrowser
+
+JxBrowser是一个商业跨平台 Java 库，可以让您将基于 Chromium 的 Web 浏览器控件集成到您的 Java Swing、JavaFX 或 SWT 桌面应用程序中，以显示使用 HTML5、CSS3、JavaScript 构建的现代网页。
+
+它对于开发和销售使用 Java 技术创建的软件解决方案或需要用于 Java 应用程序的高级且可靠的 Web 浏览器组件的公司很有帮助。
+
+使用 JxBrowser，您可以显示现代网页、PDF、WebGL、使用 DOM、JavaScript、WebRTC、network 、printing 、从 JavaScript 调用 Java、管理文件下载、将 HTML 转换为 PNG、使用 DevTools 调试网页、配置代理、管理 cookie 、处理身份验证、填写 Web 表单等等

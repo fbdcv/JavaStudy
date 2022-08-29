@@ -257,6 +257,14 @@ Java对各种变量、方法和类等要素命名时使用的字符序列称为�
 
 ### 技术点
 
+#### Java与JDK版本
+
+对于Java SE 10以前的Java版本,对应JDK的名字基本以1.x命名，而SE 10及以后的JDK为了与之前的JDK区分，JDK版本命名与Java的一致，例如Java SE 12 对应 JDK12
+
+![JAVA版本号的问题——Java版本号与Jdk版本- liuxianglong - 博客园](1679176-20200723170305785-1620391147.png)
+
+![JDK 15 正式发布，划时代的ZGC 同时宣布转正！_Oracle](8bad2265b9514d4a81944f9eab7f755e.png)
+
 #### 环境变量的配置
 
 - 创建JAVA_HOME系统变量
