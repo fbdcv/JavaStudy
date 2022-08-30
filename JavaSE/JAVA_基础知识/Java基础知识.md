@@ -1860,3 +1860,29 @@ Runtime是JDK提供的运行时类，该类为Java程序提供了与当前运行
 #### 重载和重写的区别
 
 ## 异常处理
+
+### 技术点
+
+#### AutoCloseable接口
+
+JDK1.7新增了try-with-resourse语法，用于简化繁琐的异常处理代码，这种语法只支持实现了AutoCloseable接口的类，例如FileInputStream
+
+FileInputStream类 继承-->InputStream类 实现-->Closeable接口  继承-->AutoCloseable接口
+
+```java
+import java.io.FileInputStream;
+import java.io.IOException;
+
+
+public class Test01 {
+    public static void main(String[] args) {
+        
+        try (FileInputStream is = new FileInputStream("text1.txt")){
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //自动关闭资源，无需手动关闭
+    }
+}
+```
