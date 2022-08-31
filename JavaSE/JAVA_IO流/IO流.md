@@ -510,5 +510,110 @@ private OutputStreamWriter charOut;
 
 ## 数据流
 
+数据流DataInputStream和DataOutputStream也是FilterInputStream的子类，同样采用装饰者模式，最大的不同是它们支持基本数据类型的直接存取
+
+#### DataOutputStream
+
+```java
+import java.io.DataOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+public class Test17 {
+    public static void main(String[] args) {
+        try (DataOutputStream dos = new DataOutputStream(new FileOutputStream("text08.txt"))){
+
+            //向文件里面输入数据
+            dos.writeDouble(1.5);
+            dos.writeInt(222);
+
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+#### DataInputStream
+
+```java
+import java.io.DataInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+
+public class Test18 {
+    public static void main(String[] args) {
+        try (DataInputStream dis = new DataInputStream(new FileInputStream("text08.txt"))){
+
+            //读取文件数据的顺序要与写入文件数据的顺序一致，否则会数据会出错
+            System.out.println(dis.readDouble());
+            System.out.println(dis.readInt());
+
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+![image-20220831201214818](image-20220831201214818.png)
+
 ## 对象流
+
+#### ObjectOutputStream
+
+既然基本数据类型能够读取和写入基本数据类型，那么能否将对象也支持呢？ObjectOutputStream不仅支持基本数据类型，通过对对象的序列化操作，以某种格式保存对象，来支持对象类型的IO，注意：它不是继承自FilterInputStream的。在我们后续的操作中，有可能会使得这个类的一些结构发生变化，而原来保存的数据只适用于之前版本的这个类，版本通过serialVersionUID这个类变量进行保存，当发生版本不匹配时，会无法反序列化为对象
+
+如果我们不希望某些属性参与到序列化中进行保存，我们可以添加`transient`关键字，其实，在一些JDK内部的源码中，也存在大量的transient关键字，使得某些属性不参与序列化，取消这些不必要保存的属性，可以节省数据空间占用以及减少序列化时间。
+
+```java
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+class People implements Serializable{		//要被序列化，必须实现这个接口
+    String name;
+    transient String value = "value";       //被transient修饰，无法序列化
+    public People(String name){
+        this.name = name;
+    }
+}
+
+public class Test19 {
+    public static void main(String[] args) {
+
+        try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("text09.txt"))){
+            
+            oos.writeObject(new People("niubility"));
+            
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+#### ObjectInputStream
+
+```java
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+
+public class Test20 {
+    public static void main(String[] args) {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("text09.txt"))){
+
+            People people = (People) ois.readObject();
+            System.out.println(people.name);
+            System.out.println(people.value);
+
+        }catch (ClassNotFoundException | IOException e){
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+![image-20220831204152551](image-20220831204152551.png)
 
