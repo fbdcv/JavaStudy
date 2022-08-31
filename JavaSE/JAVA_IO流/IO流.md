@@ -239,15 +239,274 @@ public class Test08 {
 
 ### 缓冲字节流
 
+#### BufferedInputStream
+
+要创建一个缓冲字节流，只需要将原本的流作为构造参数传入BufferedInputStream即可。
+
+实际上进行I/O操作的并不是BufferedInputStream，而是我们传入的FileInputStream，而BufferedInputStream虽然有着同样的方法，但是进行了一些额外的处理然后再调用FileInputStream的同名方法，这样的写法称为**装饰者模式**
+
+```java
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+
+public class Test09 {
+    public static void main(String[] args) {
+        try(BufferedInputStream bufferedInputStream = new BufferedInputStream(new FileInputStream("text01.txt"))){
+            System.out.println((char) bufferedInputStream.read());
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+![image-20220831154324602](image-20220831154324602.png)
+
+I/O操作一般不能重复读取内容（比如键盘发送的信号，主机接收了就没了），而缓冲流提供了缓冲机制，一部分内容可以被暂时保存，BufferedInputStream支持`reset()`和`mark()`操作
+
+当调用`mark()`之后，输入流会以某种方式保留之后读取的`readlimit`数量的内容，当读取的内容数量超过`readlimit`则之后的内容不会被保留
+
+当调用`reset()`之后，会使得当前的读取位置回到`mark()`调用时的位置。
+
+![image-20220831160659059](image-20220831160659059.png)
+
+```java
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+
+public class Test11 {
+    public static void main(String[] args) {
+        try(BufferedInputStream fis = new BufferedInputStream(new FileInputStream("text01.txt"))){
+            fis.mark(1);
+            System.out.println((char) fis.read());
+            System.out.println((char) fis.read());
+            fis.reset();
+            System.out.println((char) fis.read());
+            System.out.println((char) fis.read());
+
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+![image-20220831160812630](image-20220831160812630.png)
+
+我们发现虽然后面的部分没有保存，但是依然能够正常读取，其实`mark()`后保存的读取内容是取`readlimit`和BufferedInputStream类的缓冲区大小两者中的最大值，而并非完全由`readlimit`确定。因此我们限制一下缓冲区大小，再来观察一下结果：
+
+```java
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+
+public class Test11 {
+    public static void main(String[] args) {
+        try(BufferedInputStream fis = new BufferedInputStream(new FileInputStream("text01.txt"),1)){//将缓存区大小限制为一个字节
+
+            fis.mark(1);
+            System.out.println((char) fis.read());
+            System.out.println((char) fis.read());
+            fis.reset();
+            System.out.println((char) fis.read());
+            System.out.println((char) fis.read());
+
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+![image-20220831161101237](image-20220831161101237.png)
+
+#### BufferedOutputStream
+
+BufferedOutputStream同理，现在试着将text01.txt的数据用BufferedOutputStream输出
+
+```java
+import java.io.BufferedOutputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+public class Test10 {
+    public static void main(String[] args) {
+        try(FileInputStream fis = new FileInputStream("text01.txt");
+            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream("text04.txt"))){
+
+            byte[] buffer = new byte[1024];
+            int len;
+            while((len=fis.read(buffer))!=-1){
+                bos.write(buffer,0,len);
+            }
+
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+![image-20220831155247886](image-20220831155247886.png)
+
 
 
 ### 缓冲字符流
 
+#### BufferedReader
 
+缓存字符流和缓冲字节流一样，也有一个专门的缓冲区，BufferedReader构造时需要传入一个Reader对象，相比Reader更方便的是，它支持按行读取，它同样也支持`mark()`和`reset()`操作
+
+```java
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+
+public class Test12 {
+    public static void main(String[] args) {
+        try (BufferedReader br = new BufferedReader(new FileReader("text01.txt"))){
+            br.mark(1024);
+            System.out.println(br.readLine());
+            System.out.println(br.readLine());
+            System.out.println(br.readLine());
+            br.reset();
+            System.out.println(br.readLine());
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+![image-20220831165041239](image-20220831165041239.png)
+
+#### BufferedWriter
+
+BufferedReader处理纯文本文件时就更加方便了，BufferedWriter在处理时也同样方便
+
+```java
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+
+public class Test13 {
+    public static void main(String[] args) {
+        try(BufferedWriter bw = new BufferedWriter(new FileWriter("test05.txt"))){
+
+            bw.write("Hello,World!!!");//这个方法还可以用字符串当参数
+            bw.newLine();			//换行
+            bw.write("Java is best.");
+            bw.flush();
+            
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+![image-20220831165609825](image-20220831165609825.png)
 
 ## 转换流
 
+#### OutputStreamWriter
+
+有时会遇到这样一个很麻烦的问题：我这里读取的是一个字符串或是一个个字符，但是我只能往一个OutputStream里输出，但是OutputStream又只支持byte类型，如果要往里面写入内容，进行数据转换就会很麻烦，这时，我们可以将字节流转换为字符流，使用字符流的方法
+
+```java
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+
+public class Test14 {
+    public static void main(String[] args) {
+        try (OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream("text06.txt"))){
+
+            osw.write("你好，世界！！！");
+            osw.write("\n");
+            osw.write("Java 牛逼！");
+
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+![image-20220831173221321](image-20220831173221321.png)
+
+#### InputStreamReader
+
+同样的，我们现在只拿到了一个InputStream，但是我们希望能够按字符的方式读取，我们就可以使用InputStreamReader来帮助我们实现，InputStreamReader和OutputStreamWriter本质也是Reader和Writer，因此可以直接放入BufferedReader来实现更加方便的操作。
+
+```java
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+public class Test15 {
+    public static void main(String[] args) {
+        try (BufferedReader bf =new BufferedReader(new InputStreamReader(new FileInputStream("text06.txt")))){
+            System.out.println(bf.readLine());
+            System.out.println(bf.readLine());
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+![image-20220831173651872](image-20220831173651872.png)
+
 ## 打印流
+
+#### PrintStream
+
+我们平时使用的`println`方法就是PrintStream中的方法，它会直接打印基本数据类型或是调用对象的`toString()`方法得到一个字符串，并将字符串转换为字符，放入缓冲区再经过转换流输出到给定的输出流上。`System.out`也是PrintStream，不过默认是向控制台打印，我们也可以用PrintStream向文件中打印
+
+
+
+```java
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+
+public class Test16 {
+    public static void main(String[] args) {
+        try( PrintStream ps= new PrintStream(new FileOutputStream("text07.txt"))){
+            
+            ps.println("测试PrintStream");
+            ps.println("测试PrintStream");
+            
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+![image-20220831180133068](image-20220831180133068.png)
+
+![img](70.png)
+
+因此实际上内部还包含这两个内容：
+
+```java
+/**
+ * Track both the text- and character-output streams, so that their buffers
+ * can be flushed without flushing the entire stream.
+ */
+private BufferedWriter textOut;
+private OutputStreamWriter charOut;
+```
+
+#### PrintWriter
+
+与此相同的还有一个PrintWriter，不过他们的功能基本一致，PrintWriter的构造方法可以接受一个Writer作为参数，这里就不再做过多阐述了。
 
 ## 数据流
 
