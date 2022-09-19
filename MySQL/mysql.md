@@ -420,6 +420,8 @@ ALTER TABLE teacher RENAME AS teacher1
 
 ## 查询数据
 
+![查看源图像](watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L0RyZWFtX1dlYXZl,size_16,color_FFFFFF,t_70.png)
+
 ## 事务
 
 ## 索引

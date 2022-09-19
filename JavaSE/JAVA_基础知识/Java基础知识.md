@@ -1787,6 +1787,16 @@ Runtime是JDK提供的运行时类，该类为Java程序提供了与当前运行
 
 ## 类和对象
 
+面向对象程序设计(Object Oriented Programming)
+
+对象基于类创建，类相当于一个模板，对象就是根据模板创建出来的实体（就像做月饼，我们要做一个月饼首先需要一个模具，模具就是我们的类，而做出来的月饼，就是类的实现，也叫做对象），类是抽象的数据类型，并不能代表某一个具体的事物，类是对象的一个模板。类具有自己的属性，包括成员变量、成员方法等，我们可以调用类的成员方法来让类进行一些操作。
+
+所有的对象，都需要通过**new**关键字创建，基本数据类型不是对象！Java不是纯面对对象语言！
+
+不是基本类型的变量，都是**引用类型**，引用类型变量代表一个对象，而基本数据类型变量，保存的是基本数据类型的值，我们可以通过引用来对对象进行操作。（最好不要理解为引用指向对象的地址，初学者不要谈内存，学到JVM时再来讨论）
+
+对象占用的内存由JVM统一管理，不需要手动释放内存，当一个对象不再使用时（比如失去引用或是离开了作用域）会被JVM自动清理，内存管理更方便！
+
 ### 包和导入
 
 为了更好地组织类，Java提供了包机制，用于区别类名的命名空间，从而允许不同包下的同名类的存在
@@ -1803,19 +1813,365 @@ Runtime是JDK提供的运行时类，该类为Java程序提供了与当前运行
 
 ### 成员变量
 
+在类中，可以包含许多的成员变量，也叫成员属性，成员字段(field)通过`.`来访问我们类中的成员变量，我们可以通过类创建的对象来访问和修改这些变量。成员变量是属于对象的！
+
+```java
+public class Test {
+    int age;
+    String name;
+}
+
+public static void main(String[] args) {
+    Test test = new Test();
+    test.name = "奥利给";
+    System.out.println(test.name);
+}
+```
+
+成员变量默认带有初始值，也可以自己定义初始值。
+
 ### 成员方法
+
+ 在类中，我们可以定义自己的方法，格式如下：
+
+```java
+[返回值类型] 方法名称([参数]){
+  //方法体
+  return 结果;
+}
+```
+
+* 返回值类型：可以是引用类型和基本类型，还可以是void，表示没有返回值
+* 方法名称：和标识符的规则一致，和变量一样，规范小写字母开头！
+* 参数：例如方法需要计算两个数的和，那么我们就要把两个数到底是什么告诉方法，那么它们就可以作为参数传入方法
+* 方法体：方法具体要干的事情
+* 结果：方法执行的结果通过return返回（如果返回类型为void，可以省略return）
+
+非void方法中，`return`关键字不一定需要放在最后，但是一定要保证方法在任何情况下都具有返回值！
+
+```java
+int test(int a){
+  if(a > 0){
+    //缺少retrun语句！
+  }else{
+    return 0;
+  }
+}
+```
+
+`return`也能用来提前结束整个方法，无论此时程序执行到何处，无论return位于哪里，都会立即结束个方法！
+
+```java
+void main(String[] args) {
+   for (int i = 0; i < 10; i++) {
+       if(i == 1) return;   //在循环内返回了！和break区别？
+   }
+   System.out.println("淦");   //还会到这里吗？
+}
+```
+
+传入方法的参数，如果是基本类型，会在调用方法的时候，对参数的值进行复制，方法中的参数变量，不是我们传入的变量本身！
+
+```java
+public static void main(String[] args) {
+    int a = 10, b = 20;
+  	new Test().swap(a, b);
+  	System.out.println("a="+a+", b="+b);
+}
+
+public class Test{
+ 	void swap(int a, int b){  //传递的仅仅是值而已！
+  		int temp = a;
+  		a = b;
+ 			b = temp;
+	} 
+}
+```
+
+传入方法的参数，如果是引用类型，那么传入的依然是该对象的引用！（类似于C语言的指针）
+
+```java
+public class B{
+ 	String name;
+}
+
+public class A{
+ 	void test(B b){  //传递的是对象的引用，而不是值
+    System.out.println(b.name);
+  }
+}
+
+public static void main(String[] args) {
+    int a = 10, b = 20;
+  	B b = new B();
+  	b.name = "lbw";
+  	new A().test(b);
+  	System.out.println("a="+a+", b="+b);
+}
+```
+
+方法之间可以相互调用
+
+```java
+void a(){
+  //xxxx
+}
+
+void b(){
+  a();
+}
+```
+
+当方法在自己内部调用自己时，称为递归调用（递归很危险，慎重！）
+
+```java
+int a(){
+  return a();
+}
+```
+
+成员方法和成员变量一样，是属于对象的，只能通过对象去调用！
 
 ### 方法重载
 
+一个类中可以包含多个同名的方法，但是需要的形式参数不一样。（补充：形式参数就是定义方法需要的参数，实际参数就传入的参数）方法的返回类型，可以相同，也可以不同，但是仅返回类型不同，是不允许的！
+
+```java
+public class Test {
+    int a(){   //原本的方法
+       return 1;
+    }
+
+    int a(int i){  //ok，形参不同
+        return i;
+    }
+    
+    void a(byte i){  //ok，返回类型和形参都不同
+        
+    }
+    
+    void a(){  //错误，仅返回值类型名称不同不能重载
+        
+    }
+}
+```
+
+现在我们就可以使用不同的参数，但是支持调用同样的方法，执行一样的逻辑：
+
+```java
+public class Test {
+    int sum(int a, int b){   //只有int支持，不灵活！
+        return a+b;
+    }
+    
+    double sum(double a, double b){  //重写一个double类型的，就支持小数计算了
+        return a+b;
+    }
+}
+```
+
+现在我们有很多种重写的方法，那么传入实参后，到底进了哪个方法呢？
+
+```java
+package object;
+
+public class Test01 {
+    void a(int i){
+        System.out.println("调用了int");
+    }
+
+    void a(short i){
+        System.out.println("调用了short");
+    }
+
+    void a(long i){
+        System.out.println("调用了long");
+    }
+
+    void a(char i){
+        System.out.println("调用了char");
+    }
+
+    void a(double i){
+        System.out.println("调用了double");
+    }
+
+    void a(float i){
+        System.out.println("调用了float");
+    }
+
+    public static void main(String[] args) {
+        Test01 test = new Test01();
+        test.a(1);   //直接输入整数
+        test.a(1.0);  //直接输入小数
+
+        short s = 2;
+        test.a(s);  //会对号入座吗？
+        test.a(1.0F);
+    }
+}
+
+```
+
+![image-20220901090630871](image-20220901090630871.png)
+
+重载方法默认识别整数型为int，浮点型为double，如果强调类型则会识别为这个类型
+
 ### 构造方法
 
+构造方法（构造器）没有返回值，也可以理解为，返回的是当前对象的引用！每一个类都默认自带一个无参构造方法。
+
+```java
+//反编译结果
+package com.test;
+
+public class Test {
+    public Test() {    //即使你什么都不编写，也自带一个无参构造方法，只是默认是隐藏的
+    }
+}
+```
+
+反编译其实就是把我们编译好的class文件变回Java源代码。
+
+```java
+Test test = new Test();  //实际上存在Test()这个的方法，new关键字就是用来创建并得到引用的
+// new + 你想要使用的构造方法
+```
+
+这种方法没有写明返回值，但是每个类都必须具有这个方法！只有调用类的构造方法，才能创建类的对象！
+
+类要在一开始准备的所有东西，都会在构造方法里面执行，完成构造方法的内容后，才能创建出对象！
+
+一般最常用的就是给成员属性赋初始值：
+
+```java
+public class Student {
+    String name;
+    
+    Student(){
+        name = "伞兵一号";
+    }
+}
+```
+
+我们可以手动指定有参构造，当遇到名称冲突时，需要用到this关键字
+
+```java
+public class Student {
+    String name;
+
+    Student(String name){   //形参和类成员变量冲突了，Java会优先使用形式参数定义的变量！
+        this.name = name;  //通过this指代当前的对象属性，this就代表当前对象
+    }
+}
+
+//idea 右键快速生成！
+```
+
+注意，this只能用于指代当前对象的内容，因此，只有属于对象拥有的部分才可以使用this，也就是说，只能在类的成员方法中使用this，不能在静态方法中使用this关键字。
+
+**在我们定义了新的有参构造之后，默认的无参构造会被覆盖！**
+
+```java
+//反编译后依然只有我们定义的有参构造！
+```
+
+如果同时需要有参和无参构造，那么就需要用到方法的重载！手动再去定义一个无参构造。
+
+```java
+public class Student {
+    String name;
+
+    Student(){
+
+    }
+
+    Student(String name){
+        this.name = name;
+    }
+}
+```
+
 ### 静态变量和静态方法
+
+静态变量和静态方法是类具有的属性（后面还会提到静态类、静态代码块），也可以理解为是所有对象共享的内容。我们通过使用`static`关键字来声明一个变量或一个方法为静态的，一旦被声明为静态，那么通过这个类创建的所有对象，操作的都是同一个目标，也就是说，对象再多，也只有这一个静态的变量或方法。那么，一个对象改变了静态变量的值，那么其他的对象读取的就是被改变的值。
+
+```java
+public class Student {
+    static int a;
+}
+
+public static void main(String[] args) {
+	Student s1 = new Student();
+	s1.a = 10;
+	Student s2 = new Student();
+	System.out.println(s2.a);
+}
+```
+
+![image-20220901092220158](image-20220901092220158.png)
+
+不推荐使用对象来调用，被标记为静态的内容，可以直接通过`类名.xxx`的形式访问
+
+```java
+public static void main(String[] args) {
+   Student.a = 10;
+   System.out.println(Student.a);
+}
+```
+
+![image-20220901092222173](image-20220901092222173.png)
 
 ### 技术点
 
 #### 代码块和静态代码块
 
-#### 函数和方法的区别
+代码块在对象创建时执行，也是属于类的内容，但是它在构造方法执行之前执行（和成员变量初始值一样），且每创建一个对象时，只执行一次！（相当于构造之前的准备工作）
+
+```java
+package object;
+
+class Student01 {
+    {
+        System.out.println("我是代码块");
+    }
+
+    Student01(){
+        System.out.println("我是构造方法");
+    }
+}
+
+public class Test03 {
+    
+    public static void main(String[] args) {
+        Student01 student01 = new Student01();
+    }
+}
+
+```
+
+![image-20220901093052709](image-20220901093052709.png)
+
+静态代码块和上面的静态方法和静态变量一样，在类刚加载时就会调用；
+
+```java
+package object;
+
+class Student02 {
+    static int a;
+
+    static {
+        a = 10;
+    }
+}
+public class Test04 {
+    public static void main(String[] args) {
+        System.out.println(Student02.a);
+    }
+}
+```
+
+![image-20220901093314892](image-20220901093314892.png)
 
 #### 方法冲突
 
@@ -1827,39 +2183,500 @@ Runtime是JDK提供的运行时类，该类为Java程序提供了与当前运行
 
 ## 封装、继承、多态
 
-**Object类**
-
 ### 封装
+
+封装的目的是为了保证变量的安全性，使用者不必在意具体实现细节，而只是通过外部接口即可访问类的成员，如果不进行封装，类中的实例变量可以直接查看和修改，可能给整个代码带来不好的影响，因此在编写类时一般将成员变量私有化，外部类需要同getter和setter方法来查看和设置变量。
+
+设想：学生小明已经创建成功，正常情况下能随便改他的名字和年龄吗？
+
+```java
+public class Student {
+    private String name;
+    private int age;
+  
+    public Student(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public String getName() {
+        return name;
+    }
+}
+```
+
+也就是说，外部现在只能通过调用我定义的方法来获取成员属性，而我们可以在这个方法中进行一些额外的操作，比如小明可以修改名字，但是名字中不能包含"小"这个字。
+
+```java
+public void setName(String name) {
+    if(name.contains("小")) return;
+    this.name = name;
+}
+```
+
+单独给外部开放设置名称的方法，因为我还需要做一些额外的处理，所以说不能给外部直接操作成员变量的权限！
+
+**封装思想其实就是把实现细节给隐藏了，外部只需知道这个方法是什么作用，而无需关心实现，封装就是通过访问权限控制来实现的**。
 
 ### 继承
 
+继承属于非常重要的内容，在定义不同类的时候存在一些相同属性，为了方便使用可以将这些共同属性抽象成一个父类，在定义其他子类时可以继承自该父类，减少代码的重复定义，子类可以使用父类中**非私有**的成员。
+
+现在学生分为两种，艺术生和体育生，他们都是学生的分支，但是他们都有自己的方法：
+
+```java
+public class SportsStudent extends Student{   //通过extends关键字来继承父类
+
+    public SportsStudent(String name, int age) {
+        super(name, age);   //必须先通过super关键字（指代父类），实现父类的构造方法！
+    }
+
+    public void exercise(){
+        System.out.println("我超勇的！");
+    }
+}
+
+public class ArtStudent extends Student{
+
+    public ArtStudent(String name, int age) {
+        super(name, age);
+    }
+
+    public void art(){
+        System.out.println("随手画个毕加索！");
+    }
+}
+```
+
+子类具有父类的全部属性，protected可见但外部无法使用（包括`private`属性，不可见，无法使用），同时子类还能有自己的方法。继承只能继承一个父类，不支持多继承！
+
+每一个子类必须定义一个实现父类构造方法的构造方法，也就是需要在构造方法开始使用`super()`，如果父类使用的是默认构造方法，那么子类不用手动指明。
+
+所有类都默认继承自Object类，除非手动指定类型，但是依然改变不了最顶层的父类是Object类。所有类都包含Object类中的方法，比如：
+
+```java
+public static void main(String[] args) {
+Object obj = new Object;
+System.out.println(obj.hashCode());  //求对象的hashcode，默认是对象的内存地址
+System.out.println(obj.equals(obj));  //比较对象是否相同，默认比较的是对象的内存地址，也就是等同于 ==
+System.out.println(obj.toString());  //将对象转换为字符串，默认生成对象的类名称+hashcode
+}
+```
+
 ### 多态
 
-### 抽象类
+多态是同一个行为具有多个不同表现形式或形态的能力。也就是同样的方法，由于实现类不同，执行的结果也不同！
 
-### 接口
+#### 方法重写
+
+**方法重写的规则**：
+
+1. 子类在重写父类的方法时，一般必须与父类方法原型一致：修饰符 返回值类型 方法名(参数列表) 要完全一致
+2. JDK7以后，被重写的方法返回值类型可以不同，但是必须是具有父子关系的。
+3. 访问权限不能比父类中被重写的方法的访问权限更低。
+4. 父类被static、private final修饰的方法不能被重写。
+
+我们之前学习了方法的重载，方法的重写和重载是不一样的，重载是原有的方法逻辑不变的情况下，支持更多参数的实现，而重写是直接覆盖原有方法！
+
+```java
+//父类中的study
+public void study(){
+    System.out.println("学习");
+}
+
+//子类中的study
+@Override  //声明这个方法是重写的，但是可以不要，我们现阶段不接触
+public void study(){
+    System.out.println("给你看点好康的");
+}
+```
+
+再次定义同样的方法后，父类的方法就被覆盖！子类还可以给父类方法提升访问权限！
+
+```java
+public static void main(String[] args) {
+     SportsStudent student = new SportsStudent("lbw", 20);
+     student.study();   //输出子类定义的内容
+}
+```
+
+当我们在重写方法时，不仅想使用我们自己的逻辑，同时还希望执行父类的逻辑（也就是调用父类的方法）怎么办呢？
+
+```java
+public void study(){
+    super.study();
+    System.out.println("给你看点好康的");
+}
+```
+
+同理，如果想访问父类的成员变量，也可以使用super关键字来访问，注意，子类可以具有和父类相同的成员变量！而在方法中访问的默认是 形参列表中 > 当前类的成员变量 > 父类成员变量
+
+```java
+public void setTest(int test){
+    test = 1;
+  	this.test = 1;
+  	super.test = 1;
+}
+```
+
+**重写和重载的区别**
+
+- 重载
+
+  重载的参数列表是必须修改的，而返回值类型，访问限定符是可以修改的
+
+  重载是静态绑定，即在编译时就根据实参类型确定了调用哪个方法。
+
+- 重写
+
+  重写的参数列表，返回类型（可以是父子类），访问限定符（不能更严厉），一般是不能修改的。
+
+  重写是动态绑定，即在编译时不能确定具体的调用方法，而在程序运行时，才能确定具体的被调用的方法。
+
+即：方法重载是一个类的多态性表现,而方法重写是子类与父类的一种多态性表现
+
+#### 类型转换
+
+我们曾经学习过基本数据类型的类型转换，支持一种数据类型转换为另一种数据类型，而我们的类也是支持类型转换的（仅限于存在亲缘关系的类之间进行转换）比如子类可以直接**向上转型**：
+
+```java
+Student student = new SportsStudent("lbw", 20);  //父类变量引用子类实例
+student.study();     //得到依然是具体实现的结果，而不是当前类型的结果
+```
+
+我们也可以把**已经明确是由哪个类实现的父类引用**，强制转换为对应的类型：
+
+```java
+Student student = new SportsStudent("lbw", 20);  //是由SportsStudent进行实现的
+//... do something...
+
+SportsStudent ps = (SportsStudent)student;  //让它变成一个具体的子类
+ps.sport();  //调用具体实现类的方法
+```
+
+这样的类型转换称为**向下转型**。
+
+#### instanceof关键字
+
+那么我们如果只是得到一个父类引用，但是不知道它到底是哪一个子类的实现怎么办？我们可以使用instanceof关键字来实现，它能够进行类型判断！
+
+```java
+private static void test(Student student){
+    if (student instanceof SportsStudent){
+        SportsStudent sportsStudent = (SportsStudent) student;
+        sportsStudent.sport();
+    }else if (student instanceof ArtStudent){
+        ArtStudent artStudent = (ArtStudent) student;
+        artStudent.art();
+    }
+}
+```
+
+通过进行类型判断，我们就可以明确类的具体实现到底是哪个类！
+
+#### final关键字
+
+我们目前只知道`final`关键字能够使得一个变量的值不可更改，那么如果在类前面声明final，会发生什么？
+
+```java
+public final class Student {   //类被声明为终态，那么它还能被继承吗
+  	
+}
+```
+
+类一旦被声明为终态，将无法再被继承，不允许子类的存在！而方法被声明为final呢？
+
+```java
+public final void study(){  //还能重写吗
+    System.out.println("学习");
+}
+```
+
+如果类的成员属性被声明为final，那么必须在构造方法中或是在定义时赋初始值！
+
+```java
+private final String name;   //引用类型不允许再指向其他对象
+private final int age;    //基本类型值不允许发生改变
+
+public Student(String name, int age) {
+    this.name = name;
+    this.age = age;
+}
+```
+
+学习完封装继承和多态之后，我们推荐在不会再发生改变的成员属性上添加final关键字，JVM会对添加了final关键字的属性进行优化！
+
+#### 抽象类
+
+类本身就是一种抽象，而抽象类，把类还要抽象，也就是说，抽象类可以只保留特征，而不保留具体呈现形态，比如方法可以定义好，但是我可以不去实现它，而是交由子类来进行实现！
+
+```java
+public abstract class Student {    //抽象类
+		public abstract void test();  //抽象方法
+}
+```
+
+通过使用`abstract`关键字来表明一个类是一个抽象类，抽象类可以使用`abstract`关键字来表明一个方法为抽象方法，也可以定义普通方法，抽象方法不需要编写具体实现（无方法体）但是**必须**由子类实现（除非子类也是一个抽象类）！
+
+抽象类由于不是具体的类定义，因此无法直接通过new关键字来创建对象！
+
+```java
+Student s = new Student(){    //只能直接创建带实现的匿名内部类！
+  public void test(){
+    
+  }
+}
+```
+
+因此，抽象类一般只用作继承使用！抽象类使得继承关系之间更加明确：
+
+```java
+public void study(){   //现在只能由子类编写，父类没有定义，更加明确了多态的定义！同一个方法多种实现！
+    System.out.println("给你看点好康的");
+}
+```
+
+- 抽象类可以实现(implements)接口，抽象类可以继承具体类。
+
+- 抽象类中可以有静态的main方法。抽象类可以包含抽象方法和非抽象方法。
+
+- 任何继承抽象类的子类必须实现父类的所有抽象方法，除非该子类也是抽象类。
+- 因为抽象类的主要作用是被继承，而抽象方法的主要作用是被重写，所以二者皆不可被final关键字修饰
+
+#### 接口
+
+接口甚至比抽象类还抽象，他只代表某个确切的功能！也就是只包含方法的定义，甚至都不是一个类！接口包含了一些列方法的具体定义，类可以实现这个接口，表示类支持接口代表的功能（类似于一个插件，只能作为一个附属功能加在主体上，同时具体实现还需要由主体来实现）
+
+```java
+public interface Eat {
+	void eat(); 
+}
+```
+
+**接口中的属性和方法**
+
+通过使用`interface`关键字来表明是一个接口（注意，这里class关键字被替换为了interface）接口只能包含`public`权限的**抽象方法**！（Java8以后可以有默认实现）我们可以通过声明`default`关键字来给抽象方法一个默认实现：
+
+```java
+public interface Eat {
+    default void eat(){
+        //do something...
+    }
+}
+```
+
+接口中定义的变量，默认为public static final
+
+```java
+public interface Eat {
+    int a = 1;
+    void eat();
+}
+```
+
+**接口的实现**
+
+一个类可以实现很多个接口，但是不能理解为多继承！（实际上实现接口是附加功能，和继承的概念有一定出入，顶多说是多继承的一种替代方案）一个类可以附加很多个功能！
+
+```java
+public class SportsStudent extends Student implements Eat, ...{
+		@Override
+    public void eat() {
+        
+    }
+}
+```
+
+类通过`implements`关键字来声明实现的接口！每个接口之间用逗号隔开！
+
+实现接口的类也能通过instanceof关键字判断，也支持向上和向下转型！
+
+**接口的继承**
+
+一个接口能继承另一个接口，和类之间的继承方式比较相似。接口的继承使用extends关键字，子接口继承父接口的方法。
+
+下面的Sports接口被Hockey和Football接口继承：
+
+```java
+// 文件名: Sports.java
+public interface Sports
+{
+   public void setHomeTeam(String name);
+   public void setVisitingTeam(String name);
+}
+ 
+// 文件名: Football.java
+public interface Football extends Sports
+{
+   public void homeTeamScored(int points);
+   public void visitingTeamScored(int points);
+   public void endOfQuarter(int quarter);
+}
+ 
+// 文件名: Hockey.java
+public interface Hockey extends Sports
+{
+   public void homeGoalScored();
+   public void visitingGoalScored();
+   public void endOfPeriod(int period);
+   public void overtimePeriod(int ot);
+}
+```
+
+Hockey接口自己声明了四个方法，从Sports接口继承了两个方法，这样，实现Hockey接口的类需要实现六个方法。
+
+相似的，实现Football接口的类需要实现五个方法，其中两个来自于Sports接口。
+
+**接口的使用**
+
+当Java普通类实现接口后必须实现接口中的所有方法。当Java抽象类实现某个接口后没必要实现所有的方法。如果一个普通类想要实现接口的某些方法，此时需要借助抽象类，可以让抽象类先实现接口中的部分方法，然后普通类通过继承抽象类后再去实现自己需要的接口中的方法。
 
 ### 内部类
 
-#### 局部内部类
+类中可以存在一个类！各种各样的长相怪异的代码就是从这里开始出现的！
 
 #### 成员内部类
 
+我们的类中可以在嵌套一个类：
+
+```java
+public class Test {
+    class Inner{   //类中定义的一个内部类
+        
+    }
+}
+```
+
+成员内部类和成员变量和成员方法一样，都是属于对象的，也就是说，必须存在外部对象，才能创建内部类的对象！
+
+```java
+public static void main(String[] args) {
+    Test test = new Test();
+    Test.Inner inner = test.new Inner();   //写法有那么一丝怪异，但是没毛病！
+}
+```
+
 #### 静态内部类
+
+静态内部类其实就和类中的静态变量和静态方法一样，是属于类拥有的，我们可以直接通过`类名.`去访问:
+
+```java
+public class Test {
+    static class Inner{
+
+    }
+}
+
+public static void main(String[] args) {
+    Test.Inner inner = new Test.Inner();   //不用再创建外部类对象了！
+}
+```
+
+#### 局部内部类
+
+对，你没猜错，就是和局部变量一样哒~
+
+```java
+public class Test {
+    public void test(){
+        class Inner{
+
+        }
+        
+        Inner inner = new Inner();
+    }
+}
+```
+
+反正我是没用过！内部类 -> 累不累 -> 反正我累了！
 
 #### 匿名内部类
 
+**匿名**：没有名字的意思。**内部类**：写在其他类内部的类。匿名内部类的作用是简化代码。
+
+原本我们需要创建子类或者实现类，去继承父类和实现接口，才能重写其中的方法。但是有时候我们这样做了，然而子类和实现类却只使用了一次（定义了一个对象）。这个时候我们就可以使用匿名内部类，不用去写子类和实现类，起到简化代码的作用。
+
+匿名内部类的格式：**父类/接口  对象 = new 父类/接口（）{   重写父类/接口中的方法   }；**       
+
+这样做就把子类继承父类，重写父类中的方法，创建子类对象，合成了一步完成，减少了其中创建子类的过程。或者将实现类实现接口，重写接口中的方法，创建实现类对象，合成了一步完成，减少了其中创建实现类的过程。下面将会用代码演示如何使用匿名内部类。
+
+- 创建使用匿名内部类格式：父类 对象 = new 父类（）{   重写父类中的方法   }；
+
+ 创建父类
+
+```java 
+public class Fu {
+    public void method(){
+        System.out.println("我是父类，你想继承我然后再去重写我的方法？");
+    }
+}
+```
+
+创建Demo类
+
+```java
+public class Demo {
+    public static void main(String[] args) {
+        //创建匿名内部类，直接重写父类的方法，省去了创建子类继承，创建子类对象的过程
+     Fu fu= new Fu(){
+            @Override
+            public void method() { //重写父类method方法
+                super.method();
+                        }
+    };
+ fu.method();   //调用method方法
+    }
+}
+```
+
+​	![image-20220919091222323](image-20220919091222323.png)
+
+- 创建使用匿名内部类格式：接口 对象=new 接口（）{ 重写接口中的方法 }；
+
+创建接口AnonymousInter
+
+```java
+public interface AnonymousInter {
+    public abstract void eat();
+}
+```
+
+
+创建Demo1类
+
+```java
+public class Demo1 {
+    public static void main(String[] args) {
+        //创建匿名内部类，省区了创建接口的实现类的过程，以及定义实现类对象的过程
+        AnonymousInter an=new AnonymousInter() {
+            @Override
+            public void eat() {  //重写接口的eat方法
+                System.out.println("晚饭我吃了");
+            }
+        };
+        an.eat();
+    }
+}
+```
+
+​	![image-20220919091306928](image-20220919091306928.png)		
+
+​		由上我们可以总结，匿名内部类在父类和接口中可以起到简化代码的作用。因为可以省去创建子类和实现类的过程。 我们可以直接利用父类和接口得到我们想要的东西，因此**匿名内部类的最终产物是 子类/实现类对象**。
+
+
 ### lambda表达式
 
-### 技术点
-
-#### 对象的向上转型和向下转型
-
-#### final关键字的用法
-
-#### 重载和重写的区别
-
 ## 异常处理
+
+### 初识异常
+
+### 异常的捕获
+
+### 异常的抛出
 
 ### 技术点
 
