@@ -68,7 +68,110 @@ HTTP是一个客户端（用户）和服务端（网站）之间请求和应答�
 
 - **协议例子**
 
-   
+  **Request**
+
+  HTTP的请求包括：请求行(request line)、请求头部(header)、空行 和 请求数据 四个部分组成。
+
+  ![img](https:////upload-images.jianshu.io/upload_images/1843940-d3214aa6ebf47292.png?imageMogr2/auto-orient/strip|imageView2/2/w/466/format/webp)
+
+  Http请求消息结构
+
+  抓包的`request`结构如下：
+
+  
+
+  ```undefined
+  GET /mix/76.html?name=kelvin&password=123456 HTTP/1.1
+  Host: www.fishbay.cn
+  Upgrade-Insecure-Requests: 1
+  User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36
+  Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8
+  Accept-Encoding: gzip, deflate, sdch
+  Accept-Language: zh-CN,zh;q=0.8,en;q=0.6
+  ```
+
+  #### 1.请求行
+
+  `GET`为请求类型，`/mix/76.html?name=kelvin&password=123456`为要访问的资源，`HTTP/1.1`是协议版本
+
+  #### 2.请求头部
+
+  从第二行起为请求头部，`Host`指出请求的目的地（主机域名）；`User-Agent`是客户端的信息，它是检测浏览器类型的重要信息，由浏览器定义，并且在每个请求中自动发送。
+
+  #### 3.空行
+
+  请求头后面必须有一个空行
+
+  #### 4.请求数据
+
+  请求的数据也叫请求体，可以添加任意的其它数据。这个例子的请求体为空。
+
+  ## Response
+
+  一般情况下，服务器收到客户端的请求后，就会有一个`HTTP`的响应消息，HTTP响应也由`4`部分组成，分别是：状态行、响应头、空行 和 响应体。
+
+  ![img](https:////upload-images.jianshu.io/upload_images/1843940-9161c0c67fb3bad1.jpg?imageMogr2/auto-orient/strip|imageView2/2/w/683/format/webp)
+
+  **编写程序模拟web服务器获取HTTP的请求**
+
+  ```java
+  package socket;
+  
+  import java.io.IOException;
+  import java.io.InputStream;
+  import java.net.ServerSocket;
+  import java.net.Socket;
+  
+  public class Demo {
+      public static void main(String[] args) {
+          //模拟web服务器，查看http的请求数据的格式
+          try (ServerSocket ss = new ServerSocket(8080)){
+              Socket socket = ss.accept();
+              InputStream inputStream = socket.getInputStream();
+              int i;
+              while((i=inputStream.read())!=-1){
+                  System.out.print((char)i);
+              }
+  
+          } catch (IOException e) {
+              e.printStackTrace();
+          }
+      }
+  }
+  ```
+
+  ![image-20220923095013427](image-20220923095013427.png)
+
+  **编写程序模拟web服务器响应HTTP的请求**
+
+  ```java
+  package socket;
+  
+  import java.io.IOException;
+  import java.io.OutputStreamWriter;
+  import java.net.ServerSocket;
+  import java.net.Socket;
+  
+  public class Demo1 {
+      public static void main(String[] args) {
+          try(ServerSocket ss =new ServerSocket(8080)){
+              Socket socket = ss.accept();
+              OutputStreamWriter outputStreamWriter = new OutputStreamWriter(socket.getOutputStream());
+              outputStreamWriter.write("HTTP/1.1 200 Accepted\r\n");
+              outputStreamWriter.write("\r\n");
+              outputStreamWriter.write("<h1>lbwnb!</h1>");
+              outputStreamWriter.write("模拟Web服务器，响应请求");
+              outputStreamWriter.flush();
+          } catch (IOException e) {
+              e.printStackTrace();
+          }
+      }
+  }
+  ```
+
+  ![image-20220923103350046](image-20220923103350046.png)
+
+  出现乱码的原因是没有规定字符的编码解码规则，字符的编码解码规则不一致导致的
 
 - **持久连接**
 
@@ -118,10 +221,77 @@ HTTP是一个客户端（用户）和服务端（网站）之间请求和应答�
 
 　　而像WEB网站的http服务一般都用**短链接**，因为长连接对于服务端来说会耗费一定的资源，而像WEB网站这么频繁的成千上万甚至上亿客户端的连接用短连接会更省一些资源，如果用长连接，而且同时有成千上万的用户，如果每个用户都占用一个连接的话，那可想而知吧。所以并发量大，每个用户在无需频繁操作情况下需用短连好。
 
-
 ### Tomcat
 
+Tomcat 服务器是一个免费的开放源代码的Web 应用服务器(是一款网页服务器程序，是软件而非硬件)，属于轻量级应用[服务器](https://baike.baidu.com/item/服务器?fromModule=lemma_inlink)，在中小型系统和并发访问用户不是很多的场合下被普遍使用，是开发和调试JSP 程序的首选。对于一个初学者来说，可以这样认为，当在一台机器上配置好Apache 服务器，可利用它响应HTML页面的访问请求。实际上Tomcat是Apache 服务器的扩展，但运行时它是独立运行的，所以当你运行tomcat 时，它实际上作为一个与Apache 独立的进程单独运行的。
+
+诀窍是，当配置正确时，Apache 为HTML页面服务，而Tomcat 实际上运行JSP 页面和Servlet。另外，Tomcat和[IIS](https://baike.baidu.com/item/IIS?fromModule=lemma_inlink)等Web服务器一样，具有处理HTML页面的功能，另外它还是一个Servlet和JSP容器，独立的Servlet容器是Tomcat的默认模式。不过，Tomcat处理静态[HTML](https://baike.baidu.com/item/HTML?fromModule=lemma_inlink)的能力不如Apache服务器。Tomcat最新版本为10.0.14。
+
 ### Maven
+
+**Apache Maven**，是一个[软件](https://zh.m.wikipedia.org/wiki/软件)（特别是[Java](https://zh.m.wikipedia.org/wiki/Java_(编程语言))软件）[项目管理](https://zh.m.wikipedia.org/wiki/项目管理)及[自动构建](https://zh.m.wikipedia.org/wiki/自动构建)工具，由[Apache软件基金会](https://zh.m.wikipedia.org/wiki/Apache软件基金会)所提供。
+
+Maven解决了软件构建的两方面问题：一是软件是如何构建的，二是软件的依赖关系。Maven设定了构建流程的标准，在此之外只需要指定例外情况。[XML](https://zh.m.wikipedia.org/wiki/XML)文件描述了正在构建的软件项目、它对其他外部模块和组件的依赖关系、构建顺序、目录和所需的[插件](https://zh.m.wikipedia.org/wiki/插件)。该文件通常有预设的目标任务，例如代码编译和打包。Maven从一个或多个代码仓库（例如Maven 2 Central Repository）动态地下载[Java](https://zh.m.wikipedia.org/wiki/Java)库与Maven插件，并将其存储在本地缓存区中[[2\]](https://zh.m.wikipedia.org/zh-hans/Apache_Maven#cite_note-maven2repo-2)。Maven设定了构建流程的标准，在此之外只需要指定例外情况。[XML](https://zh.m.wikipedia.org/wiki/XML)文件描述了正在构建的软件项目、它对其他外部模块和组件的依赖关系、构建顺序、目录和所需的[插件](https://zh.m.wikipedia.org/wiki/插件)。该文件通常有预设的目标任务，例如代码编译和打包。Maven从一个或多个代码仓库（例如Maven 2 Central Repository）动态地下载[Java](https://zh.m.wikipedia.org/wiki/Java)库与Maven插件，并将其存储在本地缓存区中。
+
+Maven项目使用[项目对象模型](https://zh.m.wikipedia.org/wiki/项目对象模型)（Project Object Model，POM）来配置。
+
+项目对象模型存储在名为 pom.xml 的文件中。
+
+以下是一个简单的示例：
+
+```xml
+<project>
+  <!-- model version is always 4.0.0 for Maven 2.x POMs -->
+  <modelVersion>4.0.0</modelVersion>
+  
+  <!-- project coordinates, i.e. a group of values which
+       uniquely identify this project -->
+  
+  <groupId>com.mycompany.app</groupId>
+  <artifactId>my-app</artifactId>
+  <version>1.0</version>
+
+  <!-- library dependencies -->
+  
+  <dependencies>
+    <dependency>
+    
+      <!-- coordinates of the required library -->
+      
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      
+      <!-- this dependency is only used for running and compiling tests -->
+      
+      <scope>test</scope>
+      
+    </dependency>
+  </dependencies>
+</project>
+```
+
+[maven之pom.xml配置文件详解 ](https://www.jianshu.com/p/0e3a1f9c9ce7)
+
+### XML
+
+**可扩展标记语言**（英语：E**x**tensible **M**arkup **L**anguage，简称：**XML**）是一种[标记语言](https://zh.m.wikipedia.org/wiki/标记语言)。XML设计是用来传送和携带数据信息，不用于表现和展示数据，[HTML](https://zh.m.wikipedia.org/wiki/HTML)则用来表现数据，所以XML用途的焦点是在于说明数据是什么以及携带数据信息。
+
+- 富文档（Rich Documents）- 自定文件描述并使其更丰富
+  - 属于文件为主的XML技术应用
+  - 标记是用来定义一份资料应该如何呈现
+- 元数据（Metadata）- 描述其它文件或网络资讯
+  - 属于资料为主的XML技术应用
+  - 标记是用来说明一份资料的意义
+- 配置文档（Configuration Files）- 描述软件设置的参数
+
+### JSON
+
+**JSON**（**J**ava**S**cript **O**bject **N**otation）是由道格拉斯·克罗克福特构想和设计的一种轻量级资料交换格式。其内容由属性和值所组成，因此也有易于阅读和处理的优势。JSON是独立于编程语言的资料格式，其不仅是JavaScript的子集，也采用了C语言家族的习惯用法，目前也有许多编程语言都能够将其[解析和字符串化](https://zh.m.wikipedia.org/wiki/语法分析器)，其广泛使用的程度也使其成为通用的资料格式。
+
+JSON最开始被广泛的应用于WEB应用的开发。不过目前JSON使用在[JavaScript](https://zh.m.wikipedia.org/wiki/JavaScript)、[Java](https://zh.m.wikipedia.org/wiki/Java)、[Node.js](https://zh.m.wikipedia.org/wiki/Node.js)、[C#](https://zh.m.wikipedia.org/wiki/C♯)应用的情况比较多，[PHP](https://zh.m.wikipedia.org/wiki/PHP)等开发的WEB应用主要还是使用[XML](https://zh.m.wikipedia.org/wiki/XML)。
+
+JSON与XML最大的不同在于XML是一个完整的[标记语言](https://zh.m.wikipedia.org/wiki/標記語言)，而JSON不是。这使得XML在程序判读上需要比较多的功夫。主要的原因在于XML的设计理念与JSON不同。XML利用标记语言的特性提供了绝佳的延展性（如[XPath](https://zh.m.wikipedia.org/wiki/XPath)），在数据存储，扩展及高级检索方面具备对JSON的优势，而JSON则由于比XML更加小巧，以及浏览器的内建快速解析支持，使得其更适用于网络数据传输领域。
 
 ## Servlet
 
@@ -147,6 +317,10 @@ HTTP是一个客户端（用户）和服务端（网站）之间请求和应答�
 
 ### JavaBean
 
+##  Ajax
+
 ## MVC
 
 ## JDBC
+
+详见[MySQL](/MySQL/mysql.md)

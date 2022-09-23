@@ -39,6 +39,8 @@
 
 输出流根据流的特性写到指定的地方，例如FileOutputStream（new File("1.txt") ），将流中的数据写到文件1.txt中
 
+一般编程的时候，是将输入流的数据存到一个缓存区中再将缓冲区中的数据显示出来（以便一次性得到部分数据，便于用String中的方法解码和显示），而输出的话，没有那么多的缓存需求，所以要从输入流中读取一个字符串比向输出流中输出一个字符串要麻烦一点。
+
 ![image-20220710185534910](image-20220710185534910.png)
 
 ## IO流基类
@@ -389,7 +391,7 @@ public class Test10 {
 
 #### BufferedReader
 
-缓存字符流和缓冲字节流一样，也有一个专门的缓冲区，BufferedReader构造时需要传入一个Reader对象，相比Reader更方便的是，它支持按行读取，它同样也支持`mark()`和`reset()`操作
+缓存字符流和缓冲字节流一样，也有一个专门的缓冲区，BufferedReader构造时需要传入一个Reader对象，**相比Reader更方便的是，它支持按行读取**，它同样也支持`mark()`和`reset()`操作
 
 ```java
 import java.io.BufferedReader;
