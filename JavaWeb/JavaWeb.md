@@ -273,6 +273,10 @@ Maven项目使用[项目对象模型](https://zh.m.wikipedia.org/wiki/项目对�
 
 [maven之pom.xml配置文件详解 ](https://www.jianshu.com/p/0e3a1f9c9ce7)
 
+可以通过向pom.xml添加配置，使maven自动下载pom.xml中的依赖包，配置代码可以在某些网站或者博客中找到
+
+![image-20220925144414850](image-20220925144414850.png)
+
 ### XML
 
 **可扩展标记语言**（英语：E**x**tensible **M**arkup **L**anguage，简称：**XML**）是一种[标记语言](https://zh.m.wikipedia.org/wiki/标记语言)。XML设计是用来传送和携带数据信息，不用于表现和展示数据，[HTML](https://zh.m.wikipedia.org/wiki/HTML)则用来表现数据，所以XML用途的焦点是在于说明数据是什么以及携带数据信息。
@@ -293,7 +297,170 @@ JSON最开始被广泛的应用于WEB应用的开发。不过目前JSON使用在
 
 JSON与XML最大的不同在于XML是一个完整的[标记语言](https://zh.m.wikipedia.org/wiki/標記語言)，而JSON不是。这使得XML在程序判读上需要比较多的功夫。主要的原因在于XML的设计理念与JSON不同。XML利用标记语言的特性提供了绝佳的延展性（如[XPath](https://zh.m.wikipedia.org/wiki/XPath)），在数据存储，扩展及高级检索方面具备对JSON的优势，而JSON则由于比XML更加小巧，以及浏览器的内建快速解析支持，使得其更适用于网络数据传输领域。
 
+### 环境配置
+
+#### IDEA中配置Maven
+
+可以使用IDEA中默认的maven，也可以下载maven并配置环境变量后在IDEA中配置maven
+
+<img src="image-20220925170302947.png" alt="image-20220925170302947" style="zoom:80%;" />
+
+可以通过在maven配置文件中添加国内镜像源，来优化部分资源的下载速度
+
+#### IDEA中配置Tomcat
+
+![image-20220925170923112](image-20220925170923112.png)
+
+修改tomcat中的编码为GBK，并将IDEA的编码设置为UTF-8
+
+[IDEA中使用Tomcat控制台中文乱码](https://www.cnblogs.com/linglongfang/p/12570719.html#:~:text=IDEA中中文控制台乱码现象主要是由于windows默认编码是GBK，idea的默认继承了windows的编码，但是tomcat默认是utf-8的，故而要么修改tomcat为GBK，要么修改IDEA为utf-8 1.,修改IDEA的bin目录下的idea64.exe.vmoptions 2.修改IDEA的项目编码配置：Settings->Editor->File Encodings)
+
+### 技术点
+
+#### Maven父子工程的理解
+
+构建一个maven项目，这个项目中再建立Maven Moudel（相对于刚才项目的子项目）
+
+父项目中的Java文件，子项目可以直接使用。但是子项目中的Java文件，父项目不能使用，相当于Java中的父子类的关系一样 
+
+```java
+son extends father
+```
+
+
+
 ## Servlet
+
+- Servlet就是sun公司开发动态web的一门技术
+- Servlet是一个接口
+
+所以如果想开发一个Servlet程序，只需要编写一个类实现Servlet接口并且把开发好的java类部署到web服务器中就可以了
+
+### HelloServlet
+
+1. 构建一个Maven项目
+
+   ![image-20220925150448369](image-20220925150448369.png)
+
+   ![image-20220925154750128](image-20220925154750128.png)
+
+2. 补充文件夹使maven项目完整
+
+   ![image-20220925155744360](image-20220925155744360.png)
+
+3. 配置pom.xml，添加Servlet依赖
+
+   ![image-20220925151108703](image-20220925151108703.png)
+
+4. 编写Servlet程序
+
+  - 看源码理解代码
+
+      ![image-20220925161116297](image-20220925161116297.png)
+  
+      ```java
+      /*
+      	HttpServlet中的service方法的源码，里面对于不同的Http方法（get,head,...）有不同的方法调用，我们到时候只要重写Http方法对应的方法就行
+      */
+      protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+          String method = req.getMethod();
+          long lastModified;
+          if (method.equals("GET")) {
+              lastModified = this.getLastModified(req);
+              if (lastModified == -1L) {
+                  this.doGet(req, resp);
+              } else {
+                  long ifModifiedSince = req.getDateHeader("If-Modified-Since");
+                  if (ifModifiedSince < lastModified) {
+                      this.maybeSetLastModified(resp, lastModified);
+                      this.doGet(req, resp);
+                  } else {
+                      resp.setStatus(304);
+                  }
+              }
+          } else if (method.equals("HEAD")) {
+              lastModified = this.getLastModified(req);
+              this.maybeSetLastModified(resp, lastModified);
+              this.doHead(req, resp);
+          } else if (method.equals("POST")) {
+              this.doPost(req, resp);
+          } else if (method.equals("PUT")) {
+              this.doPut(req, resp);
+          } else if (method.equals("DELETE")) {
+              this.doDelete(req, resp);
+          } else if (method.equals("OPTIONS")) {
+              this.doOptions(req, resp);
+          } else if (method.equals("TRACE")) {
+              this.doTrace(req, resp);
+          } else {
+              String errMsg = lStrings.getString("http.method_not_implemented");
+              Object[] errArgs = new Object[]{method};
+              errMsg = MessageFormat.format(errMsg, errArgs);
+              resp.sendError(501, errMsg);
+          }
+      
+      }
+      ```
+
+   - 编写Servlet程序
+  
+     ```java
+     package test;
+     
+     import javax.servlet.ServletException;
+     import javax.servlet.http.HttpServlet;
+     import javax.servlet.http.HttpServletRequest;
+     import javax.servlet.http.HttpServletResponse;
+     import java.io.IOException;
+     import java.io.PrintWriter;
+     
+     public class HelloServlet extends HttpServlet {
+         //get和post实际是对两种方式的区分，如果在Http请求方法上不想要区分的话，可以使用同样的业务逻辑处理
+         @Override
+         protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+             PrintWriter writer = resp.getWriter();
+             writer.println("Hello,Servlet");
+         }
+     
+         @Override
+         protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+             doGet(req, resp);
+         }
+     }
+     ```
+  
+  ![image-20220925174058577](image-20220925174058577.png)
+  
+   - 编写Servlet映射（在tomcat中注册Servlet）
+  
+     ```xml
+     <!DOCTYPE web-app PUBLIC
+      "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+      "http://java.sun.com/dtd/web-app_2_3.dtd" >
+     
+     <web-app>
+       <display-name>Archetype Created Web Application</display-name>
+     <!--  注册Servlet-->
+       <servlet>
+         <servlet-name>hello</servlet-name>
+         <servlet-class>test.HelloServlet</servlet-class>
+       </servlet>
+     <!--  设置Servlet的请求路径-->
+       <servlet-mapping>
+         <servlet-name>hello</servlet-name>
+         <url-pattern>/hello</url-pattern><!--  记得hello前面有'/'-->
+       </servlet-mapping>
+     </web-app>
+     ```
+
+5. 设置Tomcat服务器
+
+   <img src="image-20220925171206982.png" alt="image-20220925171206982" style="zoom:80%;" />
+
+6. 测试结果
+
+   ![image-20220925173117059](image-20220925173117059.png)
+
 
 ### ServletContext
 
