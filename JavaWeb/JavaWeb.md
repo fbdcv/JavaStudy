@@ -231,8 +231,6 @@ Tomcat 服务器是一个免费的开放源代码的Web 应用服务器(是一�
 
 **Apache Maven**，是一个[软件](https://zh.m.wikipedia.org/wiki/软件)（特别是[Java](https://zh.m.wikipedia.org/wiki/Java_(编程语言))软件）[项目管理](https://zh.m.wikipedia.org/wiki/项目管理)及[自动构建](https://zh.m.wikipedia.org/wiki/自动构建)工具，由[Apache软件基金会](https://zh.m.wikipedia.org/wiki/Apache软件基金会)所提供。
 
-Maven解决了软件构建的两方面问题：一是软件是如何构建的，二是软件的依赖关系。Maven设定了构建流程的标准，在此之外只需要指定例外情况。[XML](https://zh.m.wikipedia.org/wiki/XML)文件描述了正在构建的软件项目、它对其他外部模块和组件的依赖关系、构建顺序、目录和所需的[插件](https://zh.m.wikipedia.org/wiki/插件)。该文件通常有预设的目标任务，例如代码编译和打包。Maven从一个或多个代码仓库（例如Maven 2 Central Repository）动态地下载[Java](https://zh.m.wikipedia.org/wiki/Java)库与Maven插件，并将其存储在本地缓存区中[[2\]](https://zh.m.wikipedia.org/zh-hans/Apache_Maven#cite_note-maven2repo-2)。Maven设定了构建流程的标准，在此之外只需要指定例外情况。[XML](https://zh.m.wikipedia.org/wiki/XML)文件描述了正在构建的软件项目、它对其他外部模块和组件的依赖关系、构建顺序、目录和所需的[插件](https://zh.m.wikipedia.org/wiki/插件)。该文件通常有预设的目标任务，例如代码编译和打包。Maven从一个或多个代码仓库（例如Maven 2 Central Repository）动态地下载[Java](https://zh.m.wikipedia.org/wiki/Java)库与Maven插件，并将其存储在本地缓存区中。
-
 Maven项目使用[项目对象模型](https://zh.m.wikipedia.org/wiki/项目对象模型)（Project Object Model，POM）来配置。
 
 项目对象模型存储在名为 pom.xml 的文件中。
@@ -276,6 +274,45 @@ Maven项目使用[项目对象模型](https://zh.m.wikipedia.org/wiki/项目对�
 可以通过向pom.xml添加配置，使maven自动下载pom.xml中的依赖包，配置代码可以在某些网站或者博客中找到
 
 ![image-20220925144414850](image-20220925144414850.png)
+
+#### 构建流程
+
+[构建流程 - 廖雪峰的官方网站 (liaoxuefeng.com)](https://www.liaoxuefeng.com/wiki/1252599548343744/1309301196980257)
+
+#### 资源导出
+
+maven的规定大于配置，我们以后可能会遇到配置文件无法导出或者生效的问题
+
+解决方案：
+
+```xml
+<!--在build中配置resources，来防止我们资源导出失败的问题 -->
+<build>
+    <resources>
+        
+        <resource>
+            <directory>src/main/resources</directory>
+            <includes>
+                <include>**/*.properties</include>
+                <include>**/*.xml</include>
+            </includes>
+            <filtering>true</filtering>
+        </resource>
+        
+        <resource>
+            <directory>src/main/java</directory>
+            <includes>
+                <include>**/*.properties</include>
+                <include>**/*.xml</include>
+            </includes>
+            <filtering>true</filtering>
+        </resource>
+        
+    </resources>
+</build>
+```
+
+
 
 ### XML
 
@@ -327,7 +364,78 @@ JSON与XML最大的不同在于XML是一个完整的[标记语言](https://zh.m.
 son extends father
 ```
 
+例如：如下为父项目的pom.xml
 
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.example</groupId>
+    <artifactId>HelloServlet</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>Servlet-01</module>
+    </modules>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+    </properties>
+
+    <dependencies>
+        <!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>4.0.1</version>
+            <scope>provided</scope>
+        </dependency>
+
+    </dependencies>
+
+</project>
+```
+
+如下为子项目的pom.xml
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>HelloServlet</artifactId>
+        <groupId>org.example</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>Servlet-01</artifactId>
+    <packaging>war</packaging>
+
+    <name>Servlet-01 Maven Webapp</name>
+    <!-- FIXME change it to the project's website -->
+    <url>http://www.example.com</url>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
+    </properties>
+
+    <dependencies>
+
+    </dependencies>
+
+   ....
+</project>
+```
+
+父项目中配置的servlet，可以在子项目中使用
 
 ## Servlet
 
@@ -461,8 +569,371 @@ son extends father
 
    ![image-20220925173117059](image-20220925173117059.png)
 
+### Mapping映射详解
+
+Mapping有好几种用法如下：
+
+**servlet可以映射一个路径**
+
+```xml
+ <servlet-mapping>
+     <servlet-name>hello</servlet-name>
+     <url-pattern>/hello</url-pattern>
+ </servlet-mapping>
+```
+
+![对于Servlet原理以及Mapping的五种映射和404页面的详解_插入图片_02](resize,m_fixed,w_750.webp)
+
+**servlet可以映射多个路径**
+
+```xml
+<servlet-mapping>
+    <servlet-name>hello</servlet-name>
+    <url-pattern>/hello</url-pattern>
+</servlet-mapping>
+
+<servlet-mapping>
+    <servlet-name>hello</servlet-name>
+    <url-pattern>/zhu</url-pattern>
+</servlet-mapping>
+
+<servlet-mapping>
+    <servlet-name>hello</servlet-name>
+    <url-pattern>/zhang</url-pattern>
+</servlet-mapping>
+```
+
+![对于Servlet原理以及Mapping的五种映射和404页面的详解_xml_03](resize,m_fixed,w_750-16641564564223.webp)
+
+**servlet可以映射公共路径**
+
+```xml
+<servlet-mapping>
+    <servlet-name>hello</servlet-name>
+    <url-pattern>/zhu/*</url-pattern>
+</servlet-mapping>
+```
+
+![对于Servlet原理以及Mapping的五种映射和404页面的详解_java_04](resize,m_fixed,w_750-16641564910016.webp)
+
+**servlet可以映射默认路径**
+
+```xml
+    <servlet-mapping>
+        <servlet-name>hello</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+```
+
+![对于Servlet原理以及Mapping的五种映射和404页面的详解_插入图片_05](resize,m_fixed,w_750-16641565209939.webp)
+
+我们可以通过给所有的路径一个默认映射来实现404页面未找到的效果
+
+```xml
+<!--  error-->
+    <servlet>
+        <servlet-name>error</servlet-name>
+        <servlet-class>com.gowork.servlet.Errorservlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>error</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+```
+
+指定了固定的url的优先级要大于映射默认路径,这也是我们能通过默认映射来实现404页面逻辑的重要原因
+
+**servlet可以映射前缀路径**
+
+```xml
+<servlet-mapping>
+    <servlet-name>hello</servlet-name>
+    <!- 注意，*前面不能加项目映射的路径（例如不能变为 "/*.zhu","/hi/*.zhu"）->
+    <url-pattern>*.zhu</url-pattern>
+</servlet-mapping>
+```
+
+![对于Servlet原理以及Mapping的五种映射和404页面的详解_java_06](resize,m_fixed,w_750-166415658491512.webp)
 
 ### ServletContext
+
+ServletContext官方叫[servlet](https://so.csdn.net/so/search?q=servlet&spm=1001.2101.3001.7020)上下文。服务器会为每一个工程创建一个对象，这个对象就是ServletContext对象。这个对象全局唯一，而且工程内部的所有servlet都共享这个对象。所以叫全局应用程序共享对象
+
+![image-20220926163409395](image-20220926163409395.png)
+
+**ServletContext的应用**
+
+- **共享属性**
+
+![image-20220926164905309](image-20220926164905309.png)
+
+**SetContext**
+
+```java
+package test;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+public class SetContext extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        ServletContext servletContext = this.getServletContext();
+        servletContext.setAttribute("name","FBDCV"); //在ServletContext中设置一个属性
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        doGet(req, resp);
+    }
+}
+```
+
+**GetContext**
+
+```java
+package test;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+public class GetContext extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        ServletContext servletContext = this.getServletContext();
+        String attribute = (String)servletContext.getAttribute("name"); //获取ServletContext中的一个属性
+
+        resp.setContentType("text/html"); //设置响应文件的类型
+        resp.setCharacterEncoding("utf-8");//设置响应文件的编码
+
+        resp.getWriter().println("名字："+attribute);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        doGet(req, resp);
+    }
+}
+```
+
+**web.xml**
+
+```xml
+<!DOCTYPE web-app PUBLIC
+ "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+ "http://java.sun.com/dtd/web-app_2_3.dtd" >
+
+<web-app>
+  <display-name>Archetype Created Web Application</display-name>
+  <servlet>
+    <servlet-name>setcontext</servlet-name>
+    <servlet-class>test.SetContext</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>getcontext</servlet-name>
+    <servlet-class>test.GetContext</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>getcontext</servlet-name>
+    <url-pattern>/getcontext</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>setcontext</servlet-name>
+    <url-pattern>/setcontext</url-pattern>
+  </servlet-mapping>
+</web-app>
+```
+
+![image-20220926165331466](image-20220926165331466.png)
+
+![image-20220926165301978](image-20220926165301978.png)
+
+- **获取初始化参数**
+
+  ```XML
+  <!DOCTYPE web-app PUBLIC
+   "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+   "http://java.sun.com/dtd/web-app_2_3.dtd" >
+  
+  <web-app>
+    <display-name>Archetype Created Web Application</display-name>
+    <!-- 设置初始化参数-->
+    <context-param>
+      <param-name>url</param-name>
+      <param-value>www.baidu.com</param-value>
+    </context-param>
+   ...
+    <servlet>
+      <servlet-name>url</servlet-name>
+      <servlet-class>test.GetURL</servlet-class>
+    </servlet>
+      
+    <servlet-mapping>
+      <servlet-name>url</servlet-name>
+      <url-pattern>/geturl</url-pattern>
+   </servlet-mapping>
+  </web-app>
+  ```
+
+  ```java
+  package test;
+  
+  import javax.servlet.ServletException;
+  import javax.servlet.http.HttpServlet;
+  import javax.servlet.http.HttpServletRequest;
+  import javax.servlet.http.HttpServletResponse;
+  import java.io.IOException;
+  
+  public class GetURL extends HttpServlet {
+      @Override
+      protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+          String url = this.getServletContext().getInitParameter("url");
+          resp.getWriter().println("URL:"+url);
+      }
+  
+      @Override
+      protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+          doGet(req, resp);
+      }
+  }
+  
+  ```
+
+  ![image-20220926183434820](image-20220926183434820.png)
+
+- **请求转发**
+
+  ```java
+  package test;
+  
+  import javax.servlet.ServletContext;
+  import javax.servlet.ServletException;
+  import javax.servlet.http.HttpServlet;
+  import javax.servlet.http.HttpServletRequest;
+  import javax.servlet.http.HttpServletResponse;
+  import java.io.IOException;
+  
+  public class RequestDispatcher extends HttpServlet {
+      @Override
+      protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+          ServletContext context = this.getServletContext();
+          javax.servlet.RequestDispatcher requestDispatcher = context.getRequestDispatcher("/geturl"); //设置请求转发路径
+          requestDispatcher.forward(req,resp); //调用forward实现转发
+      }
+      @Override
+      protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+          doGet(req, resp);
+      }
+  
+  
+  }
+  ```
+
+  ```xml
+  <!DOCTYPE web-app PUBLIC
+   "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+   "http://java.sun.com/dtd/web-app_2_3.dtd" >
+  
+  <web-app>
+    <display-name>Archetype Created Web Application</display-name>
+    <context-param>
+      <param-name>url</param-name>
+      <param-value>www.baidu.com</param-value>
+    </context-param>
+   ...
+      <servlet-name>url</servlet-name>
+      <servlet-class>test.GetURL</servlet-class>
+    </servlet>
+    <servlet>
+      <servlet-name>requestdispatcher</servlet-name>
+      <servlet-class>test.RequestDispatcher</servlet-class>
+    </servlet>
+    
+  ...
+      <servlet-name>url</servlet-name>
+      <url-pattern>/geturl</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+      <servlet-name>requestdispatcher</servlet-name>
+      <url-pattern>/request</url-pattern>
+    </servlet-mapping>
+  </web-app>
+  ```
+
+  ![image-20220926184622484](image-20220926184622484.png)
+
+- **读取资源文件**
+
+  ```properties
+  username = admin
+  pwd = wz123456789
+  ```
+
+  ![image-20220926185945210](image-20220926185945210.png)
+
+  如果上述db.properties不存在或者不能被读取，[可看maven资源导出](#资源导出)
+
+  ```java
+  package test;
+  
+  import javax.servlet.ServletContext;
+  import javax.servlet.ServletException;
+  import javax.servlet.http.HttpServlet;
+  import javax.servlet.http.HttpServletRequest;
+  import javax.servlet.http.HttpServletResponse;
+  import java.io.IOException;
+  import java.io.InputStream;
+  import java.util.Properties;
+  
+  public class GetData extends HttpServlet {
+      @Override
+      protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+          InputStream inputStream = this.getServletContext().getResourceAsStream("/WEB-INF/classes/db.properties");
+          Properties properties = new Properties();
+          properties.load(inputStream);
+          String username = properties.getProperty("username");
+          String pwd = properties.getProperty("pwd");
+          resp.getWriter().println(username+":"+pwd);
+      }
+  
+      @Override
+      protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+          doGet(req, resp);
+      }
+  }
+  ```
+
+  ```xml
+  <!DOCTYPE web-app PUBLIC
+   "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+   "http://java.sun.com/dtd/web-app_2_3.dtd" >
+  
+  <web-app>
+    <display-name>Archetype Created Web Application</display-name>
+  	...
+    <servlet>
+      <servlet-name>getdata</servlet-name>
+      <servlet-class>test.GetData</servlet-class>
+    </servlet>
+    	...
+    <servlet-mapping>
+      <servlet-name>getdata</servlet-name>
+      <url-pattern>/getdata</url-pattern>
+    </servlet-mapping>
+  </web-app>
+  ```
+
+  ![image-20220926190411862](image-20220926190411862.png)
 
 ### Response
 
