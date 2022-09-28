@@ -72,7 +72,7 @@ HTTP是一个客户端（用户）和服务端（网站）之间请求和应答�
 
   HTTP的请求包括：请求行(request line)、请求头部(header)、空行 和 请求数据 四个部分组成。
 
-  ![img](https:////upload-images.jianshu.io/upload_images/1843940-d3214aa6ebf47292.png?imageMogr2/auto-orient/strip|imageView2/2/w/466/format/webp)
+  ![img](webp.webp)
 
   Http请求消息结构
 
@@ -110,7 +110,7 @@ HTTP是一个客户端（用户）和服务端（网站）之间请求和应答�
 
   一般情况下，服务器收到客户端的请求后，就会有一个`HTTP`的响应消息，HTTP响应也由`4`部分组成，分别是：状态行、响应头、空行 和 响应体。
 
-  ![img](https:////upload-images.jianshu.io/upload_images/1843940-9161c0c67fb3bad1.jpg?imageMogr2/auto-orient/strip|imageView2/2/w/683/format/webp)
+  ![img](webp-16642403092323.webp)
 
   **编写程序模拟web服务器获取HTTP的请求**
 
@@ -351,6 +351,8 @@ JSON与XML最大的不同在于XML是一个完整的[标记语言](https://zh.m.
 修改tomcat中的编码为GBK，并将IDEA的编码设置为UTF-8
 
 [IDEA中使用Tomcat控制台中文乱码](https://www.cnblogs.com/linglongfang/p/12570719.html#:~:text=IDEA中中文控制台乱码现象主要是由于windows默认编码是GBK，idea的默认继承了windows的编码，但是tomcat默认是utf-8的，故而要么修改tomcat为GBK，要么修改IDEA为utf-8 1.,修改IDEA的bin目录下的idea64.exe.vmoptions 2.修改IDEA的项目编码配置：Settings->Editor->File Encodings)
+
+[在配置Tomcat中出现显示不存在artifacts,或者想删除不存在的artifact的情况的解决方法](https://blog.csdn.net/qq_24584471/article/details/109245401)
 
 ### 技术点
 
@@ -664,7 +666,7 @@ ServletContext官方叫[servlet](https://so.csdn.net/so/search?q=servlet&spm=100
 
 **ServletContext的应用**
 
-- **共享属性**
+#### 共享属性
 
 ![image-20220926164905309](image-20220926164905309.png)
 
@@ -758,184 +760,356 @@ public class GetContext extends HttpServlet {
 
 ![image-20220926165301978](image-20220926165301978.png)
 
-- **获取初始化参数**
+#### 获取初始化参数
 
-  ```XML
-  <!DOCTYPE web-app PUBLIC
-   "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
-   "http://java.sun.com/dtd/web-app_2_3.dtd" >
-  
-  <web-app>
-    <display-name>Archetype Created Web Application</display-name>
-    <!-- 设置初始化参数-->
-    <context-param>
-      <param-name>url</param-name>
-      <param-value>www.baidu.com</param-value>
-    </context-param>
-   ...
-    <servlet>
-      <servlet-name>url</servlet-name>
-      <servlet-class>test.GetURL</servlet-class>
-    </servlet>
-      
-    <servlet-mapping>
-      <servlet-name>url</servlet-name>
-      <url-pattern>/geturl</url-pattern>
-   </servlet-mapping>
-  </web-app>
-  ```
+```XML
+<!DOCTYPE web-app PUBLIC
+ "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+ "http://java.sun.com/dtd/web-app_2_3.dtd" >
 
-  ```java
-  package test;
-  
-  import javax.servlet.ServletException;
-  import javax.servlet.http.HttpServlet;
-  import javax.servlet.http.HttpServletRequest;
-  import javax.servlet.http.HttpServletResponse;
-  import java.io.IOException;
-  
-  public class GetURL extends HttpServlet {
-      @Override
-      protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-          String url = this.getServletContext().getInitParameter("url");
-          resp.getWriter().println("URL:"+url);
-      }
-  
-      @Override
-      protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-          doGet(req, resp);
-      }
-  }
-  
-  ```
-
-  ![image-20220926183434820](image-20220926183434820.png)
-
-- **请求转发**
-
-  ```java
-  package test;
-  
-  import javax.servlet.ServletContext;
-  import javax.servlet.ServletException;
-  import javax.servlet.http.HttpServlet;
-  import javax.servlet.http.HttpServletRequest;
-  import javax.servlet.http.HttpServletResponse;
-  import java.io.IOException;
-  
-  public class RequestDispatcher extends HttpServlet {
-      @Override
-      protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-          ServletContext context = this.getServletContext();
-          javax.servlet.RequestDispatcher requestDispatcher = context.getRequestDispatcher("/geturl"); //设置请求转发路径
-          requestDispatcher.forward(req,resp); //调用forward实现转发
-      }
-      @Override
-      protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-          doGet(req, resp);
-      }
-  
-  
-  }
-  ```
-
-  ```xml
-  <!DOCTYPE web-app PUBLIC
-   "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
-   "http://java.sun.com/dtd/web-app_2_3.dtd" >
-  
-  <web-app>
-    <display-name>Archetype Created Web Application</display-name>
-    <context-param>
-      <param-name>url</param-name>
-      <param-value>www.baidu.com</param-value>
-    </context-param>
-   ...
-      <servlet-name>url</servlet-name>
-      <servlet-class>test.GetURL</servlet-class>
-    </servlet>
-    <servlet>
-      <servlet-name>requestdispatcher</servlet-name>
-      <servlet-class>test.RequestDispatcher</servlet-class>
-    </servlet>
+<web-app>
+  <display-name>Archetype Created Web Application</display-name>
+  <!-- 设置初始化参数-->
+  <context-param>
+    <param-name>url</param-name>
+    <param-value>www.baidu.com</param-value>
+  </context-param>
+ ...
+  <servlet>
+    <servlet-name>url</servlet-name>
+    <servlet-class>test.GetURL</servlet-class>
+  </servlet>
     
-  ...
-      <servlet-name>url</servlet-name>
-      <url-pattern>/geturl</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-      <servlet-name>requestdispatcher</servlet-name>
-      <url-pattern>/request</url-pattern>
-    </servlet-mapping>
-  </web-app>
-  ```
+  <servlet-mapping>
+    <servlet-name>url</servlet-name>
+    <url-pattern>/geturl</url-pattern>
+ </servlet-mapping>
+</web-app>
+```
 
-  ![image-20220926184622484](image-20220926184622484.png)
+```java
+package test;
 
-- **读取资源文件**
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
-  ```properties
-  username = admin
-  pwd = wz123456789
-  ```
+public class GetURL extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String url = this.getServletContext().getInitParameter("url");
+        resp.getWriter().println("URL:"+url);
+    }
 
-  ![image-20220926185945210](image-20220926185945210.png)
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        doGet(req, resp);
+    }
+}
 
-  如果上述db.properties不存在或者不能被读取，[可看maven资源导出](#资源导出)
+```
 
-  ```java
-  package test;
+![image-20220926183434820](image-20220926183434820.png)
+
+#### 请求转发
+
+```java
+package test;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+public class RequestDispatcher extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        ServletContext context = this.getServletContext();
+        javax.servlet.RequestDispatcher requestDispatcher = context.getRequestDispatcher("/geturl"); //设置请求转发路径
+        requestDispatcher.forward(req,resp); //调用forward实现转发
+    }
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        doGet(req, resp);
+    }
+
+
+}
+```
+
+```xml
+<!DOCTYPE web-app PUBLIC
+ "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+ "http://java.sun.com/dtd/web-app_2_3.dtd" >
+
+<web-app>
+  <display-name>Archetype Created Web Application</display-name>
+  <context-param>
+    <param-name>url</param-name>
+    <param-value>www.baidu.com</param-value>
+  </context-param>
+ ...
+    <servlet-name>url</servlet-name>
+    <servlet-class>test.GetURL</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>requestdispatcher</servlet-name>
+    <servlet-class>test.RequestDispatcher</servlet-class>
+  </servlet>
   
-  import javax.servlet.ServletContext;
-  import javax.servlet.ServletException;
-  import javax.servlet.http.HttpServlet;
-  import javax.servlet.http.HttpServletRequest;
-  import javax.servlet.http.HttpServletResponse;
-  import java.io.IOException;
-  import java.io.InputStream;
-  import java.util.Properties;
-  
-  public class GetData extends HttpServlet {
-      @Override
-      protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-          InputStream inputStream = this.getServletContext().getResourceAsStream("/WEB-INF/classes/db.properties");
-          Properties properties = new Properties();
-          properties.load(inputStream);
-          String username = properties.getProperty("username");
-          String pwd = properties.getProperty("pwd");
-          resp.getWriter().println(username+":"+pwd);
-      }
-  
-      @Override
-      protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-          doGet(req, resp);
-      }
-  }
-  ```
+...
+    <servlet-name>url</servlet-name>
+    <url-pattern>/geturl</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>requestdispatcher</servlet-name>
+    <url-pattern>/request</url-pattern>
+  </servlet-mapping>
+</web-app>
+```
 
-  ```xml
-  <!DOCTYPE web-app PUBLIC
-   "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
-   "http://java.sun.com/dtd/web-app_2_3.dtd" >
-  
-  <web-app>
-    <display-name>Archetype Created Web Application</display-name>
+![image-20220926184622484](image-20220926184622484.png)
+
+#### 读取资源文件
+
+```properties
+username = admin
+pwd = wz123456789
+```
+
+![image-20220926185945210](image-20220926185945210.png)
+
+如果上述db.properties不存在或者不能被读取，[可看maven资源导出](#资源导出)
+
+```java
+package test;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
+public class GetData extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        InputStream inputStream = this.getServletContext().getResourceAsStream("/WEB-INF/classes/db.properties");
+        Properties properties = new Properties();
+        properties.load(inputStream);
+        String username = properties.getProperty("username");
+        String pwd = properties.getProperty("pwd");
+        resp.getWriter().println(username+":"+pwd);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        doGet(req, resp);
+    }
+}
+```
+
+```xml
+<!DOCTYPE web-app PUBLIC
+ "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+ "http://java.sun.com/dtd/web-app_2_3.dtd" >
+
+<web-app>
+  <display-name>Archetype Created Web Application</display-name>
+	...
+  <servlet>
+    <servlet-name>getdata</servlet-name>
+    <servlet-class>test.GetData</servlet-class>
+  </servlet>
   	...
-    <servlet>
-      <servlet-name>getdata</servlet-name>
-      <servlet-class>test.GetData</servlet-class>
-    </servlet>
-    	...
-    <servlet-mapping>
-      <servlet-name>getdata</servlet-name>
-      <url-pattern>/getdata</url-pattern>
-    </servlet-mapping>
-  </web-app>
-  ```
+  <servlet-mapping>
+    <servlet-name>getdata</servlet-name>
+    <url-pattern>/getdata</url-pattern>
+  </servlet-mapping>
+</web-app>
+```
 
-  ![image-20220926190411862](image-20220926190411862.png)
+![image-20220926190411862](image-20220926190411862.png)
 
 ### Response
+
+**Response的应用**
+
+#### 下载文件
+
+[Java中获取项目根路径和类加载路径的7种方法 ](https://www.cnblogs.com/zhaosq/p/10907348.html#:~:text=在 web 项目开发过程中，可能会经常遇到要获取项目根路径的情况%2C那接下来我就总结一下，java中获取项目根路径的7种方法%2C主要是通过thisClass和System，线程和request等方法。 (1)%3Athis.getClass,().getResource ("%2F")； (2)%3Afile.getCanonicalPath ()；)
+
+```java
+package test;
+
+import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.FileInputStream;
+import java.io.IOException;
+
+public class Download extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        //1.获取资源的路径
+        String url = this.getClass().getResource("/img.png").getPath();
+        String filename = url.substring(url.lastIndexOf("/")+1);
+        //2.设置下载文件的响应头
+        resp.setHeader("Content-Disposition","attachment;filename="+filename);
+        //3.通过resp的流，传输文件
+        FileInputStream fis = new FileInputStream(url);
+        ServletOutputStream os = resp.getOutputStream();
+        int len;
+        byte[] buffer = new byte[1024];
+        while((len=fis.read(buffer))!=-1){
+            os.write(buffer,0,len);
+        }
+
+        os.flush();
+
+        os.close();
+        fis.close();
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        doGet(req, resp);
+    }
+}
+```
+
+```xml
+<!DOCTYPE web-app PUBLIC
+ "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+ "http://java.sun.com/dtd/web-app_2_3.dtd" >
+
+<web-app>
+  <display-name>Archetype Created Web Application</display-name>
+  <servlet>
+    <servlet-name>download</servlet-name>
+    <servlet-class>test.Download</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>download</servlet-name>
+    <url-pattern>/down</url-pattern>
+  </servlet-mapping>
+</web-app>
+```
+
+浏览器访问：localhost:8080/resp/down自动下载图片
+
+![image-20220928084423458](image-20220928084423458.png)
+
+#### 验证码实现
+
+```java
+package test;
+
+import javax.imageio.ImageIO;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.util.Random;
+
+public class ImageServlet extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        //1.设置定时刷新网页的响应头
+            resp.setHeader("refresh","3");
+
+        //2.生成验证码
+        Random random = new Random();
+        int tmp = random.nextInt(9999999);
+        DecimalFormat format = new DecimalFormat("0000000");
+        String num = format.format(tmp);
+
+        //3.创建验证码图片
+        BufferedImage image = new BufferedImage(80,20,BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = (Graphics2D)image.getGraphics();
+        g.setBackground(Color.WHITE);
+        g.fillRect(0,0,80,20);
+        g.setColor(Color.BLUE);
+        g.setFont(new Font(null,Font.BOLD,20));
+        g.drawString(num,0,20);
+        //4.设置响应头，使图片可以刷新显示
+        resp.setContentType("image/jpeg");
+        resp.setDateHeader("expires",-1);
+        resp.setHeader("Cache-Control","no-cache");
+        resp.setHeader("Pragma","no-cache");
+        //5.将图片传输到客户端上
+        ImageIO.write(image,"jpg",resp.getOutputStream());
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        doGet(req, resp);
+    }
+}
+```
+
+通过web.xml配置这个servlet的访问路径为/image,运行程序，打开浏览器访问结果如下
+
+![image-20220928094346661](image-20220928094346661.png)
+
+#### 重定向
+
+转发和重定向是Servlet中进行页面跳转的两种方式，下图展示了其工作原理，左图为转发，右图为重定向。
+
+![左转发，右重定向](watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5oiR5pys5piv5py65qKw5Lq6,size_20,color_FFFFFF,t_70,g_se,x_16.png)
+
+**forward（转发）**：
+是服务器请求资源,服务器直接访问目标地址的URL,把那个URL的响应内容读取过来,然后把这些内容再发给浏览器.浏览器根本不知道服务器发送的内容从哪里来的,因为这个跳转过程实在服务器实现的，并不是在客户端实现的所以客户端并不知道这个跳转动作，所以它的地址栏还是原来的地址.
+
+**redirect（重定向）**：
+是服务端根据逻辑,发送一个状态码,告诉浏览器重新去请求那个地址.所以地址栏显示的是新的URL.
+
+转发是服务器行为，重定向是客户端行为。
+
+```java
+package test;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+public class Redirect extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.sendRedirect("/resp/image");
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+       doGet(req, resp);
+    }
+}
+
+```
+
+该servlet在web.xml中注册路径为/red,运行程序，浏览器发出请求，结果如下
+
+![image-20220928100659690](image-20220928100659690.png)
+
+通过开发者工具，我们可以看到浏览器进行了两次请求，对此服务器发出了两个响应，第一个响应让浏览器重定向，第二个请求让浏览器加载图片
+
+![image-20220928100842210](image-20220928100842210.png)
+
+![image-20220928101211799](image-20220928101211799.png)
 
 ### Request
 
