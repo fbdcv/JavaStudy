@@ -1113,6 +1113,99 @@ public class Redirect extends HttpServlet {
 
 ### Request
 
+**Request可以获取到提交表单的数据**
+
+```jsp
+<%@page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<head>
+    <title>登录</title>
+</head>
+<body>
+<h1>登录</h1>
+<div style="text-align: center">
+    <%--这里表单表示的意思，以post方式提交表单，提交到我们的login请求    --%>
+    <form action="/req/login" method="post">
+        用户名：<input type="text" name="username"> <br>
+        密码：<input type="password" name="password"> <br>
+        爱好：
+        <input type="checkbox" name="hobbies" value="代码">代码
+        <input type="checkbox" name="hobbies" value="电影">电影
+        <input type="checkbox" name="hobbies" value="跑步">跑步
+        <br>
+        <input type="submit">
+
+    </form>
+</div>
+</body>
+</html>
+```
+
+```java
+package test;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Arrays;
+
+public class LoginServlet extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        //设置编码
+        req.setCharacterEncoding("utf-8");
+        resp.setCharacterEncoding("utf-8");
+
+        String username = req.getParameter("username");
+        String password = req.getParameter("password");
+        String[] hobbies = req.getParameterValues("hobbies");
+        System.out.println("___________________________________________");
+        System.out.println(username);
+        System.out.println(password);
+        System.out.println(Arrays.toString(hobbies));
+        System.out.println("___________________________________________");
+        req.getRequestDispatcher("/success.jsp").forward(req,resp);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        doGet(req, resp);
+    }
+}
+```
+
+```xml
+<!DOCTYPE web-app PUBLIC
+ "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+ "http://java.sun.com/dtd/web-app_2_3.dtd" >
+
+<web-app>
+  <display-name>Archetype Created Web Application</display-name>
+  <servlet>
+    <servlet-name>login</servlet-name>
+    <servlet-class>test.LoginServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>login</servlet-name>
+    <url-pattern>/login</url-pattern>
+  </servlet-mapping>
+</web-app>
+```
+
+```jsp
+<%@ page contentType="text/html; charset=UTF-8" language="java"%>
+<html>
+<head>
+    <title>Title</title>
+</head>
+<body>
+<h1>登录成功</h1>
+</body>
+</html>
+```
+
 ### Cookie
 
 ### Session

@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ArtifactsWorkspaceSettings">
     <artifacts-to-build>
-      <artifact name="Response:war" />
+      <artifact name="Request:war" />
     </artifacts-to-build>
   </component>
   <component name="AutoImportSettings">
@@ -10,15 +10,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e3ab8366-aa34-4aa8-b188-ab3e1f82b6c1" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Response/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Response/src/main/webapp/WEB-INF/web.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Response/src/main/webapp/index.jsp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Request/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Request/src/main/webapp/WEB-INF/web.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Request/src/main/webapp/index.jsp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Response/src/main/webapp/index.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/Response/src/main/webapp/index.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Response/target/Response.war" beforeDir="false" afterPath="$PROJECT_DIR$/Response/target/Response.war" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Response/target/Response/index.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/Response/target/Response/index.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Response/target/classes/img.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Response/target/classes/test/Download.class" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaWeb.md" beforeDir="false" afterPath="$PROJECT_DIR$/../JavaWeb.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -28,6 +32,7 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="Tag Library Descriptor" />
         <option value="Class" />
       </list>
     </option>
@@ -52,6 +57,9 @@
       </MavenGeneralSettings>
     </option>
   </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
   <component name="ProjectId" id="2FITHkFCKtbQmMMDnX6z0R8cVHS" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <ConfirmationsSetting value="1" id="Add" />
@@ -66,19 +74,31 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
     &quot;jdk.selected.JAVA_MODULE&quot;: &quot;1.8&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Artifacts&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settings.project.maven.ignored.files&quot;
+  },
+  &quot;keyToStringList&quot;: {
+    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
+      &quot;JSP&quot;
+    ]
   }
 }</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\24348\Desktop\JavaStudy\JavaWeb\HelloServlet\Request\src\main\webapp" />
+      <recent name="C:\Users\24348\Desktop\JavaStudy\JavaWeb\HelloServlet\Request\src\main\webapp\WEB-INF" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration name="Tomcat 9.0.63" type="#com.intellij.j2ee.web.tomcat.TomcatRunConfigurationFactory" factoryName="Local" APPLICATION_SERVER_NAME="Tomcat 9.0.63" ALTERNATIVE_JRE_ENABLED="true" ALTERNATIVE_JRE_PATH="D:\jdk1.8.0_331\jre" nameIsGenerated="true">
       <option name="BROWSER_ID" value="37cae5b9-e8b2-4949-9172-aafa37fbc09c" />
       <option name="UPDATING_POLICY" value="restart-server" />
       <deployment>
-        <artifact name="Response:war">
+        <artifact name="Request:war">
           <settings>
-            <option name="CONTEXT_PATH" value="/resp" />
+            <option name="CONTEXT_PATH" value="/req" />
           </settings>
         </artifact>
       </deployment>
@@ -156,7 +176,7 @@
       <method v="2">
         <option name="Make" enabled="true" />
         <option name="BuildArtifacts" enabled="true">
-          <artifact name="Response:war" />
+          <artifact name="Request:war" />
         </option>
       </method>
     </configuration>
@@ -172,7 +192,8 @@
       <workItem from="1664178515216" duration="6540000" />
       <workItem from="1664241087121" duration="2733000" />
       <workItem from="1664243864567" duration="5360000" />
-      <workItem from="1664325567799" duration="4269000" />
+      <workItem from="1664325567799" duration="8867000" />
+      <workItem from="1664356823775" duration="4298000" />
     </task>
     <servers />
   </component>
