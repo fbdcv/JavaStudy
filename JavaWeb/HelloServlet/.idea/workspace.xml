@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ArtifactsWorkspaceSettings">
     <artifacts-to-build>
-      <artifact name="Request:war" />
+      <artifact name="Session:war" />
     </artifacts-to-build>
   </component>
   <component name="AutoImportSettings">
@@ -10,19 +10,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e3ab8366-aa34-4aa8-b188-ab3e1f82b6c1" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Request/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Request/src/main/webapp/WEB-INF/web.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Request/src/main/webapp/index.jsp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../HelloJSP/JSPGrammar/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../HelloJSP/JSPGrammar/src/main/webapp/WEB-INF/web.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../HelloJSP/JSPGrammar/src/main/webapp/index.jsp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Cookie/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Cookie/src/main/webapp/WEB-INF/web.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Cookie/src/main/webapp/index.jsp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Session/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Session/src/main/webapp/WEB-INF/web.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Session/src/main/webapp/index.jsp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Response/src/main/webapp/index.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/Response/src/main/webapp/index.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Response/target/Response.war" beforeDir="false" afterPath="$PROJECT_DIR$/Response/target/Response.war" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Response/target/Response/index.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/Response/target/Response/index.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Response/target/classes/img.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Response/target/classes/test/Download.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Request/target/Request.war" beforeDir="false" afterPath="$PROJECT_DIR$/Request/target/Request.war" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../JavaWeb.md" beforeDir="false" afterPath="$PROJECT_DIR$/../JavaWeb.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,23 +71,24 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;jdk.selected.JAVA_MODULE&quot;: &quot;1.8&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settings.project.maven.ignored.files&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "jdk.selected.JAVA_MODULE": "1.8",
+    "last_opened_file_path": "C:/Users/24348/Desktop/JavaStudy/JavaWeb/HelloServlet",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "reference.settings.project.maven.ignored.files"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
-      &quot;JSP&quot;
+  "keyToStringList": {
+    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
+      "JSP"
     ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\24348\Desktop\JavaStudy\JavaWeb\HelloServlet\Request\src\main\webapp" />
@@ -96,9 +100,9 @@
       <option name="BROWSER_ID" value="37cae5b9-e8b2-4949-9172-aafa37fbc09c" />
       <option name="UPDATING_POLICY" value="restart-server" />
       <deployment>
-        <artifact name="Request:war">
+        <artifact name="Session:war">
           <settings>
-            <option name="CONTEXT_PATH" value="/req" />
+            <option name="CONTEXT_PATH" value="" />
           </settings>
         </artifact>
       </deployment>
@@ -176,7 +180,7 @@
       <method v="2">
         <option name="Make" enabled="true" />
         <option name="BuildArtifacts" enabled="true">
-          <artifact name="Request:war" />
+          <artifact name="Session:war" />
         </option>
       </method>
     </configuration>
@@ -194,6 +198,11 @@
       <workItem from="1664243864567" duration="5360000" />
       <workItem from="1664325567799" duration="8867000" />
       <workItem from="1664356823775" duration="4298000" />
+      <workItem from="1664412623073" duration="6643000" />
+      <workItem from="1664429561932" duration="3626000" />
+      <workItem from="1664440120371" duration="339000" />
+      <workItem from="1664440495272" duration="9000" />
+      <workItem from="1664440680992" duration="14000" />
     </task>
     <servers />
   </component>

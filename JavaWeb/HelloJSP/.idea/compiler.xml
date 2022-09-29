@@ -6,16 +6,8 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="Response" />
-        <module name="Request" />
-        <module name="Cookie" />
-        <module name="Servlet-01" />
-        <module name="Servlet-02" />
-        <module name="Session" />
+        <module name="JSPGrammar" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="Request (1)" target="1.8" />
-    </bytecodeTargetLevel>
   </component>
 </project>
