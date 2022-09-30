@@ -1878,10 +1878,13 @@ public final class index_jsp extends org.apache.jasper.runtime.HttpJspBase
 
 [ JSP的EL表达式的使用详解](https://blog.csdn.net/qq_48033003/article/details/117508888)
 
-
 ### JSP内置对象
 
-### JSTL标签
+四个对象的作用域
+
+请求转发的另一种写法
+
+### JSP、JSTL标签
 
 ### JavaBean
 
