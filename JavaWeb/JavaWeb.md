@@ -1880,9 +1880,100 @@ public final class index_jsp extends org.apache.jasper.runtime.HttpJspBase
 
 ### JSP内置对象
 
-四个对象的作用域
+JSP 中定义了 9 个内置对象，它们分别是：request、response、session、application、out、pagecontext、config、page 和 exception，这些对象在客户端和服务器端交互的过程中分别完成不同的功能。
+在 JSP 九大内置对象中，包含四个**域对象**，它们分别是：pageContext（page 域对象）、request（request 域对象）、session（session 域对象）、以及 application（application 域对象）。
 
-请求转发的另一种写法
+JSP 中的 4 个域对象都能通过以下 3 个方法，对属性进行保存、获取和移除操作。
+
+| 返回值类型 | 方法                                | 作用                 |
+| ---------- | ----------------------------------- | -------------------- |
+| void       | setAttribute(String name, Object o) | 将属性保存到域对象中 |
+| Object     | getAttribute(String name)           | 获取域对象中的属性值 |
+| void       | removeAttribute(String name)        | 将属性从域对象中移除 |
+
+JSP 中的 4 个域对象的作用域各不相同，如下表。
+
+| 作用域                        | 描述                                                         | 作用范围                                                     |
+| ----------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| page                          | 如果把属性保存到 pageContext 中，则它的作用域是 page。       | 该作用域中的属性只在当前 JSP 页面有效，跳转页面后失效。      |
+| request                       | 如果把属性保存到 request 中，则它的作用域是 request。        | 该作用域中的属性只在当前请求范围内有效。服务器跳转页面后有效，例如<jsp:forward>；客户端跳转页面后无效，例如超链接。 |
+| session                       | 如果把属性保存到 session 中，则它的作用域是 session。        | 该作用域中的属性只在当前会话范围内有效，网页关闭后失效。     |
+| application（ServletContext） | 如果把属性保存到 application 中，则它的作用域是 application。 | 该作用域中的属性在整个应用范围内有效，服务器重启后失效。     |
+
+**jsp1.jsp**
+
+```jsp
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%--启用EL表达式--%>
+<%@ page isELIgnored="false" %>
+<html>
+<head>
+    <title>Title</title>
+</head>
+<body>
+    <%
+        pageContext.setAttribute("name1","FBDCV1");
+        request.setAttribute("name2","FBDCV2");
+        session.setAttribute("name3","FBDCV3");
+        application.setAttribute("name4","FBDCV4");
+
+        String name1 = (String) pageContext.findAttribute("name1");
+        String name2 = (String) pageContext.findAttribute("name2");
+        String name3 = (String) pageContext.findAttribute("name3");
+        String name4 = (String) pageContext.findAttribute("name4");
+        String name5 = (String) pageContext.findAttribute("name5");    //属性name5是不存在的
+    %>
+
+    <h1>${name1}</h1>
+    <h1>${name2}</h1>
+    <h1>${name3}</h1>
+    <h1>${name4}</h1>
+    <h1>${name5}</h1>
+
+
+</body>
+</html>
+```
+
+**jsp2.jsp**
+
+```jsp
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%--启用EL表达式--%>
+<%@ page isELIgnored="false" %>
+<html>
+<head>
+    <title>Title</title>
+</head>
+<body>
+
+<h1>${name1}</h1>
+<h1>${name2}</h1>
+<h1>${name3}</h1>
+<h1>${name4}</h1>
+<h1>${name5}</h1>
+
+</body>
+</html>
+```
+
+![image-20221001002431157](image-20221001002431157.png)
+
+![image-20221001002458048](image-20221001002458048.png)
+
+pageContext设置其他作用域的属性
+
+```java
+pageContext.setAttribute("name1","FBDCV1",PageContext.SESSION_SCOPE); //相当于设置了session
+```
+
+pageContext请求转发
+
+```java
+pageContext.forward("/jsp2.jsp"); //简化了之前用ServletContext请求转发的操作
+```
+
+
 
 ### JSP、JSTL标签
 
