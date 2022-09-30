@@ -571,7 +571,9 @@ son extends father
 
    ![image-20220925173117059](image-20220925173117059.png)
 
-### Mapping映射详解
+### Web.xml配置
+
+#### Mapping映射详解
 
 Mapping有好几种用法如下：
 
@@ -658,6 +660,44 @@ Mapping有好几种用法如下：
 
 ![对于Servlet原理以及Mapping的五种映射和404页面的详解_java_06](resize,m_fixed,w_750-166415658491512.webp)
 
+#### 设置上下文参数
+
+```xml
+<!DOCTYPE web-app PUBLIC
+ "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+ "http://java.sun.com/dtd/web-app_2_3.dtd" >
+
+<web-app>
+  <display-name>Archetype Created Web Application</display-name>
+  <!-- 设置上下文参数-->
+  <context-param>
+    <param-name>url</param-name>
+    <param-value>www.baidu.com</param-value>
+  </context-param>
+ ...
+</web-app>
+```
+
+#### 设置错误页面
+
+```xml
+<!DOCTYPE web-app PUBLIC
+ "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+ "http://java.sun.com/dtd/web-app_2_3.dtd" >
+
+<web-app>
+  <display-name>Archetype Created Web Application</display-name>
+  <error-page>
+    <error-code>404</error-code>
+    <location>/error/404.jsp</location>
+  </error-page>
+  <error-page>
+    <error-code>500</error-code>
+    <location>/error/500.jsp</location>
+  </error-page>
+</web-app>
+```
+
 ### ServletContext
 
 ServletContext官方叫[servlet](https://so.csdn.net/so/search?q=servlet&spm=1001.2101.3001.7020)上下文。服务器会为每一个工程创建一个对象，这个对象就是ServletContext对象。这个对象全局唯一，而且工程内部的所有servlet都共享这个对象。所以叫全局应用程序共享对象
@@ -665,6 +705,11 @@ ServletContext官方叫[servlet](https://so.csdn.net/so/search?q=servlet&spm=100
 ![image-20220926163409395](image-20220926163409395.png)
 
 **ServletContext的应用**
+
+- 共享属性
+- 获取上下文参数
+- 请求转发
+- 读取资源文件
 
 #### 共享属性
 
@@ -760,7 +805,7 @@ public class GetContext extends HttpServlet {
 
 ![image-20220926165301978](image-20220926165301978.png)
 
-#### 获取初始化参数
+#### 获取上下文参数
 
 ```XML
 <!DOCTYPE web-app PUBLIC
@@ -769,7 +814,7 @@ public class GetContext extends HttpServlet {
 
 <web-app>
   <display-name>Archetype Created Web Application</display-name>
-  <!-- 设置初始化参数-->
+  <!-- 设置上下文参数-->
   <context-param>
     <param-name>url</param-name>
     <param-value>www.baidu.com</param-value>
@@ -1589,15 +1634,250 @@ public final class index_jsp extends org.apache.jasper.runtime.HttpJspBase
 
 ### JSP基础语法
 
-JSP页面指令
+JSP作为Java技术的一种应用，它拥有一些自己扩充的语法，但是Java所有语法都支持！
 
-JSP表达式
+**JSP页面指令**
+![image-20220930165008214](image-20220930165008214.png)
 
-JSP脚本片段
+通过页面指令可以设置许多东西，例如响应类型，自动刷新的时间，是否缓存，引入其他java文件...
 
-JSP声明
+**JSP合成页面**
 
-EL表达式
+header.jsp
+
+```jsp
+<%@page contentType="text/html; charset=UTF-8" language="java" %>
+<html>
+<body>
+    <h2>这是头部</h2>
+</body>
+</html>
+```
+
+footer.jsp
+
+```jsp
+<%@page contentType="text/html; charset=UTF-8" language="java" %>
+<html>
+<body>
+    <h2>这是尾部</h2>
+</body>
+</html>
+```
+
+index.jsp
+
+```jsp
+<%--设置响应类型和编码规则--%>
+<%@page contentType="text/html; charset=UTF-8" language="java" %>
+<html>
+<body>
+    <%--将三个页面合为一个页面    --%>
+    <%@include file="common/header.jsp" %>
+    <h1>网页主体</h1>
+    <%@include file="common/footer.jsp" %>
+
+    <hr>
+    <%--拼接页面，实际上还是一个页面--%>
+    <jsp:include page="/common/header.jsp"/>
+    <h1>网页主体</h1>
+    <jsp:include page="/common/footer.jsp"/>
+
+</body>
+</html>
+```
+
+<img src="image-20220930174403357.png" alt="image-20220930174403357" style="zoom: 80%;" />
+
+相关源码如下：
+
+```java
+  out.write("\n");
+  out.write("\n");
+  out.write("<html>\n");
+  out.write("<body>\n");
+  out.write("\n");
+  out.write("    ");
+  out.write("\r\n");
+  out.write("<html>\r\n");
+  out.write("<body>\r\n");
+  out.write("    <h2>这是头部</h2>\r\n");
+  out.write("</body>\r\n");
+  out.write("</html>");
+  out.write("\n");
+  out.write("    <h1>网页主体</h1>\n");
+  out.write("    ");
+  out.write("\r\n");
+  out.write("<html>\r\n");
+  out.write("<body>\r\n");
+  out.write("    <h2>这是尾部</h2>\r\n");
+  out.write("</body>\r\n");
+  out.write("</html>");
+  out.write("\n");
+  out.write("\n");
+  out.write("    <hr>\n");//这里是分割符
+  out.write("\n");
+  out.write("    ");
+  org.apache.jasper.runtime.JspRuntimeLibrary.include(request, response, "/common/header.jsp", out, false);
+  out.write("\n");
+  out.write("    <h1>网页主体</h1>\n");
+  out.write("    ");
+  org.apache.jasper.runtime.JspRuntimeLibrary.include(request, response, "/common/footer.jsp", out, false);
+  out.write("\n");
+  out.write("\n");
+  out.write("</body>\n");
+  out.write("</html>\n");
+```
+
+**JSP表达式**
+
+```jsp
+<%--引入Date的类的包--%>
+<%@ page import="java.util.Date" %>
+<%--设置响应类型和编码规则--%>
+<%@page contentType="text/html; charset=UTF-8" language="java" %>
+<html>
+<body>
+<h2>Hello World!</h2>
+<%--JSP表达式--%>
+<%--
+<%=变量或者表达式%>  输出变量或者表达式的值
+--%>
+<%= new Date()%>
+</body>
+</html>
+```
+
+![image-20220930155100113](image-20220930155100113.png)
+
+**JSP脚本片段**
+
+```jsp
+<%--设置响应类型和编码规则--%>
+<%@page contentType="text/html; charset=UTF-8" language="java" %>
+<html>
+<body>
+<h2>Hello World!</h2>
+<%--
+<%脚本片段%>
+--%>
+<%
+    int sum=0;
+    for(int i=0;i<=100;i++){
+        sum+=i;
+    }
+%>
+<%=sum%>
+
+</body>
+</html>
+```
+
+![image-20220930160343551](image-20220930160343551.png)
+
+```jsp
+<%--设置响应类型和编码规则--%>
+<%@page contentType="text/html; charset=UTF-8" language="java" %>
+<html>
+<body>
+<%--脚本片段还可以与html标签配合使用--%>
+<h2>Hello World!</h2>
+<%for(int i=0;i<5;i++){%>
+        <h3>fbdcv </h3>
+<%}%>
+
+</body>
+</html>
+```
+
+![image-20220930161055163](image-20220930161055163.png)
+
+对应源码片段：
+
+```java
+//...
+      out.write("\n");
+      out.write("\n");
+      out.write("<html>\n");
+      out.write("<body>\n");
+      out.write("<h2>Hello World!</h2>\n");
+for(int i=0;i<5;i++){
+      out.write("\n");
+      out.write("        <h3>fbdcv </h3>\n");
+}
+      out.write("\n");
+      out.write("\n");
+      out.write("</body>\n");
+      out.write("</html>\n");
+//...
+```
+
+
+
+**JSP声明**
+
+通过JSP声明可以将代码段放在JSP映射的那个Servlet的类中，而非类中的_jspService方法中，相当于提高了作用域
+
+```jsp
+<%--设置响应类型和编码规则--%>
+<%@page contentType="text/html; charset=UTF-8" language="java" %>
+<html>
+<body>
+
+<%!
+        static {
+                System.out.println("Loading Servlet!");
+        }
+        private int glbalvar = 0;
+        public void test(){
+                System.out.println("测试");
+        }
+%>
+
+
+</body>
+</html>
+```
+
+对应源码片段：
+
+```java
+/*
+ * Generated by the Jasper component of Apache Tomcat
+ * Version: Apache Tomcat/9.0.63
+ * Generated at: 2022-09-30 08:29:55 UTC
+ * Note: The last modified time of this file was set to
+ *       the last modified time of the source file after
+ *       generation to assist with modification tracking.
+ */
+package org.apache.jsp;
+
+import javax.servlet.*;
+import javax.servlet.http.*;
+import javax.servlet.jsp.*;
+
+public final class index_jsp extends org.apache.jasper.runtime.HttpJspBase
+    implements org.apache.jasper.runtime.JspSourceDependent,
+                 org.apache.jasper.runtime.JspSourceImports {
+
+
+        static {
+                System.out.println("Loading Servlet!");
+        }
+        private int glbalvar = 0;
+        public void test(){
+                System.out.println("测试");
+        }
+         //...           
+}      
+```
+
+**EL表达式**
+
+简单的来说，${} 相当于 <%= %>
+
+[ JSP的EL表达式的使用详解](https://blog.csdn.net/qq_48033003/article/details/117508888)
+
 
 ### JSP内置对象
 
