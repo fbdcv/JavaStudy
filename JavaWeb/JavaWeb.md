@@ -2,7 +2,9 @@
 
 ### URI和URL
 
-![img](C:/Users/HP/Desktop/JavaStudy/JavaWeb/220px-URI_Euler_Diagram_no_lone_URIs.svg.png)
+
+
+![img](220px-URI_Euler_Diagram_no_lone_URIs.svg.png)
 
 **统一资源标志符**（英语：**U**niform **R**esource **I**dentifier，缩写：**URI**）在[电脑](https://zh.wikipedia.org/wiki/電腦)术语中是用于[标志](https://zh.wikipedia.org/wiki/标志)某一[互联网](https://zh.wikipedia.org/wiki/互联网)[资源](https://zh.wikipedia.org/wiki/资源)名称的[字符串](https://zh.wikipedia.org/wiki/字符串)。
 
@@ -2108,7 +2110,7 @@ JavaBean有特定的写法:
 
 **MVC模式**（Model–view–controller）是[软件工程](https://zh.m.wikipedia.org/wiki/软件工程)中的一种[软件架构](https://zh.m.wikipedia.org/wiki/软件架构)模式，把软件系统分为三个基本部分：模型（Model）、视图（View）和控制器（Controller）。
 
-![image-20221004194350762](C:/Users/HP/Desktop/JavaStudy/JavaWeb/image-20221004194350762.png)
+![image-20221004194350762](image-20221004194350762.png)
 
 Model
 
@@ -2220,9 +2222,9 @@ public class FilterTest implements Filter {
 </web-app>
 ```
 
-![image-20221004213038197](C:/Users/HP/Desktop/JavaStudy/JavaWeb/image-20221004213038197.png)
+![image-20221004213038197](image-20221004213038197.png)
 
-![image-20221004213532454](C:/Users/HP/Desktop/JavaStudy/JavaWeb/image-20221004213532454.png)
+![image-20221004213532454](image-20221004213532454.png)
 
 ## JDBC
 
