@@ -18,7 +18,7 @@
         request.setAttribute("name2","FBDCV2");
         session.setAttribute("name3","FBDCV3");
         application.setAttribute("name4","FBDCV4");
-        pageContext.forward("/jsp2.jsp");
+//        pageContext.forward("/jsp2.jsp");
         String name1 = (String) pageContext.findAttribute("name1");
         String name2 = (String) pageContext.findAttribute("name2");
         String name3 = (String) pageContext.findAttribute("name3");

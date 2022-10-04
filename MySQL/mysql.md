@@ -81,7 +81,7 @@ MySQL在过去由于性能高、成本低、可靠性好，已经成为最流行
 5. 初始化数据库文件
 
    ```shell
-   mysql --initialize-insecure --user=mysql
+   mysqld --initialize-insecure --user=mysql
    ```
 
    此时解压目录会多出一个data目录

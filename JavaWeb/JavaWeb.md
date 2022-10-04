@@ -1,5 +1,17 @@
 ##  初识JavaWeb
 
+### URI和URL
+
+![img](C:/Users/HP/Desktop/JavaStudy/JavaWeb/220px-URI_Euler_Diagram_no_lone_URIs.svg.png)
+
+**统一资源标志符**（英语：**U**niform **R**esource **I**dentifier，缩写：**URI**）在[电脑](https://zh.wikipedia.org/wiki/電腦)术语中是用于[标志](https://zh.wikipedia.org/wiki/标志)某一[互联网](https://zh.wikipedia.org/wiki/互联网)[资源](https://zh.wikipedia.org/wiki/资源)名称的[字符串](https://zh.wikipedia.org/wiki/字符串)。
+
+**统一资源定位符**（英语：**U**niform **R**esource **L**ocator，缩写：**URL**，或称**统一资源定位器**、**定位地址**、**URL地址**[[1\]](https://zh.wikipedia.org/wiki/统一资源定位符#cite_note-1)）俗称网页地址，简称**网址**，是[因特网](https://zh.wikipedia.org/wiki/因特网)上标准的资源的地址（Address），如同在网络上的门牌。
+
+URI可被视为定位符（URL），名称（URN）或两者兼备。[统一资源名](https://zh.wikipedia.org/wiki/统一资源名)（URN）如同一个人的名称，而[统一资源定位符](https://zh.wikipedia.org/wiki/统一资源定位符)（URL）代表一个人的住址。换言之，URN定义某事物的身份，而URL提供查找该事物的方法。
+
+用于标志唯一书目的[ISBN](https://zh.wikipedia.org/wiki/ISBN)系统是一个典型的URN使用范例。例如，`ISBN 0-486-27557-4`无二义性地标志出莎士比亚的戏剧《[罗密欧与朱丽叶](https://zh.wikipedia.org/wiki/罗密欧与朱丽叶)》的某一特定版本。为获得该资源并阅读该书，人们需要它的位置，也就是一个URL地址。在[类Unix](https://zh.wikipedia.org/wiki/类Unix)操作系统中，一个典型的URL地址可能是一个[文件目录](https://zh.wikipedia.org/w/index.php?title=文件目录&action=edit&redlink=1)，例如`file:///home/username/RomeoAndJuliet.pdf`。该URL标志出存储于本地硬盘中的电子书文件。因此，URL和URN有着互补的作用。
+
 ### Web及Web服务器
 
 - **万维网**（英语：World Wide Web）亦作**WWW**、**Web**、**全球广域网**，是一个透过[互联网](https://zh.m.wikipedia.org/wiki/互联网)访问的，由许多互相链接的[超文本](https://zh.m.wikipedia.org/wiki/超文本)组成的[信息系统](https://zh.m.wikipedia.org/wiki/信息系统)
@@ -312,6 +324,59 @@ maven的规定大于配置，我们以后可能会遇到配置文件无法导出
 </build>
 ```
 
+#### JavaWeb需要的依赖
+
+```xml
+ <dependencies>
+        <!--Servlet 依赖-->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>4.0.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
+        </dependency>
+
+        <!--jsp 依赖-->
+        <!-- https://mvnrepository.com/artifact/javax.servlet.jsp/javax.servlet.jsp-api -->
+        <dependency>
+            <groupId>javax.servlet.jsp</groupId>
+            <artifactId>javax.servlet.jsp-api</artifactId>
+            <version>2.3.3</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet.jsp</groupId>
+            <artifactId>jsp-api</artifactId>
+            <version>2.1</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/javax.servlet.jsp/jsp-api -->
+        <dependency>
+            <groupId>javax.servlet.jsp</groupId>
+            <artifactId>jsp-api</artifactId>
+            <version>2.2</version>
+        </dependency>
+
+        <!--JSTL 表达式依赖-->
+        <!-- https://mvnrepository. com/artifact/javax. servlet. jsp.jstl/jstl-api -->
+        <dependency>
+            <groupId>javax.servlet.jsp.jstl</groupId>
+            <artifactId>jstl-api</artifactId>
+            <version>1.2</version>
+        </dependency>
+        <!--standard 标签库 依赖-->
+        <!-- https://mvnrepository. com/artifact/taglibs/standard -->
+        <dependency>
+            <groupId>taglibs</groupId>
+            <artifactId>standard</artifactId>
+            <version>1.1.2</version>
+        </dependency>
+    </dependencies>
+```
+
 
 
 ### XML
@@ -353,6 +418,8 @@ JSON与XML最大的不同在于XML是一个完整的[标记语言](https://zh.m.
 [IDEA中使用Tomcat控制台中文乱码](https://www.cnblogs.com/linglongfang/p/12570719.html#:~:text=IDEA中中文控制台乱码现象主要是由于windows默认编码是GBK，idea的默认继承了windows的编码，但是tomcat默认是utf-8的，故而要么修改tomcat为GBK，要么修改IDEA为utf-8 1.,修改IDEA的bin目录下的idea64.exe.vmoptions 2.修改IDEA的项目编码配置：Settings->Editor->File Encodings)
 
 [在配置Tomcat中出现显示不存在artifacts,或者想删除不存在的artifact的情况的解决方法](https://blog.csdn.net/qq_24584471/article/details/109245401)
+
+
 
 ### 技术点
 
@@ -1872,11 +1939,7 @@ public final class index_jsp extends org.apache.jasper.runtime.HttpJspBase
 }      
 ```
 
-**EL表达式**
 
-简单的来说，${} 相当于 <%= %>
-
-[ JSP的EL表达式的使用详解](https://blog.csdn.net/qq_48033003/article/details/117508888)
 
 ### JSP内置对象
 
@@ -1975,14 +2038,197 @@ pageContext.forward("/jsp2.jsp"); //简化了之前用ServletContext请求转发
 
 
 
-### JSP、JSTL标签
+### EL表达式、JSP标签、JSTL
+
+**EL表达式**
+
+简单的来说，${} 相当于 <%= %>,但是两者又有区别,EL表达式自定义了一些运算符,并且简化了一些操作
+
+[ JSP的EL表达式的使用详解](https://blog.csdn.net/qq_48033003/article/details/117508888)
+
+**JSP标签**
+
+```jsp
+<%-- 只简单地看三个标签--%>
+<jsp:include page="要引入网页的URL"></jsp:include>
+<jsp:forward page="转发页面的URL">
+	<jsp:param name ="参数名" value="参数值"></jsp:param>
+</jsp:forward>
+
+```
+
+**JSTL**
+
+JSP标准标签库（JSTL）是一个JSP标签集合,相当于JSP标签的补充，它封装了JSP应用的通用核心功能(**将Java代码标签化,使Java代码与HTML环境融为一体**)
+
+JSTL有以下分类
+
+- **核心标签**
+- **格式化标签**
+- **SQL 标签**
+- **XML 标签**
+- **JSTL 函数**
+
+[JSP 标准标签库（JSTL） | 菜鸟教程 (runoob.com)](https://www.runoob.com/jsp/jsp-jstl.html)
+
+```jsp
+<%--常用标签--%>
+<c:out>
+<c:if>
+<c:forEach>
+<c:choose>
+<c:when>
+```
 
 ### JavaBean
 
+实体类
+
+JavaBean有特定的写法:
+
+- 必须要有一个无参构造方法
+
+- 属性必须私有化
+
+- 必须有对应的get/set方法
+
+一般用于和数据库的字段做映射
+
+**对象关系映射**（**Object Relational Mapping**），作用创建了一个可在编程语言里使用的虚拟对象数据库
+
+- 表 ---> 类
+- 字段 ---> 属性
+- 行记录 ---> 对象
+
 ##  Ajax
 
+详见[JavaScript](/Web/JavaScript/JS.md)
+
 ## MVC
+
+**MVC模式**（Model–view–controller）是[软件工程](https://zh.m.wikipedia.org/wiki/软件工程)中的一种[软件架构](https://zh.m.wikipedia.org/wiki/软件架构)模式，把软件系统分为三个基本部分：模型（Model）、视图（View）和控制器（Controller）。
+
+![image-20221004194350762](C:/Users/HP/Desktop/JavaStudy/JavaWeb/image-20221004194350762.png)
+
+Model
+
+- 业务处理:业务逻辑(service)
+- 数据持久层:CRUD (DAO)
+
+View
+
+- 展示数据
+- 提供链接发起Servlet请求
+
+Controller
+
+- 接受用户的请求:(req请求参数,Session信息)
+- 交给业务层处理对应的代码
+- 控制视图的跳转
+
+例如,一个登录的操作
+
+登录-->处理用户的请求(控制层获取用户的登录信息)-->登录信息验证(业务层验证)-->数据库查询记录(Dao层连接数据库查询数据)
+
+## 过滤器
+
+通过过滤器解决html中文乱码问题
+
+**ServletDemo.java**
+
+```java
+package test;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+public class ServletDemo extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.getWriter().println("你好,世界!!!");
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        doGet(req, resp);
+    }
+}
+```
+
+**FilterTest.java**
+
+```java
+package test;
+
+import javax.servlet.*;
+import java.io.IOException;
+
+public class FilterTest implements Filter {
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+        //该方法当web服务器运行时生效
+    }
+
+    @Override
+    public void destroy() {
+        //该方法当web服务器停止时生效
+    }
+
+    @Override
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+        servletRequest.setCharacterEncoding("utf-8");
+        servletResponse.setCharacterEncoding("utf-8");
+        servletResponse.setContentType("text/html;charset=utf-8");
+        doFilter(servletRequest,servletResponse,filterChain); //执行过滤
+    }
+}
+```
+
+**web.xml**
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+         version="4.0">
+    <servlet>
+        <servlet-name>demo</servlet-name>
+        <servlet-class>test.ServletDemo</servlet-class>
+    </servlet>
+    <!--设置两个对同一个servlet的映射    -->
+    <servlet-mapping>
+        <servlet-name>demo</servlet-name>
+        <url-pattern>/servlet/demo</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>demo</servlet-name>
+        <url-pattern>/demo</url-pattern>
+    </servlet-mapping>
+    <filter>
+        <filter-name>filterTest</filter-name>
+        <filter-class>test.FilterTest</filter-class>
+    </filter>
+    <!-- 设置路径为/servlet/*的servlet为过滤的目录    -->
+    <filter-mapping>
+        <filter-name>filterTest</filter-name>
+        <url-pattern>/servlet/*</url-pattern>
+    </filter-mapping>
+</web-app>
+```
+
+![image-20221004213038197](C:/Users/HP/Desktop/JavaStudy/JavaWeb/image-20221004213038197.png)
+
+![image-20221004213532454](C:/Users/HP/Desktop/JavaStudy/JavaWeb/image-20221004213532454.png)
 
 ## JDBC
 
 详见[MySQL](/MySQL/mysql.md)
+
+## 文件上传
+
+## 邮件发送
+
