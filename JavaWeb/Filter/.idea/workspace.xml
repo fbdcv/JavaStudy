@@ -9,16 +9,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cb61662e-c06d-44ea-b75e-0ec090d0c273" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../../JavaSE/JAVA_注解和反射/注解和反射.md" beforeDir="false" afterPath="$PROJECT_DIR$/../../JavaSE/JAVA_注解和反射/注解和反射.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../HelloJSP/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../HelloJSP/.idea/encodings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../HelloJSP/JSPGrammar/target/JSPGrammar.war" beforeDir="false" afterPath="$PROJECT_DIR$/../HelloJSP/JSPGrammar/target/JSPGrammar.war" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../HelloJSP/JSPGrammar/target/JSPGrammar/META-INF/MANIFEST.MF" beforeDir="false" afterPath="$PROJECT_DIR$/../HelloJSP/JSPGrammar/target/JSPGrammar/META-INF/MANIFEST.MF" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../HelloJSP/JSPGrammar/target/JSPGrammar/jsp1.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/../HelloJSP/JSPGrammar/target/JSPGrammar/jsp1.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../JavaWeb.md" beforeDir="false" afterPath="$PROJECT_DIR$/../JavaWeb.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../MySQL/mysql.md" beforeDir="false" afterPath="$PROJECT_DIR$/../../MySQL/mysql.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../Web/JavaScript/JS.md" beforeDir="false" afterPath="$PROJECT_DIR$/../../Web/JavaScript/JS.md" afterDir="false" />
-    </list>
+    <list default="true" id="cb61662e-c06d-44ea-b75e-0ec090d0c273" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -57,21 +48,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Artifacts&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;MavenSettings&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "C:/Users/HP/Desktop/JavaStudy/JavaWeb/smbms",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "project.structure.last.edited": "Artifacts",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "MavenSettings"
   }
-}</component>
+}]]></component>
   <component name="RunManager">
     <configuration name="Tomcat 9.0.62" type="#com.intellij.j2ee.web.tomcat.TomcatRunConfigurationFactory" factoryName="Local" APPLICATION_SERVER_NAME="Tomcat 9.0.62" ALTERNATIVE_JRE_ENABLED="true" ALTERNATIVE_JRE_PATH="1.8" nameIsGenerated="true">
       <option name="UPDATING_POLICY" value="restart-server" />
@@ -157,6 +149,7 @@
       <workItem from="1664885012148" duration="3224000" />
       <workItem from="1664888901513" duration="305000" />
       <workItem from="1664889739944" duration="815000" />
+      <workItem from="1665054323039" duration="26000" />
     </task>
     <servers />
   </component>
