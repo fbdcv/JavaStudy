@@ -21,10 +21,12 @@
 - [HTML](/Web/HTML/HTML.md)
 - [CSS](/Web/CSS/CSS.md)
 - [JavaScript](/Web/JavaScript/JS.md)
+- ES6
 - Node js
 - Vue
 - [Electron](/Web/Electron/Electron.md)
 - WebView2
+- [WebSocket](/Web/WebSocket/WebSocket.md)
 
 ## JavaWeb
 
