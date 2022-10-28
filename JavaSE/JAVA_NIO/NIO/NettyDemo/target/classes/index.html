@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript">
+
+        var ws
+        var show
+        var content
+        window.onload=function(){
+            //判断浏览器是否支持websocket
+            if(window.WebSocket){
+                ws = new WebSocket("ws://localhost:8080/")
+                show = document.getElementById("showMsg")
+
+                ws.onopen = function (){
+                    show.innerHTML+="<span style='color: green'>客户端连接成功</span><br>"
+                }
+                ws.onclose =function (){
+                    show.innerHTML+="<span>客户端断开连接</span><br>"
+                }
+                ws.onmessage = function (resp){
+                    show.innerHTML+="<span style='color: green'>服务端响应数据:"+resp.data+"</span><br>"
+                }
+            }else{
+                alert("不支持websocket")
+            }
+        }
+
+        function send(){
+            show = document.getElementById("showMsg")
+            content =document.getElementById("conTent").value
+            ws.send(content)
+            show.innerHTML+= "<span>"+content+"</span><br>"
+
+
+        }
+
+    </script>
+</head>
+<body>
+    <div id="showMsg" style="border: 1px solid black; width:400px;height: 300px;">
+
+    </div>
+    <input type="text" id="conTent" />
+
+    <button onclick="send()">发送</button>
+</body>
+</html>

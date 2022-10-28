@@ -125,6 +125,10 @@ electron . #执行这个node.js项目
 
 ![查看源图像](50ddefda45ffd2aefcce316d1d9e230b.png)
 
+![img](watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyOTAwMDAz,size_16,color_FFFFFF,t_70.jpeg)
+
+![img](watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzMyOTAwMDAz,size_16,color_FFFFFF,t_70-16665170016183.jpeg)
+
 下面以一个例子来简单地理解一下
 
 ```
@@ -327,5 +331,7 @@ window.onload = function(){
 
 ![image-20221015170610832](image-20221015170610832.png)
 
+## preload预加载
 
+## 渲染窗口显示子窗口
 

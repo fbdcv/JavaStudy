@@ -270,6 +270,8 @@ public class CilentDemo {
 
 ## Netty
 
+### HelloNetty
+
 服务端
 
 ```java
@@ -389,3 +391,349 @@ public class ClientDemo {
 ```
 
 ![image-20221017224908613](image-20221017224908613.png)
+
+### String解编码器
+
+服务端
+
+```java
+package test.ChannelPipeline;
+
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.*;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.codec.string.StringEncoder;
+
+public class ServerDemo {
+    public static void main(String[] args) {
+        EventLoopGroup master = new NioEventLoopGroup();
+        EventLoopGroup slave = new NioEventLoopGroup();
+
+        try {
+
+            ServerBootstrap serverBootstrap = new ServerBootstrap();
+            serverBootstrap.group(master,slave);
+            serverBootstrap.channel(NioServerSocketChannel.class);
+            serverBootstrap.childHandler(new ChannelInitializer<Channel>() {
+                @Override
+                protected void initChannel(Channel ch) throws Exception {
+                    ChannelPipeline pipeline = ch.pipeline();
+					//将传入服务器的比特流解码并编码
+                    pipeline.addLast(new StringDecoder());
+                    pipeline.addLast(new StringEncoder());
+					//再通过我们定义的handle进行处理
+                    pipeline.addLast(new SocketChannelHandlerString());
+                }
+            });
+            ChannelFuture channelFuture = serverBootstrap.bind(8080);
+            channelFuture.sync();
+            System.out.println("服务端启动成功");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+}
+```
+
+服务端的handle
+
+```java
+package test.ChannelPipeline;
+
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.SimpleChannelInboundHandler;
+
+public class SocketChannelHandlerString extends SimpleChannelInboundHandler<String> {
+    @Override
+    protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception {
+        System.out.println("服务器读取的内容是："+msg);
+    }
+}
+```
+
+
+
+客户端
+
+```java
+package test.ChannelPipeline;
+
+import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioSocketChannel;
+
+import java.util.Scanner;
+
+public class ClientDemo {
+
+    public static void main(String[] args) {
+
+        try {
+            NioEventLoopGroup eventLoopGroup = new NioEventLoopGroup();
+
+            Bootstrap bootstrap = new Bootstrap();
+            bootstrap.group(eventLoopGroup);
+            bootstrap.channel(NioSocketChannel.class);
+            //理论上不写也行，负责处理输入的消息
+            bootstrap.handler(new SimpleChannelInboundHandler<String>() {
+                @Override
+                protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception {
+
+                }
+            });
+            ChannelFuture channelFuture = bootstrap.connect("localhost",8080);
+            channelFuture.sync();
+            System.out.println("客户端连接成功");
+
+            Scanner scanner = new Scanner(System.in);
+            while (true){
+                ByteBuf byteBuf = Unpooled.buffer(1024*10);
+                byteBuf.writeBytes(scanner.nextLine().getBytes("utf-8"));
+                channelFuture.channel().writeAndFlush(byteBuf);
+                System.out.println("客户端写入成功");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+}
+```
+
+![image-20221018142636426](image-20221018142636426.png)
+
+### Http解编码器
+
+服务端
+
+```java
+package test.http;
+
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.*;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.http.HttpObjectAggregator;
+import io.netty.handler.codec.http.HttpServerCodec;
+import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.codec.string.StringEncoder;
+
+public class ServerDemo {
+    public static void main(String[] args) {
+        EventLoopGroup master = new NioEventLoopGroup();
+        EventLoopGroup slave = new NioEventLoopGroup();
+
+        try {
+
+            ServerBootstrap serverBootstrap = new ServerBootstrap();
+            serverBootstrap.group(master,slave);
+            serverBootstrap.channel(NioServerSocketChannel.class);
+            serverBootstrap.childHandler(new ChannelInitializer<Channel>() {
+                @Override
+                protected void initChannel(Channel ch) throws Exception {
+                    ChannelPipeline pipeline = ch.pipeline();
+
+                    //添加http解码器
+                    pipeline.addLast(new HttpServerCodec()); //解析HttpRequest
+                    pipeline.addLast(new HttpObjectAggregator(1024*10));//解析FullHttpServerRequest
+                    //通过自定义的handle处理数据
+                    pipeline.addLast(new SocketChannelHandlerHttp());
+                }
+            });
+            ChannelFuture channelFuture = serverBootstrap.bind(8080);
+            channelFuture.sync();
+            System.out.println("服务端启动成功");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+}
+```
+
+服务端的handle
+
+```java
+package test.http;
+
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.HttpHeaders;
+import io.netty.handler.codec.http.HttpRequest;
+
+import java.nio.charset.Charset;
+import java.util.List;
+import java.util.Map;
+
+public class SocketChannelHandlerHttp extends SimpleChannelInboundHandler<FullHttpRequest> {
+    @Override
+    protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest req) throws Exception {
+        System.out.println("请求行");
+        System.out.println("uri// "+req.uri());
+        System.out.println("method// "+req.method().name());
+        System.out.println("请求头部");
+        HttpHeaders headers = req.headers();
+        List<Map.Entry<String, String>> entries = headers.entries();
+        for (Map.Entry<String,String> ent:entries){
+            String key = ent.getKey();
+            String value = ent.getValue();
+            System.out.println("--- "+key+":"+value);
+        }
+        System.out.println("空行");
+        System.out.println("请求体(请求数据)");
+        System.out.println(req.content().toString(Charset.defaultCharset()));
+
+                //响应给浏览器
+        Channel channel = ctx.channel();
+
+        DefaultFullHttpResponse resp = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
+        String html ="<html><body><h1>hello,world</h1></body></html>";
+        resp.content().writeBytes(html.getBytes("utf-8"));
+        channel.writeAndFlush(resp);
+
+    }
+}
+```
+
+![image-20221018153458955](image-20221018153458955.png)
+
+![image-20221018153548651](image-20221018153548651.png)
+
+![image-20221018155924774](image-20221018155924774.png)
+
+### Netty实现FTP
+
+
+
+## WebSocket
+
+服务端
+
+```java
+package test.websocket;
+
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.*;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.http.HttpObjectAggregator;
+import io.netty.handler.codec.http.HttpServerCodec;
+import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
+
+
+public class WebsocketServer {
+    public static void main(String[] args) {
+        EventLoopGroup master = new NioEventLoopGroup();
+        EventLoopGroup slave = new NioEventLoopGroup();
+
+        try {
+            ServerBootstrap serverBootstrap = new ServerBootstrap();
+            serverBootstrap.group(master,slave);
+            serverBootstrap.channel(NioServerSocketChannel.class);
+            serverBootstrap.childHandler(new ChannelInitializer<Channel>() {
+                @Override
+                protected void initChannel(Channel ch) throws Exception {
+                    ChannelPipeline pipeline = ch.pipeline();
+
+                    pipeline.addLast(new HttpServerCodec());                                //HttpRequest
+                    pipeline.addLast(new HttpObjectAggregator(1024*10));     //FullHttpRequest
+
+                    //添加WebSocket解编码器
+                    pipeline.addLast(new WebSocketServerProtocolHandler("/"));
+
+                    //添加处理客户端请求的处理器
+                    pipeline.addLast(new WebSocketChannelHandler());
+                }
+            });
+            ChannelFuture channelFuture = serverBootstrap.bind(8080);
+            channelFuture.sync();
+            System.out.println("服务端启动成功");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+服务端Handle
+
+```java
+package test.websocket;
+
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
+
+public class WebSocketChannelHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {	//处理文本帧
+    @Override
+    protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame msg) throws Exception {
+        System.out.println("读取客户端的内容："+msg.text());
+    }
+
+    //注册
+    @Override
+    public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
+        System.out.println("新客户端连接");
+    }
+
+    //关闭
+    @Override
+    public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
+        System.out.println("客户端断开连接");
+    }
+}
+```
+
+客户端
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript">
+        function def(){
+            //判断浏览器是否支持websocket
+            if(window.WebSocket){
+                alert("hello,Websocket")
+                var ws = new WebSocket("ws://localhost:8080/")
+            }else{
+                alert("不支持websocket")
+            }
+
+        }
+    </script>
+</head>
+<body>
+    <div style="border: 1px solid black; width:400px;height: 300px;">
+
+    </div>
+    <input type="text" id="content"/>
+    <button onclick="def()">发送</button>
+</body>
+</html>
+```
+
+![image-20221018205224395](image-20221018205224395.png)
+
+![image-20221018205139347](image-20221018205139347.png)
+
+![image-20221018205155289](image-20221018205155289.png)
+
+### WebSocket通讯
+
+### 心跳机制
+
+ 

@@ -1,0 +1,13 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="NettyDemo:war exploded">
+    <output-path>$PROJECT_DIR$/out/artifacts/NettyDemo_war_exploded</output-path>
+    <root id="root">
+      <element id="javaee-facet-resources" facet="NettyDemo/web/Web" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="NettyDemo" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>

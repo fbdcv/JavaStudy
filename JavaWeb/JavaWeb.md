@@ -1229,7 +1229,7 @@ public class Redirect extends HttpServlet {
 
 **Request可以获取到提交表单的数据**
 
-**index.js**编写主页
+**index.jsp**编写主页
 
 ```jsp
 <%@page contentType="text/html;charset=UTF-8" language="java" %>
