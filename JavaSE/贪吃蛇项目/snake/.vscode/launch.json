@@ -1,0 +1,58 @@
+{
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Launch StartGames",
+            "request": "launch",
+            "mainClass": "StartGames",
+            "projectName": "snake_aee16ad4"
+        },
+        {
+            "type": "java",
+            "name": "Launch StartGames",
+            "request": "launch",
+            "mainClass": "StartGames",
+            "projectName": "snake_5c267c3d"
+        },
+        {
+            "type": "java",
+            "name": "Launch Game",
+            "request": "launch",
+            "mainClass": "Game",
+            "projectName": "snake_5c267c3d"
+        },
+        {
+            "type": "java",
+            "name": "Launch snake",
+            "request": "launch",
+            "mainClass": "snake",
+            "projectName": "snake_5c267c3d"
+        },
+        {
+            "name": "Python: 当前文件",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "externalTerminal",
+            "justMyCode": true
+        },
+        {
+            "type": "java",
+            "name": "Launch Current File",
+            "request": "launch",
+            "mainClass": "${file}",
+            "console": "externalTerminal"
+        },
+        {
+            "type": "java",
+            "name": "Launch test",
+            "request": "launch",
+            "mainClass": "test",
+            "projectName": "snake_5c267c3d"
+        }
+    ]
+}
