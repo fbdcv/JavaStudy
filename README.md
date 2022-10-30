@@ -21,6 +21,7 @@
 - [HTML](/Web/HTML/HTML.md)
 - [CSS](/Web/CSS/CSS.md)
 - [JavaScript](/Web/JavaScript/JS.md)
+- [Ajax](/Web/Ajax/Ajax.md)
 - ES6
 - Node js
 - Vue
