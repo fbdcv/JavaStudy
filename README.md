@@ -33,6 +33,10 @@
 
 - [JavaWeb](/JavaWeb/JavaWeb.md)
 
+## SSM
+
+- [Mybatis](/SSM/Mybatis/Mybatis.md)
+
 ## Linux
 
 - [Ubuntu20.04下JDK1.8的环境配置](/Linux/Ubuntu下jdk1.8的环境配置.md)
