@@ -308,5 +308,39 @@ public class UserMapperTest {
 }
 ```
 
+### Map替代对象
 
+```xml
+<insert id="addUser" parameterType="map">
+    <!-- 如果参数是类的话，参数为类中的属性名                -->
+    insert into mybatis.user(id,name,pwd) values (#{id},#{name},#{pwd})
+</insert>
+```
 
+```java
+@Test
+public void addUser() {
+    try (SqlSession sqlSession = MybatisUtils.getSession()) {
+        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+        Map<String,Object> map=new HashMap<String,Object>();
+        map.put("id",5);
+        map.put("name","李华");
+        map.put("pwd","78946");
+        int res = userMapper.addUser(map);
+        sqlSession.commit();  //开启事务
+        System.out.println(res);
+    }
+}
+```
+
+## 配置
+
+## 日志
+
+## 分页
+
+## 注解
+
+## 动态SQL
+
+## 缓存
