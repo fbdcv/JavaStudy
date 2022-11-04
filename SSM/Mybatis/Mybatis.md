@@ -335,11 +335,70 @@ public void addUser() {
 
 ## 配置
 
+MyBatis 的配置文件包含了会深深影响 MyBatis 行为的设置和属性信息。
+
+ 配置文档的顶层结构如下：
+
+- configuration（配置）
+
+  - properties（属性）
+  - settings（设置）
+  - typeAliases（类型别名）
+  - typeHandlers（类型处理器）
+  - objectFactory（对象工厂）
+  - plugins（插件）
+  - environments（环境配置）
+    - environment（环境变量）
+      - transactionManager（事务管理器）
+      - dataSource（数据源）
+  - databaseIdProvider （数据库厂商标识）
+  - mappers（映射器）
+
+  ```xml
+   <?xml version="1.0" encoding="UTF-8" ?>
+  
+  <!DOCTYPE configuration
+          PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+          "http://mybatis.org/dtd/mybatis-3-config.dtd">
+  <configuration>
+      <environments default="development">
+          <environment id="development">
+              <transactionManager type="JDBC"/>
+              <dataSource type="POOLED">
+                  <!--绑定数据库数据-->
+                  <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
+                  <property name="url" value="jdbc:mysql://localhost:3306/mybatis?useSSL=false&amp;useUnicode=true&amp;characterEncoding=UTF-8"/>
+                  <property name="username" value="root"/>
+                  <property name="password" value="wz123456789"/>
+              </dataSource>
+          </environment>
+      </environments>
+      <mappers>
+          <!--注册mapper-->
+          <mapper resource="top/fbdcv/dao/UserMapper.xml"/>
+      </mappers>
+  </configuration>
+  ```
+
+###  环境
+
+###   属性
+
+###   别名
+
+###   插件
+
+###   映射器
+
 ## 日志
 
 ## 分页
 
 ## 注解
+
+## Lombok
+
+## 一对多，多对一
 
 ## 动态SQL
 
