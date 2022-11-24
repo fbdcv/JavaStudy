@@ -357,6 +357,58 @@ public void addUser() {
 }
 ```
 
+### 解决属性名和字段名不一致的问题
+
+![image-20221124070526426](image-20221124070526426.png)
+
+**User.java**
+
+```java
+public class User {
+    private Integer id;
+    private String name;
+    private String password;
+  ...
+}
+```
+
+方法一：起别名
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.fbdcv.dao.UserMapper">
+    <select id="getUserList" resultType="top.fbdcv.pojo.User">
+        select id,name,pwd as password from mybatis.user
+    </select>
+</mapper>
+```
+
+方法二：结果集映射
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.fbdcv.dao.UserMapper">
+    <resultMap id="UserMap" type="User">
+    	<result column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="pwd" property="password"/>
+    </resultMap>
+    
+    
+    <select id="getUserList" resultMap="UserMap">
+        select id,name,pwd as password from mybatis.user
+    </select>
+</mapper>
+```
+
+
+
 ## 配置
 
 MyBatis 的配置文件包含了会深深影响 MyBatis 行为的设置和属性信息。
@@ -581,7 +633,97 @@ public class User {
 
 ## 日志
 
+在mybatis核心配置文件中的设置中设置如下属性，指定mybatis的日志实现
+
+![image-20221124074615648](image-20221124074615648.png)
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <properties resource="db.properties"/>
+    <settings>
+        <setting name="logImpl" value="STDOUT_LOGGING"/>
+    </settings>
+    ...
+</configuration 
+```
+
+测试getUserList方法
+
+- 之前的运行结果
+
+  ![image-20221124075540304](image-20221124075540304.png)
+
+- 设置STDOUT_LOGGING日志的运行结果
+
+  ![image-20221124075605050](image-20221124075605050.png)
+
 ## 分页
+
+### limit实现分页
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.fbdcv.dao.UserMapper">
+    <select id="getUserList" parameterType="map" resultType="top.fbdcv.pojo.User">
+        select * from mybatis.user limit #{start} ,#{size}  
+        <!-- 第一个参数表示起始位置，第二个参数表示页面大小-->
+    </select>
+</mapper>
+```
+
+```java
+public class UserMapperTest {
+    @Test
+    public void getUserList() {
+        try (SqlSession sqlSession = MybatisUtils.getSession()) {
+            UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+            HashMap<String,Integer> map = new HashMap<String,Integer>();
+            map.put("start",0);
+            map.put("size",2);
+            List<User> userList = mapper.getUserByList(map);
+            for(User user:userList){
+                System.out.println(user);
+            }
+        }
+    }
+```
+
+![image-20221124162241544](image-20221124162241544.png)
+
+### RowBounds实现分页
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.fbdcv.dao.UserMapper">
+    <select id="getUserList"  resultType="top.fbdcv.pojo.User">
+        select * from mybatis.user limit 
+    </select>
+</mapper>
+```
+
+```java
+@Test
+public void getUserList() {
+    try (SqlSession sqlSession = MybatisUtils.getSession()) {
+
+        RowBounds rowBounds = new RowBounds(0, 2);
+        List<User> userList = sqlSession.selectList("top.fbdcv.dao.UserMapper.getUserList", null, rowBounds);
+        for (User user : userList) {
+            System.out.println(user);
+        }
+    }
+}
+```
 
 ## 注解
 

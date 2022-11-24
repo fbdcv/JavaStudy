@@ -1,18 +1,21 @@
 package top.fbdcv.dao;
 
+import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.session.SqlSession;
 import org.junit.Test;
 import top.fbdcv.pojo.User;
 import top.fbdcv.utils.MybatisUtils;
 
+import java.util.HashMap;
 import java.util.List;
 
 public class UserMapperTest {
     @Test
     public void getUserList() {
         try (SqlSession sqlSession = MybatisUtils.getSession()) {
-            UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
-            List<User> userList = userMapper.getUserList();
+
+            RowBounds rowBounds = new RowBounds(0, 2);
+            List<User> userList = sqlSession.selectList("top.fbdcv.dao.UserMapper.getUserList", null, rowBounds);
             for (User user : userList) {
                 System.out.println(user);
             }
