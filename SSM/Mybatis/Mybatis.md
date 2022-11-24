@@ -727,9 +727,94 @@ public void getUserList() {
 
 ## 注解
 
+UserMapper.java
+
+```java
+public interface UserMapper {
+     @Select("select * from mybatis.user")
+     List<User> getUserList2();
+    
+    //当有多个参数时，必须用@Param注解进行标识
+    @Select("select * from mybatis.user where id =#{id}")
+    User getUserByID2(@Param("id")int id,@Param("name") String name);
+    
+    //参数为引用类型时，不需要加@Param注解
+    @Insert("insert into user(id,name,pwd) values (#{id},#{name},#{pwd})")
+    int addUser(User user);
+    
+    @Update("update user set name=#{name},pwd=#{pwd} where id =#{id}")
+    int updateUser(User user);
+    
+    @Delete("delect from user where id =#{id}")
+    int deleteUser(@Param("id") int id);
+    
+}
+```
+
+mybatis核心配置文件绑定接口
+
+```xml
+<mappers>
+    <mapper class="top.fbdcv.dao.UserMapper"/>
+</mappers>
+```
+
+UserMapperTest.java 进行测试
+
+```java
+@Test
+public void getUserList2() {
+    try (SqlSession sqlSession = MybatisUtils.getSession()) {
+        UserMapper mapper = sqlSession.getMapper(UserMapper.class);
+        List<User> userList = mapper.getUserList2();
+        for (User user : userList) {
+            System.out.println(user);
+        }
+    }
+}
+```
+
+可以正常输出结果
+
+![image-20221124212259753](image-20221124212259753.png)
+
+![image-20221124212801293](image-20221124212801293.png)
+
 ## Lombok
 
+idea安装Lombok插件
+
+通过maven导入jar包
+
+```
+@Data :无参构造，get，set，tostring，hashcode，equals
+@ALLArgsConstructor ：有参构造
+@NoArgsConstructor ：无参构造
+@ToString 
+@EqualsAndHashCode
+
+```
+
+平常使用只需要@ALLArgsConstructor，@NoArgsConstructor和@Data即可快速构建pojo
+
+```java
+@Data
+@ALLArgsConstructor
+@NoArgsConstructor
+public class User {
+    private Integer id;
+    private String name;
+    private String pwd;
+}
+```
+
 ## 一对多，多对一
+
+### 环境搭建
+
+### 多对一
+
+### 一对多
 
 ## 动态SQL
 

@@ -1,5 +1,6 @@
 package top.fbdcv.dao;
 
+import org.apache.ibatis.annotations.Select;
 import top.fbdcv.pojo.User;
 
 import java.util.HashMap;
@@ -15,6 +16,9 @@ public interface UserMapper {
      int updateUser(User user);
 
      int deleteUser(int id);
+
+     @Select("select * from mybatis.user")
+     List<User> getUserList2();
 
 
 }

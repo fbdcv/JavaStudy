@@ -23,6 +23,17 @@ public class UserMapperTest {
     }
 
     @Test
+    public void getUserList2() {
+        try (SqlSession sqlSession = MybatisUtils.getSession()) {
+            UserMapper mapper = sqlSession.getMapper(UserMapper.class);
+            List<User> userList = mapper.getUserList2();
+            for (User user : userList) {
+                System.out.println(user);
+            }
+        }
+    }
+
+    @Test
     public void getUserById() {
         try (SqlSession sqlSession = MybatisUtils.getSession()) {
             UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
