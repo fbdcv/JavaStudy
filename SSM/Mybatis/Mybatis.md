@@ -782,9 +782,19 @@ public void getUserList2() {
 
 ## Lombok
 
-idea安装Lombok插件
+idea安装Lombok插件![image-20221125103108696](image-20221125103108696.png)
 
 通过maven导入jar包
+
+```xml
+<!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+<dependency>
+    <groupId>org.projectlombok</groupId>
+    <artifactId>lombok</artifactId>
+    <version>1.18.24</version>
+    <scope>provided</scope>
+</dependency>
+```
 
 ```
 @Data :无参构造，get，set，tostring，hashcode，equals
@@ -812,7 +822,194 @@ public class User {
 
 ### 环境搭建
 
+创建两个表，student和teacher表
+
+```sql
+CREATE TABLE `teacher` (
+  `id` INT(10) NOT NULL,
+  `name` VARCHAR(30) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=INNODB DEFAULT CHARSET=utf8
+
+INSERT INTO teacher(`id`, `name`) VALUES (1, '秦老师'); 
+
+CREATE TABLE `student` (
+  `id` INT(10) NOT NULL,
+  `name` VARCHAR(30) DEFAULT NULL,
+  `tid` INT(10) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fktid` (`tid`),
+  CONSTRAINT `fktid` FOREIGN KEY (`tid`) REFERENCES `teacher` (`id`)
+) ENGINE=INNODB DEFAULT CHARSET=utf8
+INSERT INTO `student` (`id`, `name`, `tid`) VALUES ('1', '小明', '1'); 
+INSERT INTO `student` (`id`, `name`, `tid`) VALUES ('2', '小红', '1'); 
+INSERT INTO `student` (`id`, `name`, `tid`) VALUES ('3', '小张', '1'); 
+INSERT INTO `student` (`id`, `name`, `tid`) VALUES ('4', '小李', '1'); 
+INSERT INTO `student` (`id`, `name`, `tid`) VALUES ('5', '小王', '1');
+```
+
+![image-20221125102457518](image-20221125102457518.png)
+
+新建实体类Teacher，Student
+
+**Teacher.java**
+
+```java
+package top.fbdcv.pojo;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class Teacher {
+
+    private Integer id;
+    private String name;
+}
+```
+
+**Student.java**
+
+```java
+package top.fbdcv.pojo;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class Student {
+    private Integer id;
+    private String name;
+    private Teacher teacher;
+}
+```
+
+新建实体类对应的mapper接口和xml文件
+
+**StudentMapper.java**
+
+```java
+package top.fbdcv.dao;
+
+public interface StudentMapper {
+}
+```
+
+**StudentMapper.xml**
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.fbdcv.dao.StudentMapper">
+
+</mapper>
+```
+
+**TeacherMapper.java**
+
+```java
+package top.fbdcv.dao;
+
+public interface TeacherMapper {
+}
+```
+
+**TeacherMapper.xml**
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.fbdcv.dao.TeacherMapper">
+
+</mapper>
+```
+
+向mybatis核心配置文件中注册mapper
+
+```xml
+    <mappers>
+        <mapper class="top.fbdcv.dao.TeacherMapper"/>
+        <mapper class="top.fbdcv.dao.StudentMapper"/>
+    </mappers>
+```
+
 ### 多对一
+
+通过mybatis查询学生的id，姓名，以及老师的信息（通过mybatis实现多表查询）
+
+**子查询**
+
+思路：
+
+1. 查询所有的学生信息
+2. 根据查询出来的学生的tid，寻找对应的老师
+
+StudentMapper.java
+
+```java
+public interface StudentMapper {
+    List<Student> getStudentList();
+}
+```
+
+StudentMapper.xml  片段
+
+```xml
+<!--子查询 先查询所有学生信息，再通过查询出来学生的tid查询对应的老师-->
+<select id="getStudentList" resultMap="StudentTeacher">
+    select * from mybatis.student
+</select>
+<resultMap id="StudentTeacher" type="top.fbdcv.pojo.Student">
+    <result property="id" column="id"/>
+    <result property="name" column="name"/>
+    <association property="teacher" column="tid" javaType="top.fbdcv.pojo.Teacher" select="getTeacher"/>
+</resultMap>
+<select id="getTeacher" resultType="top.fbdcv.pojo.Teacher">
+    select * from mybatis.teacher where id =#{tid}
+</select>
+```
+
+其中还遇到一个头疼的bug，找了半天 [xml文件中如果有中文注释然后报错的解决方式](https://blog.csdn.net/qq_26558047/article/details/113149471)
+
+![image-20221125234036864](image-20221125234036864.png)
+
+  **结果查询**
+
+```java
+public interface StudentMapper {
+
+    List<Student> getStudentList();
+    List<Student> getStudentList2();
+
+}
+```
+
+```xml
+<select id="getStudentList2" resultMap="StudentTeacher2">
+    select s.id sid,s.name sname,t.name tname
+    from student s,teacher t
+    where s.tid = t.id
+</select>
+<resultMap id="StudentTeacher2" type="top.fbdcv.pojo.Student">
+    <result property="id" column="sid" />
+    <result property="name" column="sname" />
+    <association property="teacher" javaType="top.fbdcv.pojo.Teacher">
+        <result property="name" column="tname"/>
+    </association>
+</resultMap>
+```
+
+![image-20221125235135589](image-20221125235135589.png)
 
 ### 一对多
 

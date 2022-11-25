@@ -28,7 +28,8 @@
         </environment>
     </environments>
     <mappers>
-<!--        <mapper resource="top/fbdcv/dao/UserMapper.xml"/>-->
         <mapper class="top.fbdcv.dao.UserMapper"/>
+        <mapper class="top.fbdcv.dao.StudentMapper"/>
+        <mapper class="top.fbdcv.dao.TeacherMapper"/>
     </mappers>
 </configuration>

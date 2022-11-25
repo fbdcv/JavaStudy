@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.fbdcv.dao.StudentMapper">
+
+<!--子查询 先查询所有学生信息，再通过查询出来学生的tid查询对应的老师-->
+<select id="getStudentList" resultMap="StudentTeacher">
+    select * from mybatis.student
+</select>
+<resultMap id="StudentTeacher" type="top.fbdcv.pojo.Student">
+    <result property="id" column="id"/>
+    <result property="name" column="name"/>
+    <association property="teacher" column="tid" javaType="top.fbdcv.pojo.Teacher" select="getTeacher"/>
+</resultMap>
+<select id="getTeacher" resultType="top.fbdcv.pojo.Teacher">
+    select * from mybatis.teacher where id =#{tid}
+</select>
+<!--=======================================-->
+
+<!--通过结果查询 写出完整的sql语句，再努力的完成sql语句的映射    -->
+<select id="getStudentList2" resultMap="StudentTeacher2">
+    select s.id sid,s.name sname,t.name tname
+    from student s,teacher t
+    where s.tid = t.id
+</select>
+<resultMap id="StudentTeacher2" type="top.fbdcv.pojo.Student">
+    <result property="id" column="sid" />
+    <result property="name" column="sname" />
+    <association property="teacher" javaType="top.fbdcv.pojo.Teacher">
+        <result property="name" column="tname"/>
+    </association>
+</resultMap>
+
+</mapper>
