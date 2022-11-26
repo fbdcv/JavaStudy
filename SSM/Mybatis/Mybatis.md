@@ -995,6 +995,7 @@ public interface StudentMapper {
 ```
 
 ```xml
+<!--通过结果查询 写出完整的sql语句，再努力的完成sql语句的映射    -->
 <select id="getStudentList2" resultMap="StudentTeacher2">
     select s.id sid,s.name sname,t.name tname
     from student s,teacher t
@@ -1013,6 +1014,111 @@ public interface StudentMapper {
 
 ### 一对多
 
+修改pojo，创造一对多的环境
+
+**Teacher.java**
+
+```java
+package top.fbdcv.pojo;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class Teacher {
+
+    private Integer id;
+    private String name;
+    private List<Student> students;
+}
+```
+
+**Student.java**
+
+```java
+package top.fbdcv.pojo;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class Student {
+    private Integer id;
+    private String name;
+    private Integer tid;
+}
+```
+
+同样还是获取 老师及其下学生的信息
+
+这次我们只用结果查询的方法实现
+
+**TeacherMapper.java**
+
+```java
+public interface TeacherMapper {
+
+    Teacher getTeacher(int id);
+}
+```
+
+**TeacherMapper.xml**
+
+```xml
+<?xml version="1.0" encoding="utf8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.fbdcv.dao.TeacherMapper">
+
+    <select id="getTeacher" resultMap="TeacherStudent" parameterType="int">
+        select t.id tid , t.name tname ,s.id sid ,s.name sname
+        from mybatis.teacher t,mybatis.student s
+        where s.tid=t.id and t.id =#{id}
+    </select>
+
+    <resultMap id="TeacherStudent" type="top.fbdcv.pojo.Teacher">
+        <result property="id" column="tid"/>
+        <result property="name" column="tname"/>
+<!--
+    映射对象使用association 使用javaType指定实体类
+    映射集合使用collection  使用ofType指定实体类
+-->
+        <collection property="students" ofType="top.fbdcv.pojo.Student">
+            <result property="id" column="sid"/>
+            <result property="name" column="sname"/>
+            <result property="tid" column="tid"/>
+        </collection>
+    </resultMap>
+
+</mapper>
+```
+
+**结果测试**
+
+```java
+public class TeacherMapperTest {
+    @Test
+    public void getTeacher(){
+        try (SqlSession sqlSession=MybatisUtils.getSession()){
+            TeacherMapper teacherMapper = sqlSession.getMapper(TeacherMapper.class);
+            Teacher teacher = teacherMapper.getTeacher(1);
+            System.out.println(teacher);
+        }
+    }
+}
+```
+
+![image-20221126224714163](image-20221126224714163.png)
+
 ## 动态SQL
+
+
 
 ## 缓存
