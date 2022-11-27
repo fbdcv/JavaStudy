@@ -119,6 +119,7 @@ public class MybatisUtils {
 
     public  static SqlSession getSession(){
         return sqlSessionFactory.openSession();
+        //openSession参数若设为true，则开启事务，支持数据库的增删改
     }
     
 }
@@ -1119,6 +1120,238 @@ public class TeacherMapperTest {
 
 ## 动态SQL
 
+==动态sql可以使我们更方便地拼接sql语句==
 
+### 搭建环境
+
+```sql
+CREATE TABLE `blog`(
+`id` VARCHAR(50) NOT NULL COMMENT '博客id',
+`title` VARCHAR(100) NOT NULL COMMENT '博客标题',
+`author` VARCHAR(30) NOT NULL COMMENT '博客作者',
+`create_time` DATETIME NOT NULL COMMENT '创建时间',
+`views` INT(30) NOT NULL COMMENT '浏览量'
+)ENGINE=INNODB DEFAULT CHARSET=utf8;
+```
+
+创建实体类Blog.java
+
+```java
+package top.fbdcv.pojo;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.Date;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class Blog {
+    private String id;
+    private String title;
+    private String author;
+    private Date createTime; //属性名和字段名不一致 字段名为create_time
+    private Integer views;
+}
+```
+
+创建BlogMapper.java和BlogMapper.xml
+
+```java
+package top.fbdcv.dao;
+
+import top.fbdcv.pojo.Blog;
+
+public interface BlogMapper {
+    void addBlog(Blog blog);
+}
+```
+
+```xml
+<?xml version="1.0" encoding="utf8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.fbdcv.dao.BlogMapper">
+    <insert id="addBlog" parameterType="top.fbdcv.pojo.Blog">
+        insert into mybatis.blog (id,title,author,create_time,views)
+        value(#{id},#{title},#{author},#{createTime},#{views});
+    </insert>
+
+</mapper>
+```
+
+通过Java插入数据
+
+```java
+package top.fbdcv.dao;
+
+import org.apache.ibatis.session.SqlSession;
+import org.junit.Test;
+import top.fbdcv.pojo.Blog;
+import top.fbdcv.utils.IDUtils;
+import top.fbdcv.utils.MybatisUtils;
+
+import java.util.Date;
+
+public class BlogMapperTest {
+
+    @Test
+    public void addBlogTest(){
+        try(SqlSession sqlSession=MybatisUtils.getSession()){
+            BlogMapper mapper = sqlSession.getMapper(BlogMapper.class);
+            Blog blog = new Blog();
+            blog.setId(IDUtils.getID());
+            blog.setTitle("Mybatis");
+            blog.setAuthor("狂神说");
+            blog.setCreateTime(new Date());
+            blog.setViews(9999);
+			//这里没有写开启事务的代码是因为之前在MybatisUtils工具类中
+            //将getSession方法中的openSession参数设为了true，默认开启了事务
+            mapper.addBlog(blog);
+
+            blog.setId(IDUtils.getID());
+            blog.setTitle("Java");
+            mapper.addBlog(blog);
+
+            blog.setId(IDUtils.getID());
+            blog.setTitle("Spring");
+            mapper.addBlog(blog);
+
+            blog.setId(IDUtils.getID());
+            blog.setTitle("微服务");
+            mapper.addBlog(blog);
+
+        }
+    }
+
+}
+```
+
+通过IDEA集成的数据库创建查看数据是否生成
+
+![image-20221127201622305](image-20221127201622305.png)
+
+### IF标签
+
+编写queryBlogIF()方法，实现查询特定数据的功能
+
+BlogMapper.java BlogMapper.xml相关代码
+
+```java
+List<Blog> queryBlogIF(Map map);
+```
+
+```xml
+<select id="queryBlogIF" parameterType="map" resultType="top.fbdcv.pojo.Blog">
+    select * from mybatis.blog
+    where 1=1
+    <if test="title!=null">
+        and title=#{title}
+    </if>
+    <if test="author!=null">
+        and author=#{author}
+    </if>
+    <if test="createTime!=null">
+        and create_time=#{createTime}
+    </if>
+    <if test="views!=null">
+        and views =#{views}
+    </if>
+</select>
+```
+
+测试
+
+```java
+@Test
+public void queryBlogIFTest(){
+    try(SqlSession sqlSession=MybatisUtils.getSession()){
+        BlogMapper blogMapper = sqlSession.getMapper(BlogMapper.class);
+        HashMap<String,Object> map = new HashMap<>() ;
+        map.put("title","Java");
+        List<Blog> blogs = blogMapper.queryBlogIF(map);
+        for (Blog blog : blogs) {
+            System.out.println(blog);
+        }
+    }
+}
+```
+
+![image-20221127210756520](image-20221127210756520.png)
+
+### sql片段
+
+有时候，我们会将一部分常用的代码抽取出来方便复用，这个时候就可以使用sql片段来实现这个功能
+
+例如之前的代码可以改写为如下代码
+
+```xml
+<!-- 使用sql标签将复用的代码摘出来-->
+<sql id="if-">
+    <if test="title!=null">
+        and title=#{title}
+    </if>
+    <if test="author!=null">
+        and author=#{author}
+    </if>
+    <if test="createTime!=null">
+        and create_time=#{createTime}
+    </if>
+    <if test="views!=null">
+        and views =#{views}
+    </if>
+</sql>
+
+<select id="queryBlogIF" parameterType="map" resultType="top.fbdcv.pojo.Blog">
+    select * from mybatis.blog
+    <where>
+        <!--使用include标签再引入之前的sql标签 -->
+        <include refid="if-"></include>
+    </where>
+</select>
+```
+
+### 其他标签
+
+[mybatis – MyBatis 3 | 动态 SQL](https://mybatis.org/mybatis-3/zh/dynamic-sql.html)
 
 ## 缓存
+
+1. 上面是缓存
+
+   存储在内存中的临时数据
+
+   将用户经常查询的数据放在内存中，用户去查询的时候就可以不用从磁盘上查询，而是从缓存上查询，从而提高查询效率，解决高并发系统的性能问题
+
+2. 为什么使用缓存
+
+   减少和数据库交互的次数，减少系统开销，提高系统效率
+
+3. 什么样的数据能使用缓存
+
+   经常查询并且不经常改变的数据
+
+**Mybatis缓存**
+
+Mybatis包含一个非常强大的查询缓存特性，它可以非常方便地定制和配置缓存
+
+Mybatis系统中默认定义了两级缓存：**一级缓存**和**二级缓存**
+
+- 默认情况下，只有一级缓存开启（sqlSession级别的缓存，也称为本地缓存）
+
+- 二级缓存需要手动开启和配置（基于namespace级别的缓存）
+- 为了提高扩展性，Mybatis定义了缓存接口Cache。我们可以通过实现Cache接口来自定义二级缓存
+
+
+
+### 一级缓存
+
+### 二级缓存
+
+### 缓存原理
+
+### 自定义缓存
+
