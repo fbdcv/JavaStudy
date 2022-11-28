@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.fbdcv.dao.UserMapper">
+<!--配置全局缓存-->
+  <cache/>
+  <select id="getUserById" resultType="top.fbdcv.pojo.User">
+      select * from mybatis.user where id =#{id}
+  </select>
+
+    <update id="updateUser" parameterType="top.fbdcv.pojo.User">
+        update mybatis.user set name=#{name},pwd=#{pwd} where id=#{id}
+    </update>
+
+</mapper>

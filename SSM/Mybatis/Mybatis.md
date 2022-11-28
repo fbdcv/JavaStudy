@@ -1342,16 +1342,174 @@ Mybatis系统中默认定义了两级缓存：**一级缓存**和**二级缓存*
 
 - 默认情况下，只有一级缓存开启（sqlSession级别的缓存，也称为本地缓存）
 
-- 二级缓存需要手动开启和配置（基于namespace级别的缓存）
+- 二级缓存需要手动开启和配置（基于namespace级别的缓存，也称为全局缓存）
 - 为了提高扩展性，Mybatis定义了缓存接口Cache。我们可以通过实现Cache接口来自定义二级缓存
 
 
 
 ### 一级缓存
 
+```java
+@Test
+public void getUserByIdTest(){
+    try (SqlSession sqlSession=MybatisUtils.getSession()){
+        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+        User user = userMapper.getUserById(1);
+        System.out.println(user);
+
+        User user2 = userMapper.getUserById(1);
+        System.out.println(user2);
+        System.out.println("user是否被缓存:"+(user==user2));
+
+    }
+}
+```
+
+![image-20221128104042504](image-20221128104042504.png)
+
+增删改操作，可能会改变原来的数据，所以必定会刷新缓存
+
+```java
+@Test
+public void getUserByIdTest(){
+    try (SqlSession sqlSession=MybatisUtils.getSession()){
+        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+        User user = userMapper.getUserById(1);
+        System.out.println(user);
+        //这里我们更新一个数据，观察是否刷新缓存
+        userMapper.updateUser(new User(2,"张三","123456789"));
+        User user2 = userMapper.getUserById(1);
+        System.out.println(user2);
+        System.out.println("user是否被缓存:"+(user==user2));
+
+    }
+}
+```
+
+![image-20221128105621339](image-20221128105621339.png)
+
+一级缓存默认开启且无法关闭，但是我们可以设置清除缓存
+
+```java
+@Test
+public void getUserByIdTest(){
+    try (SqlSession sqlSession=MybatisUtils.getSession()){
+        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+        User user = userMapper.getUserById(1);
+        System.out.println(user);
+        //设置清除缓存
+        sqlSession.clearCache();
+        User user2 = userMapper.getUserById(1);
+        System.out.println(user2);
+        System.out.println("user是否被缓存:"+(user==user2));
+
+    }
+}
+```
+
+![image-20221128104531734](image-20221128104531734.png)
+
+刷新一级缓存的几个场景：
+
+- 增删改操作，可能会改变原来的数据，所以必定会刷新缓存
+- 使用代码手动清除了缓存
+- ...
+
 ### 二级缓存
+
+[mybatis – MyBatis 3 |全局缓存](https://mybatis.org/mybatis-3/zh/sqlmap-xml.html#cache)
+
+二级缓存的开启需要
+
+1. 在mybatis核心配置文件中显式声明开启全局缓存
+2. 在映射配置文件中通过cache标签配置缓存
+3. 若cache标签中readOnly属性为“false”则需要开启实体类序列化，否则会报错
+
+
+```xml
+<?xml version="1.0" encoding="utf8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <properties resource="db.properties"/>
+    <settings>
+        <!--设置日志-->
+        <setting name="logImpl" value="STDOUT_LOGGING"/>
+        <!--显式开启全局缓存-->
+        <setting name="cacheEnabled" value="true"/>
+    </settings>
+    <environments default="test">
+        <environment id="test">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="${driver}"/>
+                <property name="url" value="${url}"/>
+                <property name="username" value="${username}"/>
+                <property name="password" value="${password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+    <mappers>
+        <mapper class="top.fbdcv.dao.UserMapper"/>
+    </mappers>
+</configuration>
+```
+
+```xml
+<?xml version="1.0" encoding="utf8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.fbdcv.dao.UserMapper">
+<!--配置全局缓存-->
+  <cache/>
+  <select id="getUserById" resultType="top.fbdcv.pojo.User">
+      select * from mybatis.user where id =#{id}
+  </select>
+
+    <update id="updateUser" parameterType="top.fbdcv.pojo.User">
+        update mybatis.user set name=#{name},pwd=#{pwd} where id=#{id}
+    </update>
+
+</mapper>
+```
+
+```java
+package top.fbdcv.pojo;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+//User实体类开启序列化
+public class User implements Serializable {
+    private Integer id;
+    private String name;
+    private String pwd;
+}
+```
+
+通过日志，我们看出sql语句只执行了一次，说明数据经过了全局缓存
+
+![image-20221128150638479](image-20221128150638479.png)
 
 ### 缓存原理
 
-### 自定义缓存
+![image-20221128151816876](image-20221128151816876.png)
+
+### 自定义二级缓存
+
+实现Mybatis的二级缓存很简单，只需要新建一个类实现org.apache.ibatis.cache.Cache接口即可。
+
+我们可以自己写一个缓存或者使用知名的第三方缓存如ehcache和redis等
+
+
+
+
 
