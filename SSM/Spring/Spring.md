@@ -68,10 +68,313 @@ Spring 并没有重复制造轮子，它只是将目前各家公司开发的比�
 
 # IOC控制反转
 
-## IOC理论推导
+**控制反转**（Inversion of Control，缩写为**IoC**），是[面向对象编程](https://baike.baidu.com/item/面向对象编程/254878?fromModule=lemma_inlink)中的一种设计原则，可以用来减低计算机[代码](https://baike.baidu.com/item/代码/86048?fromModule=lemma_inlink)之间的[耦合度](https://baike.baidu.com/item/耦合度/2603938?fromModule=lemma_inlink)。
+
+其中最常见的方式叫做**[依赖注入](https://baike.baidu.com/item/依赖注入/5177233?fromModule=lemma_inlink)**（Dependency Injection，简称**DI**），还有一种方式叫**依赖查找**（Dependency Lookup）。
+
+通过控制反转，对象在被创建的时候，由一个调控系统内所有对象的外界实体将其所依赖的对象的引用传递给它。也可以说，依赖被注入到对象中。
 
 ## IOC本质
 
-# DI
+IoC可以认为是一种全新的**设计模式**，但是理论和时间成熟相对较晚，并没有包含在[GoF](https://baike.baidu.com/item/GoF?fromModule=lemma_inlink)中。
+
+Interface Driven Design接口驱动，接口驱动有很多好处，可以提供不同灵活的子类实现，增加代码稳定和健壮性等等，但是接口一定是需要实现的，也就是如下语句迟早要执行：AInterface a = new AInterfaceImp(); 这样一来，耦合关系就产生了，如：
+
+```java
+classA
+{
+    AInterface a;
+ 
+    A(){}
+     
+    AMethod()//一个方法
+    {
+        a = new AInterfaceImp();
+    }
+}
+```
+
+Class A与AInterfaceImp就是依赖关系，如果想使用AInterface的另外一个实现就需要更改代码了。当然我们可以建立一个Factory来根据条件生成想要的AInterface的具体实现，即：
+
+```java
+InterfaceImplFactory
+{
+   AInterface create(Object condition)
+   {
+      if(condition == condA)
+      {
+          return new AInterfaceImpA();
+      }
+      else if(condition == condB)
+      {
+          return new AInterfaceImpB();
+      }
+      else
+      {
+          return new AInterfaceImp();
+      }
+    }
+}
+```
+
+表面上是在一定程度上缓解了以上问题，但实质上这种代码耦合并没有改变。通过IoC模式可以彻底解决这种耦合，它把耦合从代码中移出去，放到统一的XML 文件中，通过一个容器在需要的时候把这个依赖关系形成，即把需要的接口实现注入到需要它的类中，这可能就是“依赖注入”说法的来源了。
+
+IoC模式，系统中通过引入实现了IoC模式的IoC容器，即可由IoC容器来管理对象的生命周期、依赖关系等，从而使得应用程序的配置和依赖性规范与实际的应用程序代码分离。其中一个特点就是通过文本的配置文件进行应用程序组件间相互关系的配置，而不用重新修改并编译具体的代码。
+
+可以把IoC模式看作工厂模式的升华，把IoC容器看作是一个大工厂，只不过这个大工厂里要生成的对象都是在XML文件中给出定义的。利用Java 的“反射”编程，根据XML中给出的类定义生成相应的对象。从实现来看，以前在工厂模式里写死了的对象，IoC模式改为配置XML文件，这就把工厂和要生成的对象两者隔离，极大提高了灵活性和可维护性。
+
+IoC中最基本的Java技术就是“反射”编程。通俗的说，反射就是根据给出的类名（字符串）来生成对象。这种编程方式可以让应用在运行时才动态决定生成哪一种对象。反射的应用是很广泛的，像Hibernate、Spring中都是用“反射”做为最基本的技术手段。
+
+在过去，反射编程方式相对于正常的对象生成方式要慢10几倍，这也许也是当时为什么[反射技术](https://baike.baidu.com/item/反射技术?fromModule=lemma_inlink)没有普遍应用开来的原因。但经SUN改良优化后，反射方式生成对象和通常对象生成方式，速度已经相差不大了（但依然有一倍以上的差距）。
+
+
+
+## Hello,Spring
+
+**Demo1**
+
+通过maven导入spring的依赖包
+
+```xml
+<!-- https://mvnrepository.com/artifact/org.springframework/spring-webmvc -->
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-webmvc</artifactId>
+    <version>5.3.23</version>
+</dependency>
+
+```
+
+创建实体类Hello.java
+
+```java
+package top.fbdcv.pojo;
+
+public class Hello {
+    private String str;
+
+    public String getStr() {
+        return str;
+    }
+	//必须要有set方法，以便注入
+    public void setStr(String str) {
+        this.str = str;
+    }
+
+    @Override
+    public String toString() {
+        return "Hello{" +
+                "str='" + str + '\'' +
+                '}';
+    }
+}
+```
+
+配置元数据
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+<!--使用spring来创建对象，在spring中对象都称为bean-->
+<!--hello为变量名，class为类名，下面的属性为变量的属性    -->
+    <bean id="hello" class="top.fbdcv.pojo.Hello">
+        <property name="str" value="Spring"/>
+    </bean>
+</beans>
+```
+
+实例化容器
+
+```java
+@Test
+public void HelloTest(){
+    //获取spring的上下文对象
+    //ApplicationContext是ClassPathXmlApplicationContext的父级接口
+    ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
+
+    Hello hello = (Hello) context.getBean("hello");
+    System.out.println(hello);
+}
+```
+
+![image-20221129204844208](image-20221129204844208.png)
+
+**Demo2**
+
+![image-20221129220011029](image-20221129220011029.png)
+
+**UserDao.java**
+
+```java
+package top.fbdcv.dao;
+
+public interface UserDao {
+    void getUser();
+}
+```
+
+**UserDaoImpl.java**
+
+```java
+package top.fbdcv.dao;
+
+public class UserDaoImpl implements UserDao{
+    @Override
+    public void getUser() {
+        System.out.println("默认获取用户数据");
+    }
+}
+```
+
+**UserDaoMysqlImpl.java**
+
+```java
+package top.fbdcv.dao;
+
+public class UserDaoMysqlImpl implements UserDao{
+    @Override
+    public void getUser() {
+        System.out.println("mysql获取用户数据");
+    }
+}
+```
+
+**UserDaoOracleImpl.java**
+
+```java
+package top.fbdcv.dao;
+
+public class UserDaoOracleImpl implements UserDao{
+    @Override
+    public void getUser() {
+        System.out.println("Oracle获取用户数据");
+    }
+}
+```
+
+**UserService.java**
+
+```java
+package top.fbdcv.service;
+
+public interface UserService {
+    void getUser();
+}
+```
+
+**UserServiceImpl.java**
+
+```java
+package top.fbdcv.service;
+
+import top.fbdcv.dao.UserDao;
+import top.fbdcv.dao.UserDaoImpl;
+
+public class UserServiceImpl implements UserService{
+    private UserDao userDao = new UserDaoImpl();
+
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
+    }
+
+    @Override
+    public void getUser() {
+        userDao.getUser();
+    }
+}
+```
+
+**beans.xml**
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="Impl" class="top.fbdcv.dao.UserDaoImpl"/>
+    <bean id="mysqlImpl" class="top.fbdcv.dao.UserDaoMysqlImpl"/>
+    <bean id="oracleImpl" class="top.fbdcv.dao.UserDaoOracleImpl"/>
+    <bean id="userServiceImpl" class="top.fbdcv.service.UserServiceImpl">
+        <!--
+                ref：引用Spring容器中创建好的对象
+                value：基本数据类型的值
+        -->
+        <property name="userDao" ref="mysqlImpl"/>
+     </bean>
+
+</beans>
+```
+
+进行测试
+
+```java
+@Test
+public void UserServiceTest(){
+    ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
+    UserServiceImpl userServiceImpl = (UserServiceImpl)context.getBean("userServiceImpl");
+    userServiceImpl.getUser();
+}
+```
+
+![image-20221129220455689](image-20221129220455689.png)
+
+如果我们想更换dao层的操作，我们只需要修改spring的元数据文件即可
+
+例如，dao层实现从mysql改为orcale
+
+```xml
+<bean id="userServiceImpl" class="top.fbdcv.service.UserServiceImpl">
+    <property name="userDao" ref="oracleImpl"/>
+ </bean>
+```
+
+![image-20221129222003666](image-20221129222003666.png)
+
+
+
+让我们再理解一下控制反转和依赖注入
+
+控制：控制对象的创建，传统应用程序的对象是由程序本身控制创建的，使用Spring后，对象是由Spring来创建的
+
+反转：程序本身不创建对象，而是变成被动的接收对象
+
+依赖注入：就是通过set方法进行注入
+
+所谓的IOC，就是对象由Spring来创建，管理，装配
+
+
+
+## IOC创建对象的方式
+
+## Spring配置说明
+
+## DI
+
+## Bean
+
+## 注解开发
+
+## JavaConfig配置
+
+
 
 # AOP
+
+## 静态代理
+
+## 动态代理
+
+## AOP实现方式
+
+## 注解实现AOP
+
+# 整合Mybatis
+
+# Spring事务
+
