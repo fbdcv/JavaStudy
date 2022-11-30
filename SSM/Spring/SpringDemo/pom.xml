@@ -11,6 +11,7 @@
     <modules>
         <module>SpringDemo1</module>
         <module>SpringDemo2</module>
+        <module>SpringDemo3</module>
     </modules>
 
     <properties>

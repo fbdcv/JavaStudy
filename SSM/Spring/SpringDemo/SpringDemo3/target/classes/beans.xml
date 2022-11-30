@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+<!--使用spring来创建对象，在spring中对象都称为bean-->
+<!--hello为变量名，class为类名，下面的属性为变量的属性    -->
+    <bean id="user" class="top.fbdcv.pojo.User">
+        <constructor-arg name="name" value="Spring"/>
+    </bean>
+
+    <!--别名，指给bean起别名，如果添加了别名，我们也可以使用别名获取到这个对象-->
+    <alias name="user" alias="userrr"/>
+
+</beans>

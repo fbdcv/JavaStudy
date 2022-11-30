@@ -350,9 +350,184 @@ public void UserServiceTest(){
 
 
 
-## IOC创建对象的方式
+## Spring IOC创建对象的方式
+
+当通过元数据文件实例化容器的时候，元数据文件中配置的Bean就已经生成了且只生成了一个
+
+```java
+package top.fbdcv.pojo;
+
+public class User {
+    private String name;
+
+    public User() {
+        System.out.println("User被实例化");
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "name='" + name + '\'' +
+                '}';
+    }
+}
+```
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+<!--使用spring来创建对象，在spring中对象都称为bean-->
+<!--hello为变量名，class为类名，下面的属性为变量的属性    -->
+    <bean id="user" class="top.fbdcv.pojo.User">
+        <property name="name" value="Spring"/>
+    </bean>
+    <bean id="user2" class="top.fbdcv.pojo.User">
+        <property name="name" value="Spring"/>
+    </bean>
+</beans>
+```
+
+```java
+@Test
+public void HelloTest(){
+    ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
+    System.out.println("--getBean之前");
+    System.out.println("------------------");
+    System.out.println("--getBean之后");
+
+
+    User user_1 = (User)context.getBean("user");
+    User user_2 = (User)context.getBean("user");
+
+    System.out.println("user_1与user_2是否为同一个实例："+(user_1==user_2));
+}
+```
+
+![image-20221130102928101](image-20221130102928101.png)
+
+
+
+Spring IOC 创建对象的方法，有两种
+
+- 无参构造
+
+  通过反射机制，获取配置文件关于对象Bean的相关信息，通过无参构造创建对象并通过set方法给属性赋值，这也是我们最常用的
+
+- 有参构造
+
+  通过有参构造创建对象并给**指定**属性赋值
+
+  这里根据给**指定属性**赋值的操作又可以分成三种方式
+
+  1. 通过属性的位置
+  2. 通过属性的类型
+  3. 通过属性的属性名
+
+
+```java
+package top.fbdcv.pojo;
+
+public class User {
+    private String name;
+
+    public User(String name) {
+        this.name = name;
+    }
+    
+    @Override
+    public String toString() {
+        return "User{" +
+                "name='" + name + '\'' +
+                '}';
+    }
+}
+```
+
+```xml
+<bean id="user" class="top.fbdcv.pojo.User">
+    <!--通过指定属性位置 -->
+    <constructor-arg index="0" value="Spring"/>
+</bean>
+```
+
+```java
+@Test
+public void Test(){
+    ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
+    User user = (User) context.getBean("user");
+    System.out.println(user);
+
+}
+```
+
+![image-20221130103833795](image-20221130103833795.png)
+
+```xml
+<bean id="user" class="top.fbdcv.pojo.User">
+    <!--通过指定属性的类型 -->
+    <constructor-arg type="java.lang.String" value="Spring"/>
+</bean>
+```
+
+![image-20221130103833795](image-20221130103833795.png)
+
+```xml
+<bean id="user" class="top.fbdcv.pojo.User">
+    <!--通过指定属性的属性名-->
+    <constructor-arg name="name" value="Spring"/>
+</bean>
+```
+
+![image-20221130103833795](image-20221130103833795.png)
 
 ## Spring配置说明
+
+![image-20221130104906632](image-20221130104906632.png)
+
+- 别名
+
+  ```xml
+  <bean id="user" class="top.fbdcv.pojo.User">
+      <constructor-arg name="name" value="Spring"/>
+  </bean>
+  
+  <!--别名，指给bean起别名，如果添加了别名，我们也可以使用别名获取到这个对象-->
+  <alias name="user" alias="userrr"/>
+  ```
+
+  ```java
+  @Test
+  public void Test(){
+      ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
+      User user = (User) context.getBean("userrr");
+      System.out.println(user);
+  }
+  ```
+
+  ![image-20221130103833795](image-20221130103833795.png)
+
+- Bean的配置
+
+  ```xml
+  <!--我们也可以通过bean的name项，设置别名甚至可以设置多个别名，别名间的分隔符 可以为 ","、 " "、 ";"    -->
+  <bean id="user" class="top.fbdcv.pojo.User" name="u us,use;userr">
+      <constructor-arg name="name" value="Spring"/>
+  </bean>
+  ```
+
+- import
+
+  一般用于团队开发使用，可以将多个配置文件，导入合并为一个
+
+  
 
 ## DI
 
