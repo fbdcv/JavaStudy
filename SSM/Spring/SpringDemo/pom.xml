@@ -12,6 +12,8 @@
         <module>SpringDemo1</module>
         <module>SpringDemo2</module>
         <module>SpringDemo3</module>
+        <module>SpringDemo4</module>
+        <module>SpringDemo5</module>
     </modules>
 
     <properties>
@@ -33,6 +35,11 @@
             <artifactId>junit</artifactId>
             <version>4.13.1</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.24</version>
         </dependency>
 
     </dependencies>

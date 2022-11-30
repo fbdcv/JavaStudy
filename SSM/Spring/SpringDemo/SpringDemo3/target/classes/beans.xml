@@ -6,7 +6,8 @@
 
 <!--使用spring来创建对象，在spring中对象都称为bean-->
 <!--hello为变量名，class为类名，下面的属性为变量的属性    -->
-    <bean id="user" class="top.fbdcv.pojo.User">
+    <!--我们也可以通过bean的name项，设置别名甚至可以设置多个别名，别名间的分隔符 可以为 ","、 " "、 ";"    -->
+    <bean id="user" class="top.fbdcv.pojo.User" name="u us,use;userr" scope="prototype">
         <constructor-arg name="name" value="Spring"/>
     </bean>
 

@@ -344,15 +344,13 @@ public void UserServiceTest(){
 
 反转：程序本身不创建对象，而是变成被动的接收对象
 
-依赖注入：就是通过set方法进行注入
-
 所谓的IOC，就是对象由Spring来创建，管理，装配
 
 
 
 ## Spring IOC创建对象的方式
 
-当通过元数据文件实例化容器的时候，元数据文件中配置的Bean就已经生成了且只生成了一个
+当通过元数据文件实例化容器的时候，元数据文件中配置的Bean就**已经生成了**且**只生成了一个**
 
 ```java
 package top.fbdcv.pojo;
@@ -527,11 +525,396 @@ public void Test(){
 
   一般用于团队开发使用，可以将多个配置文件，导入合并为一个
 
-  
+    
 
 ## DI
 
+[**构造器注入**（特指有参构造）](#Spring IOC创建对象的方式)
+
+**Set注入**
+
+**Addres.java**
+
+```java
+package top.fbdcv.pojo;
+
+public class Address {
+    private String address;
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    @Override
+    public String toString() {
+        return "Address{" +
+                "address='" + address + '\'' +
+                '}';
+    }
+}
+```
+
+**Student.java**
+
+```java
+package top.fbdcv.pojo;
+
+import java.util.*;
+
+public class Student {
+    private String name;
+    private Address address;
+    private String[] books;
+    private List<String> hobbies;
+    private Map<String,String> card;
+    private Set<String> games;
+    private String wife;
+    private Properties info;
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
+    }
+
+    public void setBooks(String[] books) {
+        this.books = books;
+    }
+
+    public void setHobbies(List<String> hobbies) {
+        this.hobbies = hobbies;
+    }
+
+    public void setCard(Map<String, String> card) {
+        this.card = card;
+    }
+
+    public void setGames(Set<String> games) {
+        this.games = games;
+    }
+
+    public void setWife(String wife) {
+        this.wife = wife;
+    }
+
+    public void setInfo(Properties info) {
+        this.info = info;
+    }
+
+    @Override
+    public String toString() {
+        return "Student{" +
+                "name='" + name + '\'' +
+                ", address=" + address +"\n"+
+                ", books=" + Arrays.toString(books) +
+                ", hobbies=" + hobbies +"\n"+
+                ", card=" + card +
+                ", games=" + games +"\n"+
+                ", wife='" + wife + '\'' +
+                ", info=" + info +
+                '}';
+    }
+}
+```
+
+**beans.xml**
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="address" class="top.fbdcv.pojo.Address"/>
+
+    <bean id="student" class="top.fbdcv.pojo.Student">
+        <!--普通类型        -->
+        <property name="name" value="fbdcv"/>
+
+        <!--普通类型,但值为null的情况        -->
+        <property name="wife">
+            <null/>
+        </property>
+
+        <!--应用类型        -->
+        <property name="address" ref="address"/>
+
+        <!--数组类型        -->
+        <property name="books">
+            <array>
+                <value>三国演义</value>
+                <value>水浒传</value>
+                <value>红楼梦</value>
+            </array>
+        </property>
+
+        <!--List类型        -->
+        <property name="hobbies">
+            <list>
+                <value>看电影</value>
+                <value>敲代码</value>
+            </list>
+        </property>
+
+        <!--Map类型        -->
+        <property name="card">
+            <map>
+                <entry key="num" value="7801"/>
+                <entry key="date" value="2015.5.26"/>
+                <entry key="CVV" value="775"/>
+            </map>
+        </property>
+
+        <!--Set类型        -->
+        <property name="games">
+            <set>
+                <value>LOL</value>
+                <value>WOW</value>
+                <value>BOB</value>
+                <value>COC</value>
+            </set>
+        </property>
+
+        <!--Properties类型        -->
+        <property name="info">
+            <props>
+                <prop key="id">123456789</prop>
+                <prop key="sex">man</prop>
+            </props>
+        </property>
+
+    </bean>
+</beans>
+```
+
+**测试**
+
+```java
+@Test
+public void Test(){
+    ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
+    Student student = context.getBean("student", Student.class);
+    System.out.println(student);
+}
+```
+
+![image-20221130200021001](image-20221130200021001.png)
+
+**c命名和p命名空间注入**
+
+若要使用p命名空间和c命名空间注入的方式需要向Spring的配置文件头中插入以下数据
+
+```xml
+    xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:c="http://www.springframework.org/schema/c"
+```
+
+如下：使用p命名空间进行注入
+
+```xml
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="myDataSource" class="org.apache.commons.dbcp.BasicDataSource"destroy-method="close"
+        p:driverClassName="com.mysql.jdbc.Driver"
+        p:url="jdbc:mysql://localhost:3306/mydb"
+        p:username="root"
+        p:password="masterkaoli"/>
+
+</beans>
+
+```
+
+使用c命名空间同理，但除此之外还需要配置对象所在类的有参构造方法
+
 ## Bean
+
+### Bean的作用域
+
+下表描述了受支持的作用域：
+
+| Scope                                                        | 说明                                                         |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| [singleton](https://docs.gitcode.net/spring/guide/spring-framework/core.html#beans-factory-scopes-singleton) | （缺省）将单个 Bean 定义作用于每个 Spring IOC 容器的单个对象实例。 |
+| [prototype](https://docs.gitcode.net/spring/guide/spring-framework/core.html#beans-factory-scopes-prototype) | Bean 将单个定义作用于任意数量的对象实例。                    |
+| [request](https://docs.gitcode.net/spring/guide/spring-framework/core.html#beans-factory-scopes-request) | Bean 将单个定义作用于单个 HTTP 请求的生命周期。即， 每个 HTTP 请求都有其自己的实例，一个 Bean 创建于单个 Bean 定义的后面。 Spring `ApplicationContext`仅在可感知 Web 的上下文中有效。 |
+| [session](https://docs.gitcode.net/spring/guide/spring-framework/core.html#beans-factory-scopes-session) | 将一个 Bean 定义的范围应用于 HTTP`Session`的生命周期。 Spring `ApplicationContext`仅在网络感知的上下文中有效。 |
+| [application](https://docs.gitcode.net/spring/guide/spring-framework/core.html#beans-factory-scopes-application) | 将一个 Bean 定义的范围应用于`ServletContext`的生命周期。 Spring `ApplicationContext`仅在网络感知的上下文中有效。 |
+| [websocket](https://docs.gitcode.net/spring/guide/spring-framework/web.html#websocket-stomp-websocket-scope) | 将单个 Bean 定义作用于`WebSocket`的生命周期。 Spring `ApplicationContext`仅在网络感知的上下文中有效。 |
+
+我们主要看前两种，单例模式和原型模式
+
+[单例模式我们之前已经测试过了](#Spring IOC创建对象的方式)，我们在这个例子的基础上稍加改动测试下原型模式的作用域
+
+```java
+package top.fbdcv.pojo;
+
+public class User {
+    private String name;
+
+    public User(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "name='" + name + '\'' +
+                '}';
+    }
+}
+```
+
+```xml
+<bean id="user" class="top.fbdcv.pojo.User" scope="prototype">
+    <constructor-arg name="name" value="Spring"/>
+</bean>
+```
+
+```java
+@Test
+public void Test(){
+    ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
+    User user1 = (User) context.getBean("user");
+    User user2 = (User) context.getBean("user");
+    System.out.println(user1==user2);
+}
+```
+
+![image-20221130205835723](image-20221130205835723.png)
+
+### Bean的自动装配
+
+**搭建环境**
+
+**Cat.java**
+
+```java
+package top.fbdcv.pojo;
+
+public class Cat {
+    public void shout(){
+        System.out.println("Miao Miao~");
+    }
+}
+```
+
+**Dog.java**
+
+```java
+package top.fbdcv.pojo;
+
+public class Dog {
+    public void shout(){
+        System.out.println("Wow Wow~");
+    }
+}
+```
+
+**People.java**
+
+```java
+package top.fbdcv.pojo;
+
+import lombok.Data;
+
+@Data
+public class People {
+    private Cat cat;
+    private Dog dog;
+    private String name;
+    
+}
+```
+
+**beans.xml**
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="cat" class="top.fbdcv.pojo.Cat"/>
+    <bean id="dog" class="top.fbdcv.pojo.Dog"/>
+
+    <bean id="people" class="top.fbdcv.pojo.People">
+        <property name="name" value="fbdcv"/>
+        <property name="cat" ref="cat"/>
+        <property name="dog" ref="dog"/>
+    </bean>
+
+</beans>
+```
+
+**测试**
+
+```java
+@Test
+public void Test(){
+    ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
+    People people = context.getBean("people", People.class);
+    people.getCat().shout();
+    people.getDog().shout();
+}
+```
+
+![image-20221130215811703](image-20221130215811703.png)
+
+**ByName自动装配**
+
+会自动在容器上下文查找，和自己对象set方法后面的值对应的Bean的id
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="cat" class="top.fbdcv.pojo.Cat"/>
+    <bean id="dog" class="top.fbdcv.pojo.Dog"/>
+
+    <bean id="people" class="top.fbdcv.pojo.People" autowire="byName">
+        <property name="name" value="fbdcv"/>
+    </bean>
+
+</beans>
+```
+
+**ByType自动装配**
+
+会自动在容器上下文查找，和自己对象属性类型相同的Bean
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="cat" class="top.fbdcv.pojo.Cat"/>
+    <bean id="dog" class="top.fbdcv.pojo.Dog"/>
+
+    <bean id="people" class="top.fbdcv.pojo.People" autowire="byType">
+        <property name="name" value="fbdcv"/>
+    </bean>
+
+</beans>
+```
+
+**使用注解自动装配**
 
 ## 注解开发
 

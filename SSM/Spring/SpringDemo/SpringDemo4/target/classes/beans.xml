@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="address" class="top.fbdcv.pojo.Address"/>
+
+    <bean id="student" class="top.fbdcv.pojo.Student">
+        <!--普通类型        -->
+        <property name="name" value="fbdcv"/>
+
+        <!--普通类型,但值为null的情况        -->
+        <property name="wife">
+            <null/>
+        </property>
+
+        <!--应用类型        -->
+        <property name="address" ref="address"/>
+
+        <!--数组类型        -->
+        <property name="books">
+            <array>
+                <value>三国演义</value>
+                <value>水浒传</value>
+                <value>红楼梦</value>
+            </array>
+        </property>
+
+        <!--List类型        -->
+        <property name="hobbies">
+            <list>
+                <value>看电影</value>
+                <value>敲代码</value>
+            </list>
+        </property>
+
+        <!--Map类型        -->
+        <property name="card">
+            <map>
+                <entry key="num" value="7801"/>
+                <entry key="date" value="2015.5.26"/>
+                <entry key="CVV" value="775"/>
+            </map>
+        </property>
+
+        <!--Set类型        -->
+        <property name="games">
+            <set>
+                <value>LOL</value>
+                <value>WOW</value>
+                <value>BOB</value>
+                <value>COC</value>
+            </set>
+        </property>
+
+        <!--Properties类型        -->
+        <property name="info">
+            <props>
+                <prop key="id">123456789</prop>
+                <prop key="sex">man</prop>
+            </props>
+        </property>
+
+
+    </bean>
+
+
+
+
+
+
+</beans>

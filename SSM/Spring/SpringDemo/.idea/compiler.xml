@@ -9,6 +9,8 @@
         <module name="SpringDemo2" />
         <module name="SpringDemo3" />
         <module name="SpringDemo1" />
+        <module name="SpringDemo4" />
+        <module name="SpringDemo5" />
       </profile>
     </annotationProcessing>
   </component>
