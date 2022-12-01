@@ -417,7 +417,7 @@ Spring IOC 创建对象的方法，有两种
 
 - 无参构造
 
-  通过反射机制，获取配置文件关于对象Bean的相关信息，通过无参构造创建对象并通过set方法给属性赋值，这也是我们最常用的
+  通过无参构造创建对象并通过set方法给属性赋值，这也是我们最常用的方法
 
 - 有参构造
 
@@ -916,9 +916,134 @@ public void Test(){
 
 **使用注解自动装配**
 
+要使用注解需：
+
+1. 导入约束
+2. 配置注解支持
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!--导入注解约束
+       xmlns:context="http://www.springframework.org/schema/context"
+       以及
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+         -->
+    <!--开启注解支持    -->
+    <context:annotation-config/>
+
+    <bean id="cat222" class="top.fbdcv.pojo.Cat"/>
+    <bean id="dog" class="top.fbdcv.pojo.Dog"/>
+
+    <bean id="people" class="top.fbdcv.pojo.People">
+        <property name="name" value="fbdcv"/>
+    </bean>
+
+</beans>
+```
+
+**@Autowrited注解**
+
+```java
+package top.fbdcv.pojo;
+
+import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
+
+@Data
+public class People {
+    @Autowired
+    private Cat cat;
+    @Autowired
+    private Dog dog;
+    private String name;
+
+}
+```
+
+```java
+@Test
+public void Test(){
+    ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
+    People people = context.getBean("people", People.class);
+    people.getCat().shout();
+    people.getDog().shout();
+}
+```
+
+![image-20221201205055417](image-20221201205055417.png)
+
+@Autowrited注解是根据类型进行自动装配的类似ByType自动装配（上面例子中的Spring IOC容器中注册的Cat类型的变量名为cat222而非cat，可见是根据类型进行自动装配的）
+
+**@Qualifier注解**
+
+@Qualifier注解与上面的@Autowrited配合使用，可以自动装配与Bean id相匹配的Bean，例如下面的cat222
+
+```xml
+    <bean id="cat222" class="top.fbdcv.pojo.Cat"/>
+    <bean id="cat" class="top.fbdcv.pojo.Cat"/>
+    <bean id="dog" class="top.fbdcv.pojo.Dog"/>
+
+    <bean id="people" class="top.fbdcv.pojo.People" >
+        <property name="name" value="fbdcv"/>
+    </bean>
+```
+
+```java
+@Data
+public class People {
+    @Autowired
+    @Qualifier(value = "cat222")
+    private Cat cat;
+    @Autowired
+    private Dog dog;
+    private String name;
+
+}
+```
+
+**@Resource注解**
+
+@Resource注解是java原生的，非Spring中的注解，该注解的效果是先进行Bean id 的匹配，如果匹配不成功再根据bean类型进行匹配，如果有多个同类型的bean还可以通过name值进行指定
+
+```java
+@Data
+public class People {
+    @Autowired
+    @Qualifier(value = "cat222")
+    private Cat cat;
+    @Resource( name = "dog222")
+    private Dog dog;
+    private String name;
+
+}
+```
+
+```xml
+<bean id="cat222" class="top.fbdcv.pojo.Cat"/>
+<bean id="cat" class="top.fbdcv.pojo.Cat"/>
+<bean id="dog" class="top.fbdcv.pojo.Dog"/>
+<bean id="dog222" class="top.fbdcv.pojo.Dog"/>
+
+<bean id="people" class="top.fbdcv.pojo.People" >
+    <property name="name" value="fbdcv"/>
+</bean>
+```
+
 ## 注解开发
 
 ## JavaConfig配置
+
+
 
 
 
