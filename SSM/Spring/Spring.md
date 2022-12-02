@@ -1041,7 +1041,73 @@ public class People {
 
 ## 注解开发
 
+在Spring4之后要进行注解开发，必须要包装aop的包导入了
+
+![image-20221202171424653](image-20221202171424653.png)
+
+我们通过maven配置Spring-webmvc的包中就已经包括aop的包了
+
+其次使用注解要导入context约束，增加注解的支持！
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!--导入注解约束
+       xmlns:context="http://www.springframework.org/schema/context"
+       以及
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+         -->
+    <!--开启注解支持    -->
+    <context:annotation-config/>
+    <!--指定要扫描的包，这个包下的注解就会生效 -->
+    <context:component-scan base-package="top.fbdcv"/>
+```
+
+
+
+1. Bean
+
+   @Component注解 ，放在User类上等价于<bean id="user" class="top.fbdcv.User"/>
+
+2. 属性
+
+   @Value注解，放在User类的属性上，@Value("属性的值")相当于给Bean中的属性设置值
+
+3. 衍生注解
+
+   @Component有几个衍生注解，我们在web开发中会按照mvc三层架构分层
+
+   - dao层 【@Repository】
+   - service层 【@Service】
+   - controller 【@Controller】
+
+   这四个注解功能都一样，都是代表将某个类注册到Spring中
+
+4. 自动装配
+
+   [之前我们已经提到过了](#Bean的自动装配)
+
+5. 作用域
+
+   @Scope注解，注解在类上标识Bean的作用域，例如@Scope("prototype")表示单例模式
+
+注解开发与xml开发的区别：
+
+- xml开发更加万能适应性强，维护方便
+- 注解开发比较方便，但是维护困难
+
 ## JavaConfig配置
+
+我们可以创建一个类来替代applicatContext.xml的功能
 
 
 
