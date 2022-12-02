@@ -1068,7 +1068,7 @@ public class People {
          -->
     <!--开启注解支持    -->
     <context:annotation-config/>
-    <!--指定要扫描的包，这个包下的注解就会生效 -->
+    <!--指定要扫描的包，这个包下的Spring注解就会生效 -->
     <context:component-scan base-package="top.fbdcv"/>
 ```
 
@@ -1107,11 +1107,7 @@ public class People {
 
 ## JavaConfig配置
 
-我们可以创建一个类来替代applicatContext.xml的功能
-
-
-
-
+我们可以创建一个类来替代applicatContext.xml的功能[基于-Java-的容器配置](https://docs.gitcode.net/spring/guide/spring-framework/core.html#_1-12-基于-爪哇-的容器配置)
 
 # AOP
 
