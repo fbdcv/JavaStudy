@@ -1111,9 +1111,150 @@ public class People {
 
 # AOP
 
+在学习AOP之前，我们需要学习一下23种设计模式之一的代理模式，因为代理模式是SpringAOP的底层
+
 ## 静态代理
 
+代理模式的定义：由于某些原因需要给某对象提供一个代理以控制对该对象的访问。这时，访问对象不适合或者不能直接引用目标对象，代理对象作为访问对象和目标对象之间的中介。
+
+代理模式的主要优点有：
+
+- 代理模式在客户端与目标对象之间起到一个中介作用和保护目标对象的作用；
+- 代理对象可以**扩展目标对象的功能**；
+- 代理模式能将客户端与目标对象分离，在一定程度上**降低了系统的耦合度**；
+
+下面以一个例子来理解一下代理模式
+
+**UserService.java**
+
+```java
+package top.fbdcv.service;
+
+public interface UserService {
+    public void insert();
+    public void delete();
+    public void update();
+    public void select();
+}
+```
+
+**UserServiceImpl.java**
+
+```java
+package top.fbdcv.service;
+
+public class UserServiceImpl implements UserService{
+    
+    @Override
+    public void insert() {
+        System.out.println("增加一个用户信息");
+    }
+
+    @Override
+    public void delete() {
+        System.out.println("删除一个用户信息");
+
+    }
+
+    @Override
+    public void update() {
+        System.out.println("更新一个用户信息");
+    }
+
+    @Override
+    public void select() {
+        System.out.println("查询一个用户信息");
+    }
+}
+```
+
+**Client.java**
+
+```java
+package top.fbdcv.client;
+
+import top.fbdcv.service.UserService;
+import top.fbdcv.service.UserServiceImpl;
+
+public class Client {
+
+    public static void main(String[] args) {
+        UserService userService = new UserServiceImpl();
+        userService.insert();
+    }
+}
+```
+
+![image-20221213093438721](image-20221213093438721.png)
+
+
+
+![image-20221213091549020](image-20221213091549020.png)
+
+现在，我们想扩展UserService功能，该如何实现？最简单的方式就是在UserServiceImpl中扩展功能，但是缺点是随着功能的扩展UserServiceImpl将越来越复杂，不利于后期的维护和功能扩展，接下来让我们看看代理模式是怎么解决这个问题的
+
+**UserServiceAgent.java**
+
+```java
+package top.fbdcv.service;
+
+public class UserServiceAgent {
+    private UserService userService = new UserServiceImpl();
+
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
+    public void insert(){
+        System.out.println("扩展了insert功能");
+        userService.insert();
+    }
+    public void delete(){
+        System.out.println("扩展了delete功能");
+        userService.delete();
+    }
+    public void update(){
+        System.out.println("扩展了update功能");
+        userService.update();
+    }
+    public void select(){
+        System.out.println("扩展了select功能");
+        userService.select();
+    }
+}
+```
+
+**Client.java**
+
+```java
+package top.fbdcv.client;
+import top.fbdcv.service.UserService;
+import top.fbdcv.service.UserServiceAgent;
+import top.fbdcv.service.UserServiceImpl;
+
+public class Client {
+
+    public static void main(String[] args) {
+        UserService userService = new UserServiceImpl();
+        
+        UserServiceAgent userServiceAgent = new UserServiceAgent();
+        userServiceAgent.setUserService(userService);
+        
+        userServiceAgent.insert();
+    }
+}
+```
+
+![image-20221213093611224](image-20221213093611224.png)
+
+
+
+![image-20221213093719938](image-20221213093719938.png)
+
+我们在Client与UserServiceImpl之间加上了一个代理类UserServiceAgent方便我们扩展UserServiceImpl，同时降低系统的耦合性，当我们想继续扩展功能的时候，可以继续在Client与UserServiceAgent之间插入新的代理类，用于扩展新功能
+
 ## 动态代理
+
+
 
 ## AOP实现方式
 
