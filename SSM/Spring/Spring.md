@@ -346,6 +346,8 @@ public void UserServiceTest(){
 
 所谓的IOC，就是对象由Spring来创建，管理，装配
 
+**依赖注入**是一种消除类之间依赖关系的设计模式。例如，A类要依赖B类，A类不再直接创建B类，而是把这种依赖关系配置在外部xml文件（或java config文件）中，然后由Spring容器根据配置信息创建、管理bean类。
+
 
 
 ## Spring IOC创建对象的方式
@@ -1254,13 +1256,331 @@ public class Client {
 
 ## 动态代理
 
+动态代理就是通过反射来实现自动创建代理类实现代理模式的过程
 
+动态代理的实现方式有两种
+
+- JDK原生的动态代理（缺点是，该方式是基于接口的，不能对没有实现接口的类进行动态代理）
+- cglib，cglib是对JDK方法的一种补充或者说是一种强化，它对于没有实现接口的类也可以生成代理类，实现方式和JDK的实现方式差不多。
+
+### JDK的动态代理
+
+使用java反射包中的类和接口实现动态代理的功能。
+反射包 java.lang.reflect , 里面有三个类 ： InvocationHandler , Method, Proxy.
+
+- InvocationHandler 接口（调用处理器）：就一个方法invoke（）
+
+```java
+public Object invoke(Object proxy, Method method, Object[] args){}
+```
+
+invoke（）:表示代理对象要执行的功能代码。你的代理类要完成的功能就写在invoke()方法中。
+
+-  Method类：表示方法的， 确切的说就是目标类中的方法。
+
+通过Method可以执行某个目标类的方法，Method.invoke();
+method.invoke(目标对象，方法的参数)
+
+-  Proxy类：核心的对象，创建代理对象。之前创建对象都是 new 类的构造方法()
+  现在我们是使用Proxy类的方法，代替new的使用
+
+```java
+public static Object newProxyInstance(ClassLoader loader,Class<?>[] interfaces,InvocationHandler h)
+```
+
+   **ClassLoader loader**： 类加载器，负责向内存中加载对象的。 使用反射获取对象的ClassLoader
+类a , a.getCalss().getClassLoader(), 目标对象的类加载器
+   **Class<?>[] interfaces**： 接口， 目标对象实现的接口，也是反射获取的。
+   **InvocationHandler h** ： 我们自己写的，代理类要完成的功能。
+
+
+
+**ProxyInvocationHandler.java**
+
+```java
+package top.fbdcv.handler;
+
+import top.fbdcv.service.UserService;
+
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+
+public class ProxyInvocationHandler implements InvocationHandler {
+    //要代理的对象    
+    private UserService userServiceImpl; 
+    
+    public void setUserServiceImpl(UserService userServiceImpl) {
+        this.userServiceImpl = userServiceImpl;
+    }
+    
+    //创建代理类
+    public UserService getProxy(){
+        return (UserService) Proxy.newProxyInstance(UserService.class.getClassLoader(),
+                userServiceImpl.getClass().getInterfaces(), this);
+    }
+
+    //实现代理功能
+    @Override
+    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        System.out.println("动态创建了代理类，实现了代理功能");
+        return method.invoke(userServiceImpl,args);
+    }
+
+}
+```
+
+**Client.java**
+
+```java
+package top.fbdcv.client;
+import top.fbdcv.handler.ProxyInvocationHandler;
+import top.fbdcv.service.UserService;
+import top.fbdcv.service.UserServiceAgent;
+import top.fbdcv.service.UserServiceImpl;
+
+public class Client {
+
+    public static void main(String[] args) {
+        UserService userService = new UserServiceImpl();
+        ProxyInvocationHandler proxyInvocationHandler = new ProxyInvocationHandler();
+        proxyInvocationHandler.setUserServiceImpl(userService);
+        UserService proxy = proxyInvocationHandler.getProxy();
+        proxy.insert();
+    }
+}
+```
+
+![image-20221217102317659](image-20221217102317659.png)
+
+![image-20221217102751704](image-20221217102751704.png)
 
 ## AOP实现方式
 
-## 注解实现AOP
+**AOP**为Aspect Oriented Programming的缩写，意为：[面向切面编程](https://baike.baidu.com/item/面向切面编程/6016335?fromModule=lemma_inlink)，通过[预编译](https://baike.baidu.com/item/预编译/3191547?fromModule=lemma_inlink)方式和运行期间动态代理实现程序功能的统一维护的一种技术,旨在将[横切关注点](https://zh.wikipedia.org/wiki/横切关注点)与业务主体进行进一步分离，以提高程序代码的[模块化](https://zh.wikipedia.org/wiki/模块化编程)程度。通过在现有代码基础上增加额外的通知（Advice）机制，能够对被声明为“切点（Pointcut）”的代码块进行统一管理与装饰.
+
+**AOP的基本概念**
+
+- 连接点（JoinPoint）：需要在程序中插入横切关注点的点，连接点可能是在类初始化、方法调用、字段调用或处理异常等等。Spring中只支持方法执行连接点。
+
+- 切入点（Pointcut）：切入点是指通知（Advice）所要织入（Weaving）的具体位置。
+
+  简单可以理解为，每个出口都是**连接点**，但是我们使用的那个出口才是**切入点**。每个应用有多个位置适合织入通知，这些位置都是**连接点**。但是只有我们选择的那个具体的位置才是**切入点**。
+
+- 通知（Advice）：在连接点上执行的行为，增强提供了在AOP中需要在切入点所选择的连接点处进行扩展现有行为的手段。包括前置增强（before advice）、后置增强 (after advice)、环绕增强 （around advice）。
+
+- 切面（Aspect）：通知和切入点的结合。
+
+- 织入（Weaving）：织入是一个过程，是将切面应用到目标对象从而创建出AOP代理对象的过程。
+
+- 代理（Proxy）：通过代理方式来对目标对象应用切面。AOP代理可以用JDK动态代理或CGLIB代理实现。
+
+- 目标对象（Target）：需要被织入关注点的对象。即被代理的对象。
+
+![img](webp.webp)
+
+SpringAOP包含五种通知
+
+![JAVA-Spring AOP五大通知类型- 掘金](16c514c51a386d57tplv-t2oaga2asx-zoom-in-crop-mark4536000.png)
+
+
+
+### 使用原生的Spring API
+
+导入依赖
+
+```xml
+<!-- https://mvnrepository.com/artifact/org.aspectj/aspectjweaver -->
+<dependency>
+    <groupId>org.aspectj</groupId>
+    <artifactId>aspectjweaver</artifactId>
+    <version>1.9.9.1</version>
+    <scope>runtime</scope>
+</dependency>
+```
+
+**Log.java**
+
+```java
+package top.fbdcv.log;
+
+import org.springframework.aop.AfterReturningAdvice;
+import org.springframework.aop.MethodBeforeAdvice;
+
+import java.lang.reflect.Method;
+import java.util.Arrays;
+
+public class Log implements MethodBeforeAdvice , AfterReturningAdvice {
+
+    @Override
+    public void before(Method method, Object[] args, Object target) throws Throwable {
+        System.out.println("要执行"+method.getName()+"方法，方法参数为："+ Arrays.toString(args));
+    }
+
+    @Override
+    public void afterReturning(Object returnValue, Method method, Object[] args, Object target) throws Throwable {
+        System.out.println("执行了"+method.getName()+"方法,返回结果是"+returnValue);
+    }
+
+}
+```
+
+Spring核心配置
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <bean id="userService" class="top.fbdcv.service.UserServiceImpl"/>
+    <bean id="log" class="top.fbdcv.log.Log"/>
+
+    <aop:config>
+        <!--新增切入点-->
+          <!--execution(修饰符  返回值  包名.类名/接口名.方法名(参数列表))
+(..)可以代表所有参数,(*)代表一个参数,(*,String)代表第一个参数为任何值,第二个参数为String类型.-->
+        <aop:pointcut id="pointcut" expression="execution(* top.fbdcv.service.UserServiceImpl.*(..))"/>
+        
+      <!--新增通知-->
+        <aop:advisor advice-ref="log" pointcut-ref="pointcut"/>
+    </aop:config>
+
+</beans>
+```
+
+**Client.java**
+
+```java
+package top.fbdcv.client;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import top.fbdcv.service.UserService;
+
+public class Client {
+    public static void main(String[] args) {
+        ApplicationContext context = new ClassPathXmlApplicationContext("ApplicationContext.xml");
+        UserService userService = (UserService) context.getBean("userService");
+        userService.insert();
+    }
+
+}
+```
+
+![image-20221217134711270](image-20221217134711270.png)
+
+![image-20221217144741144](image-20221217144741144.png)
+
+### 自定义类（切面）实现AOP
+
+切面  **Aspect.java**
+
+```java
+package top.fbdcv.aspects;
+
+public class Aspect {
+
+    public  void Before(){
+        System.out.println("===========程序执行前==============");
+    }
+    public  void After(){
+        System.out.println("===========程序执行后==============");
+    }
+}
+```
+
+Spring配置
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <bean id="userService" class="top.fbdcv.service.UserServiceImpl"/>
+    <bean id="aspect" class="top.fbdcv.aspects.Aspect"/>
+
+    <aop:config>
+    <!--新增切面-->
+        <aop:aspect ref="aspect">
+            <!--定义切入点-->
+            <aop:pointcut id="pointcut" expression="execution(* top.fbdcv.service.UserServiceImpl.*(..))"/>
+            <!--增加两个通知-->
+            <aop:before method="Before" pointcut-ref="pointcut"/>
+            <aop:after method="After" pointcut-ref="pointcut"/>
+        </aop:aspect>
+    </aop:config>
+
+</beans>
+```
+
+![image-20221217163336455](image-20221217163336455.png)
+
+该方法相对于第一种方法，把通知的类型定义在配置文件中，且无法通过反射得到切入点的信息，没有第一种方法全能
+
+但是由于引入了切面更方便理解和管理
+
+### 注解实现AOP
+
+**Aspect.java**
+
+```java
+package top.fbdcv.aspect;
+
+import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.Before;
+
+@org.aspectj.lang.annotation.Aspect
+public class Aspect {
+
+    @Before("execution(* top.fbdcv.service.UserServiceImpl.*(..))")
+    public  void Before(){
+        System.out.println("===========程序执行前==============");
+    }
+    @After("execution(* top.fbdcv.service.UserServiceImpl.*(..))")
+    public  void After(){
+        System.out.println("===========程序执行后==============");
+    }
+}
+```
+
+Spring配置
+
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <bean id="userService" class="top.fbdcv.service.UserServiceImpl"/>
+    <!-- 开启AOP注解   -->
+    <aop:aspectj-autoproxy/>
+    <!--使用IOC，实例化切面对象    -->
+    <bean id="aspect" class="top.fbdcv.aspect.Aspect"/>
+    
+</beans>
+```
+
+![image-20221217172326223](image-20221217172326223.png)
+
+使用注解，可以简化我们 [自定义类实现AOP](#自定义类（切面）实现AOP)这种方式的操作
 
 # 整合Mybatis
+
+
 
 # Spring事务
 

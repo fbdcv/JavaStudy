@@ -7,10 +7,9 @@ public class Client {
 
     public static void main(String[] args) {
         UserService userService = new UserServiceImpl();
+        UserServiceAgent porxy = new UserServiceAgent();
+        porxy.setUserService(userService);
+        porxy.insert();
 
-        UserServiceAgent userServiceAgent = new UserServiceAgent();
-        userServiceAgent.setUserService(userService);
-
-        userServiceAgent.insert();
     }
 }

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <bean id="userService" class="top.fbdcv.service.UserServiceImpl"/>
+    <bean id="aspect" class="top.fbdcv.aspects.Aspect"/>
+
+    <aop:config>
+    <!--新增切面-->
+        <aop:aspect ref="aspect">
+            <!--定义切入点-->
+            <aop:pointcut id="pointcut" expression="execution(* top.fbdcv.service.UserServiceImpl.*(..))"/>
+            <!--增加两个通知-->
+            <aop:before method="Before" pointcut-ref="pointcut"/>
+            <aop:after method="After" pointcut-ref="pointcut"/>
+        </aop:aspect>
+    </aop:config>
+
+</beans>
