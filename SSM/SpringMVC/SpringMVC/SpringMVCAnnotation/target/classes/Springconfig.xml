@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd">
+
+    <!--开启扫描包，让指定包下的注解生效，由IOC容器同一管理    -->
+    <context:component-scan base-package="top.fbdcv.controller"/>
+
+<!--这个Spring MVC xml文件的属性，主要是处理web项目的静态文件问题。
+每次请求过来，先经过 DefaultServletHttpRequestHandler 判断是否是静态文件，
+如果是静态文件，则使用默认的Servlet进行处理，不是则放行交由 DispatcherServlet 控制器处理  -->
+    <mvc:default-servlet-handler/>
+
+    <!--自动配置处理器映射器和处理器适配器    -->
+    <mvc:annotation-driven/>
+
+    <!--添加 视图解析器    -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver" id="internalResourceViewResolver">
+        <!--前缀        -->
+        <property name="prefix" value="/WEB-INF/jsp/"/>
+        <!--后缀        -->
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+</beans>

@@ -1534,6 +1534,14 @@ session.invalidate();
 
 [Cookie、Session、Token究竟区别在哪？如何进行身份认证，保持用户登录状态？](https://www.bilibili.com/video/BV1ob4y1Y7Ep)
 
+### 知识点
+
+#### attribute与parameter区别 
+
+request.getParameter取得Web客户端到web服务端的http请求数据(get/post)，只能是string类型的，而且HttpServletRequest没有对应的setParameter()方法。不仅在提交表单中，在Context中也可以设置该参数[设置该参数](# 设置上下文参数)
+
+request.getAttribute():当两个web组件为转发关系时，通过getAttribute()和setAttribute()来共享request范围内的数据。attrubute中的数据是Object类型的，通过attribute传递的数据会存在于web容器内部
+
 ## JSP
 
 **JSP**（全称**J**akarta **S**erver **P**ages，曾称为**J**ava**S**erver **P**ages）是由[Sun Microsystems](https://zh.m.wikipedia.org/wiki/Sun_Microsystems)公司主导建立的一种动态网页技术标准。
@@ -2237,4 +2245,33 @@ public class FilterTest implements Filter {
 ## 文件上传
 
 ## 邮件发送
+
+## RESTful 风格API
+
+在RESTful API中，不同的HTTP请求方法有各自的含义，这里就展示GET,POST,PUT,DELETE几种请求API的设计与含义分析。针对不同操作，具体的含义如下：
+
+```text
+GET /collection：从服务器查询资源的列表（数组）
+GET /collection/resource：从服务器查询单个资源
+POST /collection：在服务器创建新的资源
+PUT /collection/resource：更新服务器资源
+DELETE /collection/resource：从服务器删除资源
+```
+
+例如，对于Dog这个实体类，操作这个实体类的业务层请求API依据RESTful风格如下
+
+```java
+package com.restfuldemo.pojo;
+
+public class Dog {
+    private int id;//唯一id标识
+    private String name;//名称
+    private  int age;//年龄
+    //省略get set
+}
+```
+
+![img](v2-46b880b82c5cec18708506f7a34547b4_720w.webp)
+
+
 
