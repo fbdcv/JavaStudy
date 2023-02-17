@@ -1,6 +1,12 @@
 ## NIO
 
-NIO分为三个组件Buffer、Channels、Selector，Bufffer代替之前BIO中的byte数组，Channels代替之前BIO中的流，Selector实现服务器接收客户端消息的多路复用
+NIO分为三个组件**Buffer**、**Channels**、**Selector**，
+
+**Bufffer代替之前BIO中的byte数组，**
+
+**Channels代替之前BIO中的流，**
+
+**Selector实现服务器接收客户端消息的多路复用**
 
 ```java
 package test;
